@@ -1,0 +1,12 @@
+/* Shared product image box size for list rows (cart, wishlist) */
+:root {
+  --product-thumb-row: 120px;
+  --product-thumb-bg: #f8fafc;
+  --product-thumb-radius: 10px;
+}
+
+@media (max-width: 520px) {
+  :root {
+    --product-thumb-row: 96px;
+  }
+}
