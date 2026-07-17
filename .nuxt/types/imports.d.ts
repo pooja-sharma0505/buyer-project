@@ -10,8 +10,6 @@ declare global {
   const clearNuxtState: typeof import('../../node_modules/nuxt/dist/app/composables/state').clearNuxtState
   const computed: typeof import('vue').computed
   const createError: typeof import('../../node_modules/nuxt/dist/app/composables/error').createError
-  const createUseAsyncData: typeof import('../../node_modules/nuxt/dist/app/composables/asyncData').createUseAsyncData
-  const createUseFetch: typeof import('../../node_modules/nuxt/dist/app/composables/fetch').createUseFetch
   const customRef: typeof import('vue').customRef
   const defineAppConfig: typeof import('../../node_modules/nuxt/dist/app/nuxt').defineAppConfig
   const defineAsyncComponent: typeof import('vue').defineAsyncComponent
@@ -21,7 +19,7 @@ declare global {
   const defineNuxtLink: typeof import('../../node_modules/nuxt/dist/app/components/nuxt-link').defineNuxtLink
   const defineNuxtPlugin: typeof import('../../node_modules/nuxt/dist/app/nuxt').defineNuxtPlugin
   const defineNuxtRouteMiddleware: typeof import('../../node_modules/nuxt/dist/app/composables/router').defineNuxtRouteMiddleware
-  const definePageMeta: typeof import('../../node_modules/nuxt/dist/app/composables/pages').definePageMeta
+  const definePageMeta: typeof import('../../node_modules/nuxt/dist/pages/runtime/composables').definePageMeta
   const definePayloadPlugin: typeof import('../../node_modules/nuxt/dist/app/nuxt').definePayloadPlugin
   const definePayloadReducer: typeof import('../../node_modules/nuxt/dist/app/composables/payload').definePayloadReducer
   const definePayloadReviver: typeof import('../../node_modules/nuxt/dist/app/composables/payload').definePayloadReviver
@@ -50,8 +48,8 @@ declare global {
   const nextTick: typeof import('vue').nextTick
   const onActivated: typeof import('vue').onActivated
   const onBeforeMount: typeof import('vue').onBeforeMount
-  const onBeforeRouteLeave: typeof import('vue-router').onBeforeRouteLeave
-  const onBeforeRouteUpdate: typeof import('vue-router').onBeforeRouteUpdate
+  const onBeforeRouteLeave: typeof import('../../node_modules/vue-router').onBeforeRouteLeave
+  const onBeforeRouteUpdate: typeof import('../../node_modules/vue-router').onBeforeRouteUpdate
   const onBeforeUnmount: typeof import('vue').onBeforeUnmount
   const onBeforeUpdate: typeof import('vue').onBeforeUpdate
   const onDeactivated: typeof import('vue').onDeactivated
@@ -96,10 +94,11 @@ declare global {
   const tryUseNuxtApp: typeof import('../../node_modules/nuxt/dist/app/nuxt').tryUseNuxtApp
   const unref: typeof import('vue').unref
   const updateAppConfig: typeof import('../../node_modules/nuxt/dist/app/config').updateAppConfig
-  const useAnnouncer: typeof import('../../node_modules/nuxt/dist/app/composables/announcer').useAnnouncer
   const useAppConfig: typeof import('../../node_modules/nuxt/dist/app/config').useAppConfig
   const useAsyncData: typeof import('../../node_modules/nuxt/dist/app/composables/asyncData').useAsyncData
   const useAttrs: typeof import('vue').useAttrs
+  const useAuth: typeof import('../../composables/useAuth').useAuth
+  const useCart: typeof import('../../composables/useCart').useCart
   const useCookie: typeof import('../../node_modules/nuxt/dist/app/composables/cookie').useCookie
   const useCssModule: typeof import('vue').useCssModule
   const useCssVars: typeof import('vue').useCssVars
@@ -111,7 +110,7 @@ declare global {
   const useId: typeof import('vue').useId
   const useLazyAsyncData: typeof import('../../node_modules/nuxt/dist/app/composables/asyncData').useLazyAsyncData
   const useLazyFetch: typeof import('../../node_modules/nuxt/dist/app/composables/fetch').useLazyFetch
-  const useLink: typeof import('vue-router').useLink
+  const useLink: typeof import('../../node_modules/vue-router').useLink
   const useLoadingIndicator: typeof import('../../node_modules/nuxt/dist/app/composables/loading-indicator').useLoadingIndicator
   const useModel: typeof import('vue').useModel
   const useNuxtApp: typeof import('../../node_modules/nuxt/dist/app/nuxt').useNuxtApp
@@ -130,6 +129,9 @@ declare global {
   const useRuntimeConfig: typeof import('../../node_modules/nuxt/dist/app/nuxt').useRuntimeConfig
   const useRuntimeHook: typeof import('../../node_modules/nuxt/dist/app/composables/runtime-hook').useRuntimeHook
   const useScript: typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs').useScript
+  const useScriptAhrefsAnalytics: typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs').useScriptAhrefsAnalytics
+  const useScriptBingUet: typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs').useScriptBingUet
+  const useScriptCalendly: typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs').useScriptCalendly
   const useScriptClarity: typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs').useScriptClarity
   const useScriptCloudflareWebAnalytics: typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs').useScriptCloudflareWebAnalytics
   const useScriptCrisp: typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs').useScriptCrisp
@@ -139,23 +141,33 @@ declare global {
   const useScriptGoogleAdsense: typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs').useScriptGoogleAdsense
   const useScriptGoogleAnalytics: typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs').useScriptGoogleAnalytics
   const useScriptGoogleMaps: typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs').useScriptGoogleMaps
+  const useScriptGoogleRecaptcha: typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs').useScriptGoogleRecaptcha
+  const useScriptGoogleSignIn: typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs').useScriptGoogleSignIn
   const useScriptGoogleTagManager: typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs').useScriptGoogleTagManager
+  const useScriptGravatar: typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs').useScriptGravatar
   const useScriptHotjar: typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs').useScriptHotjar
   const useScriptIntercom: typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs').useScriptIntercom
   const useScriptLemonSqueezy: typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs').useScriptLemonSqueezy
+  const useScriptLinkedInInsight: typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs').useScriptLinkedInInsight
   const useScriptMatomoAnalytics: typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs').useScriptMatomoAnalytics
   const useScriptMetaPixel: typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs').useScriptMetaPixel
+  const useScriptMixpanelAnalytics: typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs').useScriptMixpanelAnalytics
   const useScriptNpm: typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs').useScriptNpm
   const useScriptPayPal: typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs').useScriptPayPal
   const useScriptPlausibleAnalytics: typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs').useScriptPlausibleAnalytics
+  const useScriptPostHog: typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs').useScriptPostHog
   const useScriptRedditPixel: typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs').useScriptRedditPixel
   const useScriptRybbitAnalytics: typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs').useScriptRybbitAnalytics
   const useScriptSegment: typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs').useScriptSegment
   const useScriptSnapchatPixel: typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs').useScriptSnapchatPixel
+  const useScriptSpeedCurve: typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs').useScriptSpeedCurve
   const useScriptStripe: typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs').useScriptStripe
+  const useScriptTikTokPixel: typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs').useScriptTikTokPixel
   const useScriptTriggerConsent: typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs').useScriptTriggerConsent
   const useScriptTriggerElement: typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs').useScriptTriggerElement
   const useScriptUmamiAnalytics: typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs').useScriptUmamiAnalytics
+  const useScriptUsercentrics: typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs').useScriptUsercentrics
+  const useScriptVercelAnalytics: typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs').useScriptVercelAnalytics
   const useScriptVimeoPlayer: typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs').useScriptVimeoPlayer
   const useScriptXPixel: typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs').useScriptXPixel
   const useScriptYouTubePlayer: typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs').useScriptYouTubePlayer
@@ -168,6 +180,7 @@ declare global {
   const useState: typeof import('../../node_modules/nuxt/dist/app/composables/state').useState
   const useTemplateRef: typeof import('vue').useTemplateRef
   const useTransitionState: typeof import('vue').useTransitionState
+  const useWishlist: typeof import('../../composables/useWishlist').useWishlist
   const watch: typeof import('vue').watch
   const watchEffect: typeof import('vue').watchEffect
   const watchPostEffect: typeof import('vue').watchPostEffect
@@ -184,9 +197,6 @@ declare global {
   // @ts-ignore
   export type { Component, ComponentPublicInstance, ComputedRef, DirectiveBinding, ExtractDefaultPropTypes, ExtractPropTypes, ExtractPublicPropTypes, InjectionKey, PropType, Ref, MaybeRef, MaybeRefOrGetter, VNode, WritableComputedRef } from 'vue'
   import('vue')
-  // @ts-ignore
-  export type { PageMeta } from '../../node_modules/nuxt/dist/app/composables/pages'
-  import('../../node_modules/nuxt/dist/app/composables/pages')
 }
 // for vue template auto import
 import { UnwrapRef } from 'vue'
@@ -201,8 +211,6 @@ declare module 'vue' {
     readonly clearNuxtState: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/state')['clearNuxtState']>
     readonly computed: UnwrapRef<typeof import('vue')['computed']>
     readonly createError: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/error')['createError']>
-    readonly createUseAsyncData: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/asyncData')['createUseAsyncData']>
-    readonly createUseFetch: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/fetch')['createUseFetch']>
     readonly customRef: UnwrapRef<typeof import('vue')['customRef']>
     readonly defineAppConfig: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/nuxt')['defineAppConfig']>
     readonly defineAsyncComponent: UnwrapRef<typeof import('vue')['defineAsyncComponent']>
@@ -212,7 +220,7 @@ declare module 'vue' {
     readonly defineNuxtLink: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/components/nuxt-link')['defineNuxtLink']>
     readonly defineNuxtPlugin: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/nuxt')['defineNuxtPlugin']>
     readonly defineNuxtRouteMiddleware: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/router')['defineNuxtRouteMiddleware']>
-    readonly definePageMeta: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/pages')['definePageMeta']>
+    readonly definePageMeta: UnwrapRef<typeof import('../../node_modules/nuxt/dist/pages/runtime/composables')['definePageMeta']>
     readonly definePayloadPlugin: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/nuxt')['definePayloadPlugin']>
     readonly definePayloadReducer: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/payload')['definePayloadReducer']>
     readonly definePayloadReviver: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/payload')['definePayloadReviver']>
@@ -241,8 +249,8 @@ declare module 'vue' {
     readonly nextTick: UnwrapRef<typeof import('vue')['nextTick']>
     readonly onActivated: UnwrapRef<typeof import('vue')['onActivated']>
     readonly onBeforeMount: UnwrapRef<typeof import('vue')['onBeforeMount']>
-    readonly onBeforeRouteLeave: UnwrapRef<typeof import('vue-router')['onBeforeRouteLeave']>
-    readonly onBeforeRouteUpdate: UnwrapRef<typeof import('vue-router')['onBeforeRouteUpdate']>
+    readonly onBeforeRouteLeave: UnwrapRef<typeof import('../../node_modules/vue-router')['onBeforeRouteLeave']>
+    readonly onBeforeRouteUpdate: UnwrapRef<typeof import('../../node_modules/vue-router')['onBeforeRouteUpdate']>
     readonly onBeforeUnmount: UnwrapRef<typeof import('vue')['onBeforeUnmount']>
     readonly onBeforeUpdate: UnwrapRef<typeof import('vue')['onBeforeUpdate']>
     readonly onDeactivated: UnwrapRef<typeof import('vue')['onDeactivated']>
@@ -287,10 +295,11 @@ declare module 'vue' {
     readonly tryUseNuxtApp: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/nuxt')['tryUseNuxtApp']>
     readonly unref: UnwrapRef<typeof import('vue')['unref']>
     readonly updateAppConfig: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/config')['updateAppConfig']>
-    readonly useAnnouncer: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/announcer')['useAnnouncer']>
     readonly useAppConfig: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/config')['useAppConfig']>
     readonly useAsyncData: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/asyncData')['useAsyncData']>
     readonly useAttrs: UnwrapRef<typeof import('vue')['useAttrs']>
+    readonly useAuth: UnwrapRef<typeof import('../../composables/useAuth')['useAuth']>
+    readonly useCart: UnwrapRef<typeof import('../../composables/useCart')['useCart']>
     readonly useCookie: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/cookie')['useCookie']>
     readonly useCssModule: UnwrapRef<typeof import('vue')['useCssModule']>
     readonly useCssVars: UnwrapRef<typeof import('vue')['useCssVars']>
@@ -302,7 +311,7 @@ declare module 'vue' {
     readonly useId: UnwrapRef<typeof import('vue')['useId']>
     readonly useLazyAsyncData: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/asyncData')['useLazyAsyncData']>
     readonly useLazyFetch: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/fetch')['useLazyFetch']>
-    readonly useLink: UnwrapRef<typeof import('vue-router')['useLink']>
+    readonly useLink: UnwrapRef<typeof import('../../node_modules/vue-router')['useLink']>
     readonly useLoadingIndicator: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/loading-indicator')['useLoadingIndicator']>
     readonly useModel: UnwrapRef<typeof import('vue')['useModel']>
     readonly useNuxtApp: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/nuxt')['useNuxtApp']>
@@ -321,6 +330,9 @@ declare module 'vue' {
     readonly useRuntimeConfig: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/nuxt')['useRuntimeConfig']>
     readonly useRuntimeHook: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/runtime-hook')['useRuntimeHook']>
     readonly useScript: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs')['useScript']>
+    readonly useScriptAhrefsAnalytics: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs')['useScriptAhrefsAnalytics']>
+    readonly useScriptBingUet: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs')['useScriptBingUet']>
+    readonly useScriptCalendly: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs')['useScriptCalendly']>
     readonly useScriptClarity: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs')['useScriptClarity']>
     readonly useScriptCloudflareWebAnalytics: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs')['useScriptCloudflareWebAnalytics']>
     readonly useScriptCrisp: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs')['useScriptCrisp']>
@@ -330,23 +342,33 @@ declare module 'vue' {
     readonly useScriptGoogleAdsense: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs')['useScriptGoogleAdsense']>
     readonly useScriptGoogleAnalytics: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs')['useScriptGoogleAnalytics']>
     readonly useScriptGoogleMaps: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs')['useScriptGoogleMaps']>
+    readonly useScriptGoogleRecaptcha: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs')['useScriptGoogleRecaptcha']>
+    readonly useScriptGoogleSignIn: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs')['useScriptGoogleSignIn']>
     readonly useScriptGoogleTagManager: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs')['useScriptGoogleTagManager']>
+    readonly useScriptGravatar: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs')['useScriptGravatar']>
     readonly useScriptHotjar: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs')['useScriptHotjar']>
     readonly useScriptIntercom: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs')['useScriptIntercom']>
     readonly useScriptLemonSqueezy: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs')['useScriptLemonSqueezy']>
+    readonly useScriptLinkedInInsight: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs')['useScriptLinkedInInsight']>
     readonly useScriptMatomoAnalytics: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs')['useScriptMatomoAnalytics']>
     readonly useScriptMetaPixel: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs')['useScriptMetaPixel']>
+    readonly useScriptMixpanelAnalytics: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs')['useScriptMixpanelAnalytics']>
     readonly useScriptNpm: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs')['useScriptNpm']>
     readonly useScriptPayPal: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs')['useScriptPayPal']>
     readonly useScriptPlausibleAnalytics: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs')['useScriptPlausibleAnalytics']>
+    readonly useScriptPostHog: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs')['useScriptPostHog']>
     readonly useScriptRedditPixel: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs')['useScriptRedditPixel']>
     readonly useScriptRybbitAnalytics: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs')['useScriptRybbitAnalytics']>
     readonly useScriptSegment: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs')['useScriptSegment']>
     readonly useScriptSnapchatPixel: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs')['useScriptSnapchatPixel']>
+    readonly useScriptSpeedCurve: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs')['useScriptSpeedCurve']>
     readonly useScriptStripe: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs')['useScriptStripe']>
+    readonly useScriptTikTokPixel: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs')['useScriptTikTokPixel']>
     readonly useScriptTriggerConsent: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs')['useScriptTriggerConsent']>
     readonly useScriptTriggerElement: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs')['useScriptTriggerElement']>
     readonly useScriptUmamiAnalytics: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs')['useScriptUmamiAnalytics']>
+    readonly useScriptUsercentrics: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs')['useScriptUsercentrics']>
+    readonly useScriptVercelAnalytics: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs')['useScriptVercelAnalytics']>
     readonly useScriptVimeoPlayer: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs')['useScriptVimeoPlayer']>
     readonly useScriptXPixel: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs')['useScriptXPixel']>
     readonly useScriptYouTubePlayer: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs')['useScriptYouTubePlayer']>
@@ -359,6 +381,7 @@ declare module 'vue' {
     readonly useState: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/state')['useState']>
     readonly useTemplateRef: UnwrapRef<typeof import('vue')['useTemplateRef']>
     readonly useTransitionState: UnwrapRef<typeof import('vue')['useTransitionState']>
+    readonly useWishlist: UnwrapRef<typeof import('../../composables/useWishlist')['useWishlist']>
     readonly watch: UnwrapRef<typeof import('vue')['watch']>
     readonly watchEffect: UnwrapRef<typeof import('vue')['watchEffect']>
     readonly watchPostEffect: UnwrapRef<typeof import('vue')['watchPostEffect']>

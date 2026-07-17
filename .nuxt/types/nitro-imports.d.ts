@@ -15,6 +15,7 @@ declare global {
   const callNodeListener: typeof import('../../node_modules/h3').callNodeListener
   const clearResponseHeaders: typeof import('../../node_modules/h3').clearResponseHeaders
   const clearSession: typeof import('../../node_modules/h3').clearSession
+  const clearSessionCookie: typeof import('../../server/utils/auth').clearSessionCookie
   const createApp: typeof import('../../node_modules/h3').createApp
   const createAppEventHandler: typeof import('../../node_modules/h3').createAppEventHandler
   const createError: typeof import('../../node_modules/h3').createError
@@ -39,16 +40,24 @@ declare global {
   const defineWebSocket: typeof import('../../node_modules/h3').defineWebSocket
   const defineWebSocketHandler: typeof import('../../node_modules/h3').defineWebSocketHandler
   const deleteCookie: typeof import('../../node_modules/h3').deleteCookie
+  const destroySession: typeof import('../../server/utils/auth').destroySession
   const dynamicEventHandler: typeof import('../../node_modules/h3').dynamicEventHandler
+  const ensureAuthTables: typeof import('../../server/utils/schema').ensureAuthTables
+  const ensureOrderTables: typeof import('../../server/utils/schema').ensureOrderTables
   const eventHandler: typeof import('../../node_modules/h3').eventHandler
+  const fetchAllProductsRows: typeof import('../../server/utils/products').fetchAllProductsRows
+  const fetchProductRowById: typeof import('../../server/utils/products').fetchProductRowById
   const fetchWithEvent: typeof import('../../node_modules/h3').fetchWithEvent
   const fromNodeMiddleware: typeof import('../../node_modules/h3').fromNodeMiddleware
   const fromPlainHandler: typeof import('../../node_modules/h3').fromPlainHandler
   const fromWebHandler: typeof import('../../node_modules/h3').fromWebHandler
   const getCookie: typeof import('../../node_modules/h3').getCookie
+  const getDemoProductById: typeof import('../../server/utils/demo-products').getDemoProductById
+  const getDemoProducts: typeof import('../../server/utils/demo-products').getDemoProducts
   const getHeader: typeof import('../../node_modules/h3').getHeader
   const getHeaders: typeof import('../../node_modules/h3').getHeaders
   const getMethod: typeof import('../../node_modules/h3').getMethod
+  const getPool: typeof import('../../server/utils/db').getPool
   const getProxyRequestHeaders: typeof import('../../node_modules/h3').getProxyRequestHeaders
   const getQuery: typeof import('../../node_modules/h3').getQuery
   const getRequestFingerprint: typeof import('../../node_modules/h3').getRequestFingerprint
@@ -68,6 +77,8 @@ declare global {
   const getRouterParam: typeof import('../../node_modules/h3').getRouterParam
   const getRouterParams: typeof import('../../node_modules/h3').getRouterParams
   const getSession: typeof import('../../node_modules/h3').getSession
+  const getSessionToken: typeof import('../../server/utils/auth').getSessionToken
+  const getUserFromSession: typeof import('../../server/utils/auth').getUserFromSession
   const getValidatedQuery: typeof import('../../node_modules/h3').getValidatedQuery
   const getValidatedRouterParams: typeof import('../../node_modules/h3').getValidatedRouterParams
   const handleCacheHeaders: typeof import('../../node_modules/h3').handleCacheHeaders
@@ -83,7 +94,6 @@ declare global {
   const lazyEventHandler: typeof import('../../node_modules/h3').lazyEventHandler
   const nitroPlugin: typeof import('../../node_modules/nitropack/dist/runtime/internal/plugin').nitroPlugin
   const parseCookies: typeof import('../../node_modules/h3').parseCookies
-  const pool: typeof import('../../server/utils/db').pool
   const promisifyNodeListener: typeof import('../../node_modules/h3').promisifyNodeListener
   const proxyRequest: typeof import('../../node_modules/h3').proxyRequest
   const readBody: typeof import('../../node_modules/h3').readBody
@@ -92,10 +102,13 @@ declare global {
   const readRawBody: typeof import('../../node_modules/h3').readRawBody
   const readValidatedBody: typeof import('../../node_modules/h3').readValidatedBody
   const removeResponseHeader: typeof import('../../node_modules/h3').removeResponseHeader
+  const requireUser: typeof import('../../server/utils/auth').requireUser
+  const resetPool: typeof import('../../server/utils/db').resetPool
   const runTask: typeof import('../../node_modules/nitropack/dist/runtime/internal/task').runTask
   const sanitizeStatusCode: typeof import('../../node_modules/h3').sanitizeStatusCode
   const sanitizeStatusMessage: typeof import('../../node_modules/h3').sanitizeStatusMessage
   const sealSession: typeof import('../../node_modules/h3').sealSession
+  const seedDemoUserIfEmpty: typeof import('../../server/utils/schema').seedDemoUserIfEmpty
   const send: typeof import('../../node_modules/h3').send
   const sendError: typeof import('../../node_modules/h3').sendError
   const sendIterable: typeof import('../../node_modules/h3').sendIterable
@@ -111,15 +124,18 @@ declare global {
   const setResponseHeader: typeof import('../../node_modules/h3').setResponseHeader
   const setResponseHeaders: typeof import('../../node_modules/h3').setResponseHeaders
   const setResponseStatus: typeof import('../../node_modules/h3').setResponseStatus
+  const setSessionCookie: typeof import('../../server/utils/auth').setSessionCookie
   const splitCookiesString: typeof import('../../node_modules/h3').splitCookiesString
+  const testDbConnection: typeof import('../../server/utils/db').testDbConnection
   const toEventHandler: typeof import('../../node_modules/h3').toEventHandler
   const toNodeListener: typeof import('../../node_modules/h3').toNodeListener
   const toPlainHandler: typeof import('../../node_modules/h3').toPlainHandler
+  const toProductPayload: typeof import('../../server/utils/products').toProductPayload
   const toWebHandler: typeof import('../../node_modules/h3').toWebHandler
   const toWebRequest: typeof import('../../node_modules/h3').toWebRequest
   const unsealSession: typeof import('../../node_modules/h3').unsealSession
   const updateSession: typeof import('../../node_modules/h3').updateSession
-  const useAppConfig: typeof import('../../node_modules/@nuxt/nitro-server/dist/runtime/utils/app-config').useAppConfig
+  const useAppConfig: typeof import('../../node_modules/nitropack/dist/runtime/internal/config').useAppConfig
   const useBase: typeof import('../../node_modules/h3').useBase
   const useEvent: typeof import('../../node_modules/nitropack/dist/runtime/internal/context').useEvent
   const useNitroApp: typeof import('../../node_modules/nitropack/dist/runtime/internal/app').useNitroApp
@@ -136,7 +152,7 @@ declare global {
 }
 export { H3Event, H3Error, appendCorsHeaders, appendCorsPreflightHeaders, appendHeader, appendHeaders, appendResponseHeader, appendResponseHeaders, assertMethod, callNodeListener, clearResponseHeaders, clearSession, createApp, createAppEventHandler, createError, createEvent, createEventStream, createRouter, defaultContentType, defineEventHandler, defineLazyEventHandler, defineNodeListener, defineNodeMiddleware, defineRequestMiddleware, defineResponseMiddleware, defineWebSocket, defineWebSocketHandler, deleteCookie, dynamicEventHandler, eventHandler, fetchWithEvent, fromNodeMiddleware, fromPlainHandler, fromWebHandler, getCookie, getHeader, getHeaders, getMethod, getProxyRequestHeaders, getQuery, getRequestFingerprint, getRequestHeader, getRequestHeaders, getRequestHost, getRequestIP, getRequestPath, getRequestProtocol, getRequestURL, getRequestWebStream, getResponseHeader, getResponseHeaders, getResponseStatus, getResponseStatusText, getRouterParam, getRouterParams, getSession, getValidatedQuery, getValidatedRouterParams, handleCacheHeaders, handleCors, isCorsOriginAllowed, isError, isEvent, isEventHandler, isMethod, isPreflightRequest, isStream, isWebResponse, lazyEventHandler, parseCookies, promisifyNodeListener, proxyRequest, readBody, readFormData, readMultipartFormData, readRawBody, readValidatedBody, removeResponseHeader, sanitizeStatusCode, sanitizeStatusMessage, sealSession, send, sendError, sendIterable, sendNoContent, sendProxy, sendRedirect, sendStream, sendWebResponse, serveStatic, setCookie, setHeader, setHeaders, setResponseHeader, setResponseHeaders, setResponseStatus, splitCookiesString, toEventHandler, toNodeListener, toPlainHandler, toWebHandler, toWebRequest, unsealSession, updateSession, useBase, useSession, writeEarlyHints } from 'h3';
 export { useNitroApp } from 'nitropack/runtime/internal/app';
-export { useRuntimeConfig } from 'nitropack/runtime/internal/config';
+export { useRuntimeConfig, useAppConfig } from 'nitropack/runtime/internal/config';
 export { defineNitroPlugin, nitroPlugin } from 'nitropack/runtime/internal/plugin';
 export { defineCachedFunction, defineCachedEventHandler, cachedFunction, cachedEventHandler } from 'nitropack/runtime/internal/cache';
 export { useStorage } from 'nitropack/runtime/internal/storage';
@@ -148,5 +164,8 @@ export { defineTask, runTask } from 'nitropack/runtime/internal/task';
 export { defineNitroErrorHandler } from 'nitropack/runtime/internal/error/utils';
 export { buildAssetsURL as __buildAssetsURL, publicAssetsURL as __publicAssetsURL } from '/Applications/XAMPP/xamppfiles/htdocs/buyer-project/node_modules/@nuxt/nitro-server/dist/runtime/utils/paths';
 export { defineAppConfig } from '/Applications/XAMPP/xamppfiles/htdocs/buyer-project/node_modules/@nuxt/nitro-server/dist/runtime/utils/config';
-export { useAppConfig } from '/Applications/XAMPP/xamppfiles/htdocs/buyer-project/node_modules/@nuxt/nitro-server/dist/runtime/utils/app-config';
-export { pool } from '/Applications/XAMPP/xamppfiles/htdocs/buyer-project/server/utils/db';
+export { getSessionToken, getUserFromSession, requireUser, setSessionCookie, clearSessionCookie, destroySession } from '/Applications/XAMPP/xamppfiles/htdocs/buyer-project/server/utils/auth';
+export { getPool, testDbConnection, resetPool } from '/Applications/XAMPP/xamppfiles/htdocs/buyer-project/server/utils/db';
+export { getDemoProducts, getDemoProductById } from '/Applications/XAMPP/xamppfiles/htdocs/buyer-project/server/utils/demo-products';
+export { fetchAllProductsRows, fetchProductRowById, toProductPayload } from '/Applications/XAMPP/xamppfiles/htdocs/buyer-project/server/utils/products';
+export { ensureAuthTables, ensureOrderTables, seedDemoUserIfEmpty } from '/Applications/XAMPP/xamppfiles/htdocs/buyer-project/server/utils/schema';

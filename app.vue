@@ -1,22 +1,12 @@
 <template>
   <div class="app-shell">
-    <Navbar :cart-count="cart.itemCount.value" :wishlist-count="wishlist.itemCount.value" />
+    <Navbar />
     <main class="app-main">
-      <RouterView />
+      <NuxtPage />
     </main>
     <Footer />
   </div>
 </template>
-
-<script setup>
-import Navbar from './components/Navbar.vue'
-import Footer from './components/Footer.vue'
-import { useCartStore } from './store/cart'
-import { useWishlistStore } from './store/wishlist'
-
-const cart = useCartStore()
-const wishlist = useWishlistStore()
-</script>
 
 <style>
 *,
@@ -26,8 +16,7 @@ const wishlist = useWishlistStore()
 }
 
 html,
-body,
-#app {
+body {
   margin: 0;
   padding: 0;
   min-height: 100%;

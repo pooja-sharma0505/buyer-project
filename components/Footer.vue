@@ -16,10 +16,10 @@
         <div class="block">
           <h3 class="title">Pages</h3>
           <ul class="links">
-            <li><RouterLink class="footer-link" to="/">Home — catalog</RouterLink></li>
-            <li><RouterLink class="footer-link" to="/wishlist">Wishlist</RouterLink></li>
-            <li><RouterLink class="footer-link" to="/cart">Cart &amp; checkout</RouterLink></li>
-            <li><RouterLink class="footer-link" to="/login">Login</RouterLink></li>
+            <li><NuxtLink class="footer-link" to="/">Home — catalog</NuxtLink></li>
+            <li><NuxtLink class="footer-link" to="/wishlist">Wishlist</NuxtLink></li>
+            <li><NuxtLink class="footer-link" to="/cart">Cart &amp; checkout</NuxtLink></li>
+            <li><NuxtLink class="footer-link" to="/login">Login</NuxtLink></li>
             <li><span class="muted small">Products also open via <code class="inline">/product/:id</code> from listing.</span></li>
           </ul>
         </div>
@@ -28,11 +28,11 @@
         <div class="block">
           <h3 class="title">Categories</h3>
           <ul class="links">
-            <li><RouterLink class="footer-link" :to="{ path: '/', query: {} }">All products</RouterLink></li>
-            <li><RouterLink class="footer-link" :to="{ path: '/', query: { category: 'Men' } }">Men</RouterLink></li>
-            <li><RouterLink class="footer-link" :to="{ path: '/', query: { category: 'Women' } }">Women</RouterLink></li>
-            <li><RouterLink class="footer-link" :to="{ path: '/', query: { category: 'Jewellery' } }">Jewellery</RouterLink></li>
-            <li><RouterLink class="footer-link" :to="{ path: '/', query: { category: 'Electronics' } }">Electronics</RouterLink></li>
+            <li><NuxtLink class="footer-link" :to="{ path: '/', query: {} }">All products</NuxtLink></li>
+            <li><NuxtLink class="footer-link" :to="{ path: '/', query: { category: 'Men' } }">Men</NuxtLink></li>
+            <li><NuxtLink class="footer-link" :to="{ path: '/', query: { category: 'Women' } }">Women</NuxtLink></li>
+            <li><NuxtLink class="footer-link" :to="{ path: '/', query: { category: 'Jewellery' } }">Jewellery</NuxtLink></li>
+            <li><NuxtLink class="footer-link" :to="{ path: '/', query: { category: 'Electronics' } }">Electronics</NuxtLink></li>
           </ul>
         </div>
 

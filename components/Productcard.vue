@@ -25,7 +25,7 @@
         <span class="rating-count">({{ rating.count }})</span>
       </div>
 
-      <p class="product-price">${{ price.toFixed(2) }}</p>
+      <p class="product-price">${{ Number(price || 0).toFixed(2) }}</p>
 
       <button class="add-btn" :class="{ added: isAdded }" @click.stop="handleAddToCart">
         {{ isAdded ? 'Added!' : '+ Add to Cart' }}
@@ -35,8 +35,6 @@
 </template>
 
 <script>
-import { useWishlistStore } from '../store/wishlist'
-
 export default {
   name: 'ProductCard',
   props: {
@@ -48,15 +46,16 @@ export default {
     rating: { type: Object, default: () => ({ rate: 0, count: 0 }) }
   },
   emits: ['add-to-cart'],
-  data() {
-    return { isAdded: false, imgFailed: false, wl: null }
+  setup() {
+    const wishlist = useWishlist()
+    return { wishlist }
   },
-  created() {
-    this.wl = useWishlistStore()
+  data() {
+    return { isAdded: false, imgFailed: false }
   },
   computed: {
     inWishlist() {
-      return this.wl?.isInWishlist(this.id) ?? false
+      return this.wishlist?.isInWishlist(this.id) ?? false
     },
     displaySrc() {
       return this.imgFailed ? '/placeholder-product.svg' : this.image || '/placeholder-product.svg'
@@ -76,7 +75,7 @@ export default {
       if (!this.imgFailed) this.imgFailed = true
     },
     goToDetail() {
-      this.$router.push({ name: 'product-detail', params: { id: this.id } })
+      navigateTo(`/product/${this.id}`)
     },
     handleAddToCart() {
       this.$emit('add-to-cart', {
@@ -93,7 +92,7 @@ export default {
       }, 1200)
     },
     toggleWishlist() {
-      this.wl.toggleWishlist({
+      this.wishlist.toggleWishlist({
         id: this.id,
         image: this.image,
         title: this.title,

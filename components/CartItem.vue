@@ -12,7 +12,7 @@
 
     <div class="meta">
       <h2>{{ product.title }}</h2>
-      <p>${{ product.price.toFixed(2) }}</p>
+      <p>${{ Number(product.price || 0).toFixed(2) }}</p>
       <div class="qty-row">
         <button @click="decrease">-</button>
         <span>{{ quantity }}</span>
@@ -21,7 +21,7 @@
     </div>
 
     <div class="total">
-      <p>${{ (product.price * quantity).toFixed(2) }}</p>
+      <p>${{ (Number(product.price || 0) * quantity).toFixed(2) }}</p>
       <button class="remove" @click="$emit('remove', product.id)">Remove</button>
     </div>
   </div>
