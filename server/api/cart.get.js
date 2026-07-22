@@ -7,7 +7,7 @@ export default defineEventHandler(async (event) => {
   const pool = getPool()
 
   const [rows] = await pool.query(
-    'SELECT product_id, qty FROM cart_items WHERE user_id = ? ORDER BY created_at DESC',
+    'SELECT product_id, qty FROM cart WHERE user_id = ? ORDER BY created_at DESC',
     [user.id]
   )
 
