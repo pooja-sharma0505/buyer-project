@@ -1,5 +1,5 @@
 import { getPool } from '../../utils/db.js'
-import { ensureAuthTables } from '../../utils/schema.js'
+import { ensureUsersTable } from '../../utils/schema.js'
 import bcrypt from 'bcryptjs'
 
 export default defineEventHandler(async (event) => {
@@ -26,7 +26,7 @@ export default defineEventHandler(async (event) => {
 
   try {
     const pool = getPool()
-    await ensureAuthTables(pool)
+    await ensureUsersTable(pool)
 
     // Check if user already exists with this phone
     const [existing] = await pool.query(

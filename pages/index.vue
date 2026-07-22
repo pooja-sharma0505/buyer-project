@@ -106,7 +106,17 @@ const debouncedSearch = useDebounce(search, 350)
 const currentPage = ref(1)
 const pageSize = 12
 
-const { data: products, pending, error: fetchError } = await useFetch('/api/products')
+const { data: products, pending, error: fetchError, refresh } = await useFetch('/api/products', {
+  query: computed(() => {
+    const q = {}
+    if (search.value.trim()) q.search = search.value.trim()
+    return q
+  })
+})
+
+watch(search, () => {
+  currentPage.value = 1
+})
 
 const SHOP_CATEGORIES = ['Men', 'Women', 'Jewellery', 'Electronics']
 
@@ -135,11 +145,7 @@ function categoryMatches(productCategory, chip) {
 const filteredProducts = computed(() =>
   (products.value || []).filter((p) => {
     if (!categoryMatches(p.category, selectedCategory.value)) return false
-    const q = norm(debouncedSearch.value)
-    if (!q) return true
-    const title = norm(p.title)
-    const desc = norm(p.description)
-    return title.includes(q) || desc.includes(q)
+    return true
   })
 )
 

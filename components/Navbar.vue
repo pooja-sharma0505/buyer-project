@@ -6,6 +6,23 @@
         <span class="logo-text">LUMIÈRE</span>
       </NuxtLink>
 
+      <div class="nav-search" v-if="!mobileOpen">
+        <div class="search-wrapper">
+          <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8" />
+            <line x1="21" y1="21" x2="16.65" y2="16.65" />
+          </svg>
+          <input
+            v-model.trim="navSearch"
+            type="search"
+            aria-label="Search products"
+            placeholder="Search…"
+            class="search-input"
+            @keydown.enter="handleNavSearch"
+          />
+        </div>
+      </div>
+
       <ul class="nav-links">
         <li v-for="link in navLinks" :key="link.to">
           <NuxtLink :to="link.to" class="nav-link" active-class="active">
@@ -70,6 +87,22 @@
 
     <transition name="mobile-slide">
       <div v-if="mobileOpen" class="mobile-menu">
+        <div class="mobile-search">
+          <div class="search-wrapper">
+            <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8" />
+              <line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </svg>
+            <input
+              v-model.trim="navSearch"
+              type="search"
+              aria-label="Search products"
+              placeholder="Search…"
+              class="search-input"
+              @keydown.enter="handleNavSearch"
+            />
+          </div>
+        </div>
         <ul>
           <li v-for="link in navLinks" :key="link.to">
             <NuxtLink :to="link.to" class="mobile-link" @click="mobileOpen = false">
@@ -118,6 +151,14 @@ const handleScroll = () => {
 const handleMobileLogout = async () => {
   mobileOpen.value = false
   await logout()
+}
+
+const navSearch = ref('')
+
+const handleNavSearch = () => {
+  if (!navSearch.value.trim()) return
+  navigateTo(`/?search=${encodeURIComponent(navSearch.value.trim())}`)
+  navSearch.value = ''
 }
 
 onMounted(() => {
@@ -271,6 +312,43 @@ onBeforeUnmount(() => {
   border-color: #d4af64;
 }
 
+.nav-search {
+  flex: 1;
+  max-width: 320px;
+  margin: 0 1rem;
+}
+
+.nav-search .search-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #fff;
+  border: 1px solid #d1d5db;
+  border-radius: 999px;
+  padding: 8px 12px;
+  width: 100%;
+}
+
+.nav-search .search-wrapper:focus-within {
+  border-color: #d4af64;
+  outline: 2px solid #d4af64;
+  outline-offset: 2px;
+}
+
+.nav-search .search-input {
+  border: none;
+  background: transparent;
+  padding: 0;
+  width: 100%;
+  font: inherit;
+  font-size: 0.85rem;
+  outline: none;
+}
+
+.nav-search .search-input::placeholder {
+  color: #9ca3af;
+}
+
 .nav-actions {
   display: flex;
   align-items: center;
@@ -366,6 +444,31 @@ onBeforeUnmount(() => {
   background: rgba(255, 255, 255, 0.98);
   border-top: 1px solid #e5e7eb;
   padding: 1.5rem 2rem 2rem;
+}
+
+.mobile-search {
+  padding: 0.75rem 0 0.5rem;
+  border-bottom: 1px solid #f1f5f9;
+  margin-bottom: 0.5rem;
+}
+
+.mobile-search .search-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #fff;
+  border: 1px solid #d1d5db;
+  border-radius: 999px;
+  padding: 10px 14px;
+}
+
+.mobile-search .search-input {
+  border: none;
+  background: transparent;
+  padding: 0;
+  width: 100%;
+  font: inherit;
+  outline: none;
 }
 
 .mobile-menu ul {
