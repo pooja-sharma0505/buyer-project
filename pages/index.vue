@@ -164,12 +164,12 @@ watch(selectedCategory, (cat) => {
 .home-page { min-height: 100vh; background: #f8fafc; padding: 28px 16px; }
 .container { max-width: 1200px; margin: 0 auto; }
 .top-row { display: flex; flex-wrap: wrap; gap: 12px; justify-content: space-between; align-items: center; margin-bottom: 18px; }
-.brand { font-size: 22px; color: #111827; }
+.brand { font-size: 22px; color: #111827; font-family: 'Cormorant Garamond', serif; }
 .search-input { width: 280px; max-width: 100%; border: 1px solid #d1d5db; border-radius: 999px; padding: 10px 14px; background: #fff; font: inherit; }
 .search-input::placeholder { color: #9ca3af; }
 .filters { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
 .filter-btn { border: 1px solid #d1d5db; background: #fff; color: #4b5563; border-radius: 999px; padding: 8px 14px; cursor: pointer; }
-.filter-btn.active { background: #111827; color: #fff; border-color: #111827; }
+.filter-btn.active { background: #d4af64; color: #0a0806; border-color: #d4af64; }
 .grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));

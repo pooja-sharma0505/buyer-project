@@ -207,7 +207,7 @@ watch(product, () => {
 <style scoped>
 .detail-page { min-height: 100vh; background: #f8fafc; padding: 28px 16px; }
 .container { max-width: 1000px; margin: 0 auto; }
-.back-link { color: #4f46e5; text-decoration: none; display: inline-block; margin-bottom: 14px; }
+.back-link { color: #d4af64; text-decoration: none; display: inline-block; margin-bottom: 14px; }
 .layout { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 20px; }
 .image-box {
   aspect-ratio: 1 / 1;
@@ -231,7 +231,7 @@ watch(product, () => {
   object-fit: contain;
 }
 .category { color: #6b7280; margin-bottom: 8px; }
-.title { margin-bottom: 10px; color: #111827; }
+.title { margin-bottom: 10px; color: #111827; font-family: 'Cormorant Garamond', serif; }
 .price { color: #111827; font-weight: 700; margin-bottom: 12px; font-size: 18px; }
 .description { color: #4b5563; margin-bottom: 16px; }
 .qty-row { display: flex; align-items: center; gap: 6px; margin-bottom: 14px; }
@@ -272,7 +272,7 @@ watch(product, () => {
 }
 
 .reviews-section { max-width: 1000px; margin: 24px auto 0; background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 20px; }
-.reviews-heading { margin: 0 0 14px; color: #111827; font-size: 18px; }
+.reviews-heading { margin: 0 0 14px; color: #111827; font-size: 18px; font-family: 'Cormorant Garamond', serif; }
 .review-form { display: grid; gap: 8px; margin-bottom: 20px; }
 .review-label { font-size: 13px; color: #374151; }
 .star-rating { display: flex; gap: 4px; }

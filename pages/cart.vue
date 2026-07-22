@@ -113,8 +113,8 @@ const placeOrder = async () => {
 .cart-page { min-height: 100vh; background: #f8fafc; padding: 28px 16px; }
 .container { max-width: 1100px; margin: 0 auto; }
 .top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 8px; }
-.top a { color: #4f46e5; text-decoration: none; }
-.top h1 { margin: 0; font-size: 22px; color: #111827; }
+.top a { color: #d4af64; text-decoration: none; }
+.top h1 { margin: 0; font-size: 22px; color: #111827; font-family: 'Cormorant Garamond', serif; }
 .layout { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; }
 .items { display: grid; gap: 10px; }
 .summary { background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 16px; height: fit-content; }

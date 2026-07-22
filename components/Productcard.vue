@@ -174,7 +174,7 @@ export default {
 .category-tag { font-size: 10px; color: #9ca3af; text-transform: uppercase; letter-spacing: .6px; margin-bottom: 4px; }
 .product-title { font-size: 13px; color: #111827; line-height: 1.4; margin-bottom: 6px; min-height: 36px; }
 .rating-row { display: flex; align-items: center; gap: 4px; margin-bottom: 6px; }
-.stars { font-size: 12px; color: #f59e0b; }
+.stars { font-size: 12px; color: #d4af64; }
 .rating-count { font-size: 11px; color: #9ca3af; }
 .product-price { font-size: 16px; font-weight: 600; color: #111827; margin-bottom: 10px; }
 .qty-row { display: flex; align-items: center; gap: 6px; margin-bottom: 10px; }
@@ -185,7 +185,7 @@ export default {
 .qty-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
 .qty-input { -moz-appearance: textfield; }
 .add-btn { width: 100%; padding: 8px; font-size: 13px; border: 1px solid #d1d5db; border-radius: 8px; background: transparent; color: #374151; cursor: pointer; transition: all .15s ease; }
-.add-btn:hover { background: #f3f4f6; }
+.add-btn:hover { background: #d4af64; color: #0a0806; border-color: #d4af64; }
 .add-btn.added { background: #d1fae5; border-color: #6ee7b7; color: #065f46; }
 @media (max-width: 640px) {
   .img-wrapper { padding: 10px; }

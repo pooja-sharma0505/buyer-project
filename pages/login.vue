@@ -116,14 +116,15 @@ const handleLogin = async () => {
 <style scoped>
 .login-page { min-height: calc(100vh - 72px); display: flex; align-items: center; justify-content: center; background: #f8fafc; padding: 16px; }
 .card { width: 100%; max-width: 360px; background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 20px; }
-h1 { margin: 0 0 6px; color: #111827; }
+h1 { margin: 0 0 6px; color: #111827; font-family: 'Cormorant Garamond', serif; }
 p { margin: 0 0 12px; color: #6b7280; font-size: 14px; }
 form { display: grid; gap: 8px; }
 label { color: #374151; font-size: 13px; }
 input { border: 1px solid #d1d5db; border-radius: 8px; padding: 10px; }
 input[aria-invalid="true"] { border-color: #dc2626; }
 .field-error { color: #dc2626; font-size: 12px; margin: -4px 0 4px; }
-button { margin-top: 8px; border: none; border-radius: 8px; background: #111827; color: #fff; padding: 10px; cursor: pointer; }
+button { margin-top: 8px; border: none; border-radius: 8px; background: #111827; color: #fff; padding: 10px; cursor: pointer; transition: background 0.2s ease; }
+button:hover { background: #d4af64; color: #0a0806; }
 button:disabled { opacity: 0.7; cursor: not-allowed; }
 .error { color: #dc2626; margin-top: 10px; }
 .success { color: #15803d; margin-top: 10px; }
