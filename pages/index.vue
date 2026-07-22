@@ -74,7 +74,7 @@ useHead({ title: 'Luxury Collection' })
 useSeoMeta({
   ogTitle: 'LUMIÈRE - Luxury Collection',
   ogDescription: 'Discover curated luxury products from LUMIÈRE.',
-  ogImage: '/og-image.jpg',
+  ogImage: '/og-image.svg',
   ogType: 'website'
 })
 

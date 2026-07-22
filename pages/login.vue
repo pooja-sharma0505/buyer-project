@@ -55,7 +55,7 @@ useHead({ title: 'Login' })
 useSeoMeta({
   ogTitle: 'Login - LUMIÈRE',
   ogDescription: 'Sign in to your LUMIÈRE account.',
-  ogImage: '/og-image.jpg',
+  ogImage: '/og-image.svg',
   ogType: 'website'
 })
 

@@ -52,7 +52,7 @@ useHead({ title: 'My Orders' })
 useSeoMeta({
   ogTitle: 'My Orders - LUMIÈRE',
   ogDescription: 'View your order history at LUMIÈRE.',
-  ogImage: '/og-image.jpg',
+  ogImage: '/og-image.svg',
   ogType: 'website'
 })
 

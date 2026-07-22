@@ -33,7 +33,7 @@ useHead({ title: 'Wishlist' })
 useSeoMeta({
   ogTitle: 'Wishlist - LUMIÈRE',
   ogDescription: 'Your saved items at LUMIÈRE.',
-  ogImage: '/og-image.jpg',
+  ogImage: '/og-image.svg',
   ogType: 'website'
 })
 

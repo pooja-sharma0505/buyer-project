@@ -54,7 +54,7 @@ useHead({ title: 'Shopping Cart' })
 useSeoMeta({
   ogTitle: 'Shopping Cart - LUMIÈRE',
   ogDescription: 'Review your items and complete your purchase at LUMIÈRE.',
-  ogImage: '/og-image.jpg',
+  ogImage: '/og-image.svg',
   ogType: 'website'
 })
 
