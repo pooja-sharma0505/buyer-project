@@ -1,16 +1,16 @@
 <template>
-  <div class="login-page">
+  <div class="signup-page">
     <div class="card">
-      <h1>Login</h1>
-      <p>Enter your account details to continue.</p>
+      <h1>Create Account</h1>
+      <p>Sign up to start shopping with LUMIÈRE.</p>
 
-      <form @submit.prevent="handleLogin">
+      <form @submit.prevent="handleSignup">
         <label for="name">Name</label>
         <input
           id="name"
           v-model.trim="name"
           type="text"
-          placeholder="Name"
+          placeholder="Your name"
           autocomplete="name"
           :aria-invalid="!!fieldErrors.name"
           @input="fieldErrors.name = ''"
@@ -37,8 +37,8 @@
           id="password"
           v-model="password"
           type="password"
-          placeholder="Password"
-          autocomplete="current-password"
+          placeholder="Create a password"
+          autocomplete="new-password"
           :aria-invalid="!!fieldErrors.password"
           @input="fieldErrors.password = ''"
           @blur="validateField('password')"
@@ -46,36 +46,29 @@
         <p v-if="fieldErrors.password" class="field-error">{{ fieldErrors.password }}</p>
 
         <button type="submit" :disabled="loading">
-          {{ loading ? 'Logging in...' : 'Login' }}
+          {{ loading ? 'Creating account...' : 'Sign Up' }}
         </button>
       </form>
 
-      <p v-if="error" class="login-error">{{ error }}</p>
-      <p v-if="success" class="success">Login successful. Redirecting...</p>
+      <p v-if="error" class="signup-error">{{ error }}</p>
+      <p v-if="success" class="success">Account created. Redirecting to login...</p>
 
-      <div class="login-links">
-        <span class="link-placeholder">Forgot password?</span>
-        <span class="divider">|</span>
-        <NuxtLink to="/signup" class="link">Sign up</NuxtLink>
-      </div>
-
-      <div class="demo-hint">
-        <p><strong>Demo login:</strong> Name = <code>Demo User</code>, Phone = <code>9876543210</code>, Password = <code>demo123</code></p>
+      <div class="signup-links">
+        <span>Already have an account?</span>
+        <NuxtLink to="/login" class="link">Log in</NuxtLink>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-useHead({ title: 'Login' })
+useHead({ title: 'Sign Up' })
 useSeoMeta({
-  ogTitle: 'Login - LUMIÈRE',
-  ogDescription: 'Sign in to your LUMIÈRE account.',
+  ogTitle: 'Sign Up - LUMIÈRE',
+  ogDescription: 'Create your LUMIÈRE account.',
   ogImage: '/og-image.svg',
   ogType: 'website'
 })
-
-const { login } = useAuth()
 
 const name = ref('')
 const phone = ref('')
@@ -141,7 +134,7 @@ function validateField(field) {
   }
 }
 
-const handleLogin = async () => {
+const handleSignup = async () => {
   error.value = ''
   success.value = ''
 
@@ -149,11 +142,14 @@ const handleLogin = async () => {
 
   loading.value = true
   try {
-    await login(name.value, phone.value, password.value)
-    success.value = 'Success'
-    await navigateTo('/')
+    await $fetch('/api/auth/signup', {
+      method: 'POST',
+      body: { name: name.value, phone: phone.value, password: password.value }
+    })
+    success.value = 'Account created successfully'
+    setTimeout(() => navigateTo('/login'), 1500)
   } catch (err) {
-    error.value = err.data?.message || err.message || 'Login failed'
+    error.value = err.data?.message || err.message || 'Signup failed'
   } finally {
     loading.value = false
   }
@@ -161,7 +157,7 @@ const handleLogin = async () => {
 </script>
 
 <style scoped>
-.login-page { min-height: calc(100vh - 72px); display: flex; align-items: center; justify-content: center; background: #f8fafc; padding: 16px; }
+.signup-page { min-height: calc(100vh - 72px); display: flex; align-items: center; justify-content: center; background: #f8fafc; padding: 16px; }
 .card { width: 100%; max-width: 360px; background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 20px; }
 h1 { margin: 0 0 6px; color: #111827; font-family: 'Cormorant Garamond', serif; }
 p { margin: 0 0 12px; color: #6b7280; font-size: 14px; }
@@ -173,19 +169,13 @@ input[aria-invalid="true"] { border-color: #dc2626; }
 button { margin-top: 8px; border: none; border-radius: 8px; background: #111827; color: #fff; padding: 10px; cursor: pointer; transition: background 0.2s ease; }
 button:hover { background: #d4af64; color: #0a0806; }
 button:disabled { opacity: 0.7; cursor: not-allowed; }
-.login-error { color: #dc2626; margin-top: 10px; }
+.signup-error { color: #dc2626; margin-top: 10px; }
 .success { color: #15803d; margin-top: 10px; }
-.login-links { display: flex; gap: 8px; justify-content: center; margin-top: 14px; font-size: 13px; color: #6b7280; }
-.link-placeholder { cursor: pointer; transition: color 0.2s ease; }
-.link-placeholder:hover { color: #d4af64; }
+.signup-links { display: flex; gap: 6px; justify-content: center; margin-top: 14px; font-size: 13px; color: #6b7280; }
 .link { color: #d4af64; text-decoration: none; font-weight: 500; }
 .link:hover { text-decoration: underline; }
-.divider { color: #d1d5db; }
-.demo-hint { margin-top: 16px; padding: 12px; background: #f8fafc; border: 1px solid #e5e7eb; border-radius: 8px; font-size: 12px; color: #6b7280; }
-.demo-hint code { background: #fff; padding: 2px 4px; border-radius: 4px; border: 1px solid #d1d5db; font-family: 'Courier New', monospace; color: #374151; }
-.demo-hint p { margin: 0; font-size: 12px; }
 @media (max-width: 480px) {
-  .login-page { align-items: flex-start; padding: 12px; }
+  .signup-page { align-items: flex-start; padding: 12px; }
   .card { border-radius: 10px; padding: 16px; }
 }
 </style>

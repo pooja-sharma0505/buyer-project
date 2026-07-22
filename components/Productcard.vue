@@ -48,77 +48,66 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: 'ProductCard',
-  props: {
-    id: { type: Number, required: true },
-    image: { type: String, required: true },
-    title: { type: String, required: true },
-    price: { type: Number, required: true },
-    category: { type: String, default: '' },
-    rating: { type: Object, default: () => ({ rate: 0, count: 0 }) }
-  },
-  emits: ['add-to-cart'],
-  setup() {
-    const wishlist = useWishlist()
-    const { formatPrice } = useFormatPrice()
-    return { wishlist, formatPrice }
-  },
-  data() {
-    return { isAdded: false, imgFailed: false, localQty: 1 }
-  },
-  computed: {
-    inWishlist() {
-      return this.wishlist?.isInWishlist(this.id) ?? false
-    },
-    displaySrc() {
-      return this.imgFailed ? '/placeholder-product.svg' : this.image || '/placeholder-product.svg'
-    },
-    starDisplay() {
-      const filled = Math.round(this.rating.rate)
-      return '★'.repeat(filled) + '☆'.repeat(5 - filled)
-    }
-  },
-  watch: {
-    image() {
-      this.imgFailed = false
-    }
-  },
-  methods: {
-    onImgError() {
-      if (!this.imgFailed) this.imgFailed = true
-    },
-    goToDetail() {
-      navigateTo(`/product/${this.id}`)
-    },
-    handleAddToCart() {
-      this.$emit('add-to-cart', {
-        id: this.id,
-        image: this.image,
-        title: this.title,
-        price: this.price,
-        category: this.category,
-        rating: this.rating,
-        qty: this.localQty
-      })
-      this.isAdded = true
-      this.localQty = 1
-      setTimeout(() => {
-        this.isAdded = false
-      }, 1200)
-    },
-    toggleWishlist() {
-      this.wishlist.toggleWishlist({
-        id: this.id,
-        image: this.image,
-        title: this.title,
-        price: this.price,
-        category: this.category,
-        rating: this.rating
-      })
-    }
-  }
+<script setup>
+const props = defineProps({
+  id: { type: Number, required: true },
+  image: { type: String, required: true },
+  title: { type: String, required: true },
+  price: { type: Number, required: true },
+  category: { type: String, default: '' },
+  rating: { type: Object, default: () => ({ rate: 0, count: 0 }) }
+})
+const emit = defineEmits(['add-to-cart'])
+
+const wishlist = useWishlist()
+const { formatPrice } = useFormatPrice()
+
+const isAdded = ref(false)
+const imgFailed = ref(false)
+const localQty = ref(1)
+
+const inWishlist = computed(() => wishlist?.isInWishlist(props.id) ?? false)
+const displaySrc = computed(() => imgFailed.value ? '/placeholder-product.svg' : props.image || '/placeholder-product.svg')
+const starDisplay = computed(() => {
+  const filled = Math.round(props.rating.rate)
+  return '★'.repeat(filled) + '☆'.repeat(5 - filled)
+})
+
+watch(() => props.image, () => {
+  imgFailed.value = false
+})
+
+function onImgError() {
+  if (!imgFailed.value) imgFailed.value = true
+}
+function goToDetail() {
+  navigateTo(`/product/${props.id}`)
+}
+function handleAddToCart() {
+  emit('add-to-cart', {
+    id: props.id,
+    image: props.image,
+    title: props.title,
+    price: props.price,
+    category: props.category,
+    rating: props.rating,
+    qty: localQty.value
+  })
+  isAdded.value = true
+  localQty.value = 1
+  setTimeout(() => {
+    isAdded.value = false
+  }, 1200)
+}
+function toggleWishlist() {
+  wishlist.toggleWishlist({
+    id: props.id,
+    image: props.image,
+    title: props.title,
+    price: props.price,
+    category: props.category,
+    rating: props.rating
+  })
 }
 </script>
 

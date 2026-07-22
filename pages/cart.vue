@@ -52,7 +52,7 @@
           >
             {{ placing ? 'Placing order…' : 'Place Order' }}
           </button>
-          <p v-if="!isLoggedIn" class="hint">You must be logged in to place an order.</p>
+          <p v-if="!isLoggedIn" class="hint">You must be <NuxtLink to="/login" class="login-link">logged in</NuxtLink> to place an order.</p>
           <p v-if="orderError" class="error">{{ orderError }}</p>
           <p v-if="success" class="success">Order placed successfully.</p>
         </div>
@@ -134,6 +134,7 @@ const placeOrder = async () => {
 .order-btn:hover { background: #d4af64; color: #0a0806; }
 .order-btn:disabled { background: #9ca3af; cursor: not-allowed; }
 .hint { color: #6b7280; font-size: 13px; margin-top: 10px; }
+.login-link { color: #d4af64; text-decoration: underline; font-weight: 500; }
 .error { color: #dc2626; margin-top: 10px; }
 .success { color: #15803d; margin-top: 10px; }
 .empty { color: #6b7280; }
