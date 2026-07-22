@@ -4,6 +4,38 @@ function isMissingColumnError(err) {
   return err && (err.code === 'ER_BAD_FIELD_ERROR' || err.errno === 1054)
 }
 
+export async function fetchProductsPage(pool, { limit = 12, offset = 0, category = null } = {}) {
+  const hasCategory = await checkColumnExists(pool, 'category')
+  let baseQuery = `SELECT id, name, price, old_price, image, description${hasCategory ? ', category' : ''} FROM products`
+  let countQuery = `SELECT COUNT(*) as total FROM products`
+  const params = []
+  const countParams = []
+
+  if (category && hasCategory) {
+    baseQuery += ' WHERE category = ?'
+    countQuery += ' WHERE category = ?'
+    params.push(category)
+    countParams.push(category)
+  }
+
+  baseQuery += ' ORDER BY id DESC LIMIT ? OFFSET ?'
+  params.push(Number(limit), Number(offset))
+
+  const [rows] = await pool.query(baseQuery, params)
+  const [countRows] = await pool.query(countQuery, countParams)
+  return { rows, hasCategory, total: Number(countRows[0]?.total || 0) }
+}
+
+async function checkColumnExists(pool, column) {
+  try {
+    const [rows] = await pool.query(`SELECT ${column} FROM products LIMIT 1`)
+    return true
+  } catch (err) {
+    if (err.code === 'ER_BAD_FIELD_ERROR' || err.errno === 1054) return false
+    throw err
+  }
+}
+
 export async function fetchAllProductsRows(pool) {
   try {
     const [rows] = await pool.query(

@@ -30,6 +30,12 @@
 
 <script setup>
 useHead({ title: 'Wishlist' })
+useSeoMeta({
+  ogTitle: 'Wishlist - LUMIÈRE',
+  ogDescription: 'Your saved items at LUMIÈRE.',
+  ogImage: '/og-image.jpg',
+  ogType: 'website'
+})
 
 const { addToCart: addProductToCart } = useCart()
 const { items, removeFromWishlist } = useWishlist()

@@ -28,12 +28,12 @@
       <p v-else-if="fetchError" class="status-text error">{{ fetchError.message || 'Unable to load products' }}</p>
 
       <template v-else>
-        <p v-if="!filteredProducts.length" class="status-text">
+        <p v-if="!paginatedProducts.length" class="status-text">
           No products match{{ selectedCategory === 'All' ? '' : ` in “${selectedCategory}”` }}{{ search ? ' for your search' : '' }}.
         </p>
         <div v-else class="grid">
           <Productcard
-            v-for="product in filteredProducts"
+            v-for="product in paginatedProducts"
             :key="product.id"
             :id="product.id"
             :image="product.image"
@@ -44,6 +44,26 @@
             @add-to-cart="cart.addToCart"
           />
         </div>
+
+        <div v-if="pageCount > 1" class="pagination">
+          <button
+            type="button"
+            class="page-btn"
+            :disabled="currentPage <= 1"
+            @click="currentPage--"
+          >
+            Previous
+          </button>
+          <span class="page-info">Page {{ currentPage }} of {{ pageCount }}</span>
+          <button
+            type="button"
+            class="page-btn"
+            :disabled="currentPage >= pageCount"
+            @click="currentPage++"
+          >
+            Next
+          </button>
+        </div>
       </template>
     </div>
   </div>
@@ -51,6 +71,12 @@
 
 <script setup>
 useHead({ title: 'Luxury Collection' })
+useSeoMeta({
+  ogTitle: 'LUMIÈRE - Luxury Collection',
+  ogDescription: 'Discover curated luxury products from LUMIÈRE.',
+  ogImage: '/og-image.jpg',
+  ogType: 'website'
+})
 
 const cart = useCart()
 const route = useRoute()
@@ -58,6 +84,8 @@ const router = useRouter()
 
 const selectedCategory = ref('All')
 const search = ref('')
+const currentPage = ref(1)
+const pageSize = 12
 
 const { data: products, pending, error: fetchError } = await useFetch('/api/products')
 
@@ -96,6 +124,16 @@ const filteredProducts = computed(() =>
   })
 )
 
+const pageCount = computed(() => Math.max(1, Math.ceil(filteredProducts.value.length / pageSize)))
+const paginatedProducts = computed(() => {
+  const start = (currentPage.value - 1) * pageSize
+  return filteredProducts.value.slice(start, start + pageSize)
+})
+
+watch([selectedCategory, search], () => {
+  currentPage.value = 1
+})
+
 function canonicalCategoryFromQuery(raw) {
   const r = typeof raw === 'string' ? raw.trim() : Array.isArray(raw) ? String(raw[0] ?? '').trim() : ''
   if (!r) return 'All'
@@ -113,6 +151,7 @@ watch(
 )
 
 watch(selectedCategory, (cat) => {
+  currentPage.value = 1
   const want = cat === 'All' ? undefined : cat
   const cur = route.query.category
   const curStr = typeof cur === 'string' ? cur : undefined
@@ -138,6 +177,11 @@ watch(selectedCategory, (cat) => {
 }
 .status-text { color: #6b7280; margin: 12px 0; }
 .status-text.error { color: #dc2626; }
+.pagination { display: flex; justify-content: center; align-items: center; gap: 12px; margin-top: 24px; }
+.page-btn { border: 1px solid #d1d5db; background: #fff; color: #374151; border-radius: 8px; padding: 8px 14px; cursor: pointer; font-size: 13px; }
+.page-btn:hover:not(:disabled) { border-color: #d4af64; color: #d4af64; }
+.page-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.page-info { font-size: 13px; color: #6b7280; }
 @media (max-width: 900px) {
   .home-page { padding: 20px 12px; }
   .top-row { margin-bottom: 14px; }

@@ -45,6 +45,63 @@
       </div>
 
       <div v-else class="not-found">{{ errorMessage }}</div>
+
+      <div v-if="product" class="reviews-section">
+        <h2 class="reviews-heading">Reviews</h2>
+
+        <div v-if="user" class="review-form">
+          <label class="review-label">Rating</label>
+          <div class="star-rating">
+            <button
+              v-for="n in 5"
+              :key="n"
+              type="button"
+              class="star-btn"
+              :class="{ active: n <= newRating }"
+              @click="newRating = n"
+              :aria-label="`${n} star${n > 1 ? 's' : ''}`"
+            >
+              ★
+            </button>
+          </div>
+
+          <label class="review-label" for="review-comment">Comment</label>
+          <textarea
+            id="review-comment"
+            v-model="newComment"
+            rows="3"
+            placeholder="Share your experience..."
+            class="review-textarea"
+          />
+
+          <button
+            type="button"
+            class="review-submit"
+            :disabled="reviewPending"
+            @click="submitReview"
+          >
+            {{ reviewPending ? 'Submitting...' : 'Submit Review' }}
+          </button>
+          <p v-if="reviewError" class="review-error">{{ reviewError }}</p>
+          <p v-if="reviewSuccess" class="review-success">Review submitted.</p>
+        </div>
+
+        <p v-if="reviewsPending" class="reviews-status">Loading reviews...</p>
+        <p v-else-if="reviewsError" class="reviews-status error">Unable to load reviews.</p>
+
+        <div v-else-if="reviews.length" class="reviews-list">
+          <div v-for="r in reviews" :key="r.id" class="review-card">
+            <div class="review-header">
+              <span class="review-author">{{ r.userName }}</span>
+              <span class="review-stars">{{ '★'.repeat(r.rating) }}{{ '☆'.repeat(5 - r.rating) }}</span>
+            </div>
+            <p class="review-comment">{{ r.comment }}</p>
+            <p class="review-date">{{ new Date(r.createdAt).toLocaleDateString() }}</p>
+          </div>
+        </div>
+
+        <p v-else class="reviews-status">No reviews yet. Be the first to write one.</p>
+      </div>
     </div>
   </div>
 </template>
@@ -53,15 +110,63 @@
 const route = useRoute()
 const cart = useCart()
 const wishlist = useWishlist()
+const { user } = useAuth()
 
 useHead(() => ({
   title: product.value?.title || 'Product'
+}))
+
+useSeoMeta(() => ({
+  ogTitle: product.value?.title || 'Product',
+  ogDescription: product.value?.description?.slice(0, 200) || 'Product details at LUMIÈRE.',
+  ogImage: product.value?.image || '/og-image.svg',
+  ogType: 'product'
 }))
 
 const detailImgBad = ref(false)
 const detailQty = ref(1)
 
 const { data: product, pending, error } = await useFetch(() => `/api/products/${route.params.id}`)
+
+const { data: reviewsData, pending: reviewsPending, error: reviewsError, refresh: refreshReviews } = await useFetch(() => `/api/reviews/${route.params.id}`, { server: false })
+
+const reviews = computed(() => reviewsData.value?.reviews || [])
+
+const newRating = ref(5)
+const newComment = ref('')
+const reviewPending = ref(false)
+const reviewError = ref('')
+const reviewSuccess = ref(false)
+
+const submitReview = async () => {
+  reviewError.value = ''
+  reviewSuccess.value = false
+
+  if (newRating.value < 1 || newRating.value > 5) {
+    reviewError.value = 'Please select a rating between 1 and 5 stars.'
+    return
+  }
+
+  reviewPending.value = true
+  try {
+    await $fetch('/api/reviews', {
+      method: 'POST',
+      body: {
+        productId: Number(route.params.id),
+        rating: newRating.value,
+        comment: newComment.value
+      }
+    })
+    reviewSuccess.value = true
+    newComment.value = ''
+    newRating.value = 5
+    await refreshReviews()
+  } catch (err) {
+    reviewError.value = err.data?.message || err.message || 'Failed to submit review'
+  } finally {
+    reviewPending.value = false
+  }
+}
 
 const errorMessage = computed(() => {
   if (error.value) return error.value.message || 'Unable to load product'
@@ -165,4 +270,27 @@ watch(product, () => {
   .image-box { padding: 14px; }
   .cta-row > * { flex: 1; justify-content: center; }
 }
+
+.reviews-section { max-width: 1000px; margin: 24px auto 0; background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 20px; }
+.reviews-heading { margin: 0 0 14px; color: #111827; font-size: 18px; }
+.review-form { display: grid; gap: 8px; margin-bottom: 20px; }
+.review-label { font-size: 13px; color: #374151; }
+.star-rating { display: flex; gap: 4px; }
+.star-btn { font-size: 20px; background: none; border: none; color: #d1d5db; cursor: pointer; padding: 0; line-height: 1; }
+.star-btn.active { color: #d4af64; }
+.review-textarea { border: 1px solid #d1d5db; border-radius: 8px; padding: 10px; font: inherit; resize: vertical; }
+.review-submit { justify-self: start; border: none; border-radius: 8px; background: #111827; color: #fff; padding: 10px 16px; cursor: pointer; }
+.review-submit:hover { background: #d4af64; color: #0a0806; }
+.review-submit:disabled { opacity: 0.7; cursor: not-allowed; }
+.review-error { color: #dc2626; font-size: 13px; margin: 0; }
+.review-success { color: #15803d; font-size: 13px; margin: 0; }
+.reviews-status { color: #6b7280; font-size: 14px; margin: 0; }
+.reviews-status.error { color: #dc2626; }
+.reviews-list { display: grid; gap: 12px; }
+.review-card { border: 1px solid #e5e7eb; border-radius: 8px; padding: 12px; }
+.review-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+.review-author { font-size: 14px; font-weight: 500; color: #111827; }
+.review-stars { font-size: 14px; color: #d4af64; letter-spacing: 1px; }
+.review-comment { color: #4b5563; margin: 0 0 6px; font-size: 14px; }
+.review-date { color: #9ca3af; font-size: 12px; margin: 0; }
 </style>

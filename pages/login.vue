@@ -52,6 +52,12 @@
 
 <script setup>
 useHead({ title: 'Login' })
+useSeoMeta({
+  ogTitle: 'Login - LUMIÈRE',
+  ogDescription: 'Sign in to your LUMIÈRE account.',
+  ogImage: '/og-image.jpg',
+  ogType: 'website'
+})
 
 const { login } = useAuth()
 

@@ -51,6 +51,12 @@
 
 <script setup>
 useHead({ title: 'Shopping Cart' })
+useSeoMeta({
+  ogTitle: 'Shopping Cart - LUMIÈRE',
+  ogDescription: 'Review your items and complete your purchase at LUMIÈRE.',
+  ogImage: '/og-image.jpg',
+  ogType: 'website'
+})
 
 const { items, subtotal, updateQty, removeFromCart, clearCart } = useCart()
 const { isLoggedIn } = useAuth()
