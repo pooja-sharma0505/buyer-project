@@ -44,9 +44,11 @@ declare global {
   const dynamicEventHandler: typeof import('../../node_modules/h3').dynamicEventHandler
   const ensureAuthTables: typeof import('../../server/utils/schema').ensureAuthTables
   const ensureOrderTables: typeof import('../../server/utils/schema').ensureOrderTables
+  const ensureReviewTables: typeof import('../../server/utils/schema').ensureReviewTables
   const eventHandler: typeof import('../../node_modules/h3').eventHandler
   const fetchAllProductsRows: typeof import('../../server/utils/products').fetchAllProductsRows
   const fetchProductRowById: typeof import('../../server/utils/products').fetchProductRowById
+  const fetchProductsPage: typeof import('../../server/utils/products').fetchProductsPage
   const fetchWithEvent: typeof import('../../node_modules/h3').fetchWithEvent
   const fromNodeMiddleware: typeof import('../../node_modules/h3').fromNodeMiddleware
   const fromPlainHandler: typeof import('../../node_modules/h3').fromPlainHandler
@@ -167,5 +169,5 @@ export { defineAppConfig } from '/workspace/node_modules/@nuxt/nitro-server/dist
 export { getSessionToken, getUserFromSession, requireUser, setSessionCookie, clearSessionCookie, destroySession } from '/workspace/server/utils/auth';
 export { getPool, testDbConnection, resetPool } from '/workspace/server/utils/db';
 export { getDemoProducts, getDemoProductById } from '/workspace/server/utils/demo-products';
-export { fetchAllProductsRows, fetchProductRowById, toProductPayload } from '/workspace/server/utils/products';
-export { ensureAuthTables, ensureOrderTables, seedDemoUserIfEmpty } from '/workspace/server/utils/schema';
+export { fetchProductsPage, fetchAllProductsRows, fetchProductRowById, toProductPayload } from '/workspace/server/utils/products';
+export { ensureAuthTables, ensureOrderTables, seedDemoUserIfEmpty, ensureReviewTables } from '/workspace/server/utils/schema';

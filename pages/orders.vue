@@ -49,6 +49,12 @@
 
 <script setup>
 useHead({ title: 'My Orders' })
+useSeoMeta({
+  ogTitle: 'My Orders - LUMIÈRE',
+  ogDescription: 'View your order history at LUMIÈRE.',
+  ogImage: '/og-image.svg',
+  ogType: 'website'
+})
 
 const { data, pending, error } = await useFetch('/api/orders', { server: false })
 

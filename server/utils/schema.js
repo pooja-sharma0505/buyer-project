@@ -49,3 +49,17 @@ export async function seedDemoUserIfEmpty(pool, defaultPasswordHash) {
   )
   console.log('[db] Seeded demo user — login with name "Demo User" and phone "9876543210", password "demo123"')
 }
+
+export async function ensureReviewTables(pool) {
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS reviews (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      product_id INT NOT NULL,
+      user_id INT NOT NULL,
+      user_name VARCHAR(255) NOT NULL,
+      rating INT NOT NULL CHECK (rating BETWEEN 1 AND 5),
+      comment TEXT,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+  `)
+}
