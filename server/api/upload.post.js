@@ -1,7 +1,6 @@
 import formidable from 'formidable'
 import fs from 'node:fs'
 import path from 'node:path'
-import sharp from 'sharp'
 import { requireUser } from '../utils/auth.js'
 
 const ALLOWED_MIMETYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif']
@@ -60,12 +59,22 @@ export default defineEventHandler(async (event) => {
 
     const newPath = path.join(uploadDir, fileName)
 
-    await sharp(oldPath)
-      .resize(1200, 1200, { fit: 'inside', withoutEnlargement: true })
-      .jpeg({ quality: 85, progressive: true })
-      .toFile(newPath)
+    let processed = false
+    try {
+      const sharp = (await import('sharp')).default
+      await sharp(oldPath)
+        .resize(1200, 1200, { fit: 'inside', withoutEnlargement: true })
+        .jpeg({ quality: 85, progressive: true })
+        .toFile(newPath)
+      fs.unlinkSync(oldPath)
+      processed = true
+    } catch {
+      // sharp not available — fall back to raw copy
+    }
 
-    fs.unlinkSync(oldPath)
+    if (!processed) {
+      fs.renameSync(oldPath, newPath)
+    }
 
     return {
       filename: fileName,
