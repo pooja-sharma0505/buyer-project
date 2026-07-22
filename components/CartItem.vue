@@ -12,16 +12,16 @@
 
     <div class="meta">
       <h2>{{ product.title }}</h2>
-      <p>${{ Number(product.price || 0).toFixed(2) }}</p>
+      <p>${{ formatPrice(product.price) }}</p>
       <div class="qty-row">
-        <button @click="decrease">-</button>
+        <button @click="decrease" aria-label="Decrease quantity">-</button>
         <span>{{ quantity }}</span>
-        <button @click="increase">+</button>
+        <button @click="increase" aria-label="Increase quantity">+</button>
       </div>
     </div>
 
     <div class="total">
-      <p>${{ (Number(product.price || 0) * quantity).toFixed(2) }}</p>
+      <p>${{ formatPrice(product.price * quantity) }}</p>
       <button class="remove" @click="$emit('remove', product.id)">Remove</button>
     </div>
   </div>
@@ -69,6 +69,10 @@ const decrease = () => {
       quantity: props.quantity - 1
     })
   }
+}
+
+function formatPrice(value) {
+  return Number(value || 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 }
 </script>
 

@@ -2,7 +2,7 @@
   <div class="home-page">
     <div class="container">
       <div class="top-row">
-        <h1 class="brand">LUXESTORE</h1>
+        <h1 class="brand">LUMIÈRE</h1>
         <input
           v-model.trim="search"
           type="search"
@@ -50,6 +50,8 @@
 </template>
 
 <script setup>
+useHead({ title: 'Luxury Collection' })
+
 const cart = useCart()
 const route = useRoute()
 const router = useRouter()

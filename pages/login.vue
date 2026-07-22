@@ -51,6 +51,8 @@
 </template>
 
 <script setup>
+useHead({ title: 'Login' })
+
 const { login } = useAuth()
 
 const name = ref('')

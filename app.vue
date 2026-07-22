@@ -1,3 +1,12 @@
+<script setup>
+useHead({
+  titleTemplate: '%s | LUMIÈRE',
+  meta: [
+    { name: 'description', content: 'LUMIÈRE — a curated collection of luxury essentials. Shop jewellery, fashion, electronics, and more.' }
+  ]
+})
+</script>
+
 <template>
   <div class="app-shell">
     <Navbar />

@@ -16,7 +16,7 @@
           <div class="info">
             <p v-if="item.category" class="cat">{{ item.category }}</p>
             <button type="button" class="title-btn" @click="goProduct(item.id)">{{ item.title }}</button>
-            <p class="price">${{ Number(item.price || 0).toFixed(2) }}</p>
+            <p class="price">${{ formatPrice(item.price) }}</p>
             <div class="actions">
               <button type="button" class="btn secondary" @click="removeFromWishlist(item.id)">Remove</button>
               <button type="button" class="btn primary" @click="addToCart(item)">Add to cart</button>
@@ -29,6 +29,8 @@
 </template>
 
 <script setup>
+useHead({ title: 'Wishlist' })
+
 const { addToCart: addProductToCart } = useCart()
 const { items, removeFromWishlist } = useWishlist()
 
@@ -43,8 +45,13 @@ const addToCart = (item) => {
     title: item.title,
     price: item.price,
     category: item.category,
-    rating: item.rating || { rate: 0, count: 0 }
+    rating: item.rating || { rate: 0, count: 0 },
+    qty: 1
   })
+}
+
+function formatPrice(value) {
+  return Number(value || 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 }
 </script>
 

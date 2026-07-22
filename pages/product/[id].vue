@@ -54,6 +54,10 @@ const route = useRoute()
 const cart = useCart()
 const wishlist = useWishlist()
 
+useHead(() => ({
+  title: product.value?.title || 'Product'
+}))
+
 const detailImgBad = ref(false)
 const detailQty = ref(1)
 

@@ -10,3 +10,14 @@
     --product-thumb-row: 96px;
   }
 }
+
+:focus-visible {
+  outline: 2px solid #d4af64;
+  outline-offset: 2px;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible {
+  border-radius: 4px;
+}
