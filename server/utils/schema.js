@@ -107,6 +107,12 @@ export async function ensureCartTables(pool) {
       UNIQUE KEY unique_cart_item (user_id, product_id)
     )
   `)
+  // Migration: add created_at if missing (old deploys had cart without it)
+  try {
+    await pool.query('ALTER TABLE cart ADD COLUMN created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP')
+  } catch (err) {
+    if (err.code !== 'ER_DUP_FIELDNAME' && err.code !== 'ER_BAD_FIELD_ERROR') throw err
+  }
 }
 
 export async function ensureReviewTables(pool) {
