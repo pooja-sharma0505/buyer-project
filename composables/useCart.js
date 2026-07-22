@@ -86,23 +86,22 @@ export function useCart() {
     const addQty = Number(product.qty) || 1
     const existing = items.value.find((item) => item.id === product.id)
     if (existing) {
-      const newQty = existing.qty + addQty
-      if (newQty > MAX_QTY_PER_PRODUCT) {
-        existing.qty = MAX_QTY_PER_PRODUCT
+      if (existing.qty >= MAX_QTY_PER_PRODUCT) {
         if (import.meta.client) {
           const toast = useToast()
-          toast.info(`Max ${MAX_QTY_PER_PRODUCT} per product. Quantity set to ${MAX_QTY_PER_PRODUCT}.`)
+          toast.info(`You've already added the maximum quantity (${MAX_QTY_PER_PRODUCT}) of this item.`)
         }
-        return
+        return false
       }
-      existing.qty = newQty
+      existing.qty = Math.min(existing.qty + addQty, MAX_QTY_PER_PRODUCT)
     } else {
       items.value.push({ ...product, qty: Math.min(addQty, MAX_QTY_PER_PRODUCT) })
     }
     if (import.meta.client) {
       const toast = useToast()
-      toast.success(`${product.title || 'Item'} added to cart`)
+      toast.success('Added to cart!')
     }
+    return true
   }
 
   const updateQty = (id, qty) => {

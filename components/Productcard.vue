@@ -47,15 +47,12 @@
         >+</button>
       </div>
 
-      <p v-if="isAtLimit" class="limit-msg">Max {{ cart.MAX_QTY_PER_PRODUCT }} per product</p>
-
       <button
         class="add-btn"
-        :class="{ added: isAdded, disabled: isAtLimit }"
-        :disabled="isAtLimit"
+        :class="{ added: isAdded }"
         @click.stop="handleAddToCart"
       >
-        {{ isAdded ? 'Added!' : isAtLimit ? 'Max reached' : '+ Add to Cart' }}
+        {{ isAdded ? 'Added!' : '+ Add to Cart' }}
       </button>
     </div>
   </div>
@@ -82,7 +79,6 @@ const localQty = ref(1)
 
 const inWishlist = computed(() => wishlist?.isInWishlist(props.id) ?? false)
 const cartQty = computed(() => cart.getCartQty(props.id))
-const isAtLimit = computed(() => cartQty.value >= cart.MAX_QTY_PER_PRODUCT)
 const remainingQty = computed(() => Math.max(0, cart.MAX_QTY_PER_PRODUCT - cartQty.value))
 const displaySrc = computed(() => imgFailed.value ? '/placeholder-product.svg' : props.image || '/placeholder-product.svg')
 const starDisplay = computed(() => {
@@ -189,11 +185,9 @@ function toggleWishlist() {
 .qty-input::-webkit-outer-spin-button,
 .qty-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
 .qty-input { -moz-appearance: textfield; }
-.limit-msg { font-size: 11px; color: #9ca3af; margin: -4px 0 6px; text-align: center; }
 .add-btn { width: 100%; padding: 10px 8px; font-size: 13px; border: none; border-radius: 8px; background: #111827; color: #fff; cursor: pointer; transition: all .15s ease; }
-.add-btn:hover:not(:disabled) { background: #d4af64; color: #0a0806; }
+.add-btn:hover { background: #d4af64; color: #0a0806; }
 .add-btn.added { background: #d1fae5; border-color: #6ee7b7; color: #065f46; }
-.add-btn:disabled { background: #e5e7eb; color: #9ca3af; cursor: not-allowed; }
 @media (max-width: 640px) {
   .img-wrapper { padding: 10px; }
   .card-body { padding: 12px; }

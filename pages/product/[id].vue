@@ -34,15 +34,8 @@
               aria-label="Increase quantity"
             >+</button>
           </div>
-          <p v-if="isAtLimit" class="limit-msg">Max {{ cart.MAX_QTY_PER_PRODUCT }} per product</p>
           <div class="cta-row">
-            <button
-              class="add-btn"
-              :disabled="isAtLimit"
-              @click="addToCartWithQty"
-            >
-              {{ isAtLimit ? 'Max reached' : 'Add to Cart' }}
-            </button>
+            <button class="add-btn" @click="addToCartWithQty">Add to Cart</button>
             <button
               type="button"
               class="wish-btn"
@@ -147,7 +140,6 @@ const detailImgBad = ref(false)
 const detailQty = ref(1)
 
 const cartQty = computed(() => cart.getCartQty(product.value?.id))
-const isAtLimit = computed(() => cartQty.value >= cart.MAX_QTY_PER_PRODUCT)
 const remainingQty = computed(() => Math.max(0, cart.MAX_QTY_PER_PRODUCT - cartQty.value))
 
 const { data: product, pending, error } = await useFetch(() => `/api/products/${route.params.id}`)
