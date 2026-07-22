@@ -6,7 +6,16 @@
         <h1>Wishlist ({{ items.length }})</h1>
       </div>
 
-      <p v-if="items.length === 0" class="empty">Your wishlist is empty. Save items from the home page or product details.</p>
+      <div v-if="items.length === 0" class="empty-state">
+        <div class="empty-icon">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+          </svg>
+        </div>
+        <h2 class="empty-title">Your wishlist is empty</h2>
+        <p class="empty-text">Save items you love to your wishlist and they'll be here when you're ready.</p>
+        <NuxtLink to="/" class="empty-cta">Browse Products</NuxtLink>
+      </div>
 
       <ul v-else class="list">
         <li v-for="item in items" :key="item.id" class="row">

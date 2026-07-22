@@ -13,6 +13,8 @@
           placeholder="Name"
           autocomplete="name"
           :aria-invalid="!!fieldErrors.name"
+          @input="fieldErrors.name = ''"
+          @blur="validateField('name')"
         />
         <p v-if="fieldErrors.name" class="field-error">{{ fieldErrors.name }}</p>
 
@@ -25,6 +27,8 @@
           placeholder="Phone number"
           autocomplete="tel"
           :aria-invalid="!!fieldErrors.phone"
+          @input="fieldErrors.phone = ''"
+          @blur="validateField('phone')"
         />
         <p v-if="fieldErrors.phone" class="field-error">{{ fieldErrors.phone }}</p>
 
@@ -36,6 +40,8 @@
           placeholder="Password"
           autocomplete="current-password"
           :aria-invalid="!!fieldErrors.password"
+          @input="fieldErrors.password = ''"
+          @blur="validateField('password')"
         />
         <p v-if="fieldErrors.password" class="field-error">{{ fieldErrors.password }}</p>
 
@@ -92,6 +98,37 @@ function validate() {
 
   fieldErrors.value = next
   return !next.name && !next.phone && !next.password
+}
+
+function validateField(field) {
+  const err = fieldErrors.value
+  if (field === 'name') {
+    if (!name.value) {
+      err.name = 'Name is required'
+    } else if (name.value.length < 2) {
+      err.name = 'Name must be at least 2 characters'
+    } else {
+      err.name = ''
+    }
+  }
+  if (field === 'phone') {
+    if (!phone.value) {
+      err.phone = 'Phone is required'
+    } else if (!/^\d{10,15}$/.test(phone.value)) {
+      err.phone = 'Phone must be 10–15 digits only'
+    } else {
+      err.phone = ''
+    }
+  }
+  if (field === 'password') {
+    if (!password.value) {
+      err.password = 'Password is required'
+    } else if (password.value.length < 6) {
+      err.password = 'Password must be at least 6 characters'
+    } else {
+      err.password = ''
+    }
+  }
 }
 
 const handleLogin = async () => {

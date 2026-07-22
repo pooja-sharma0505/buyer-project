@@ -46,10 +46,19 @@ export function useWishlist() {
       category: product.category,
       rating: product.rating
     })
+    if (import.meta.client) {
+      const toast = useToast()
+      toast.success(`${product.title || 'Item'} saved to wishlist`)
+    }
   }
 
   const removeFromWishlist = (id) => {
+    const removed = items.value.find((item) => item.id === id)
     items.value = items.value.filter((item) => item.id !== id)
+    if (import.meta.client && removed) {
+      const toast = useToast()
+      toast.info(`${removed.title || 'Item'} removed from wishlist`)
+    }
   }
 
   const toggleWishlist = (product) => {
