@@ -75,8 +75,8 @@ function formatPrice(value) {
 .orders-page { min-height: 100vh; background: #f8fafc; padding: 28px 16px; }
 .container { max-width: 800px; margin: 0 auto; }
 .top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 8px; }
-.top a { color: #4f46e5; text-decoration: none; }
-.top h1 { margin: 0; font-size: 22px; color: #111827; }
+.top a { color: #d4af64; text-decoration: none; }
+.top h1 { margin: 0; font-size: 22px; color: #111827; font-family: 'Cormorant Garamond', serif; }
 .status { color: #6b7280; margin: 0; }
 .status.error { color: #dc2626; }
 .orders-list { display: flex; flex-direction: column; gap: 16px; }

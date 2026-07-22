@@ -110,7 +110,8 @@ function formatPrice(value) {
 .meta h2 { margin: 0 0 4px; font-size: 14px; color: #111827; }
 .meta p { margin: 0; font-size: 13px; color: #6b7280; }
 .qty-row { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
-.qty-row button { width: 28px; height: 28px; border: 1px solid #d1d5db; border-radius: 6px; background: #fff; cursor: pointer; }
+.qty-row button { width: 28px; height: 28px; border: 1px solid #d1d5db; border-radius: 6px; background: #fff; cursor: pointer; transition: border-color 0.2s ease, color 0.2s ease; }
+.qty-row button:hover { border-color: #d4af64; color: #d4af64; }
 .total { text-align: right; }
 .total p { margin: 0 0 8px; font-weight: 600; color: #111827; }
 .remove { border: none; background: none; color: #dc2626; cursor: pointer; font-size: 12px; }

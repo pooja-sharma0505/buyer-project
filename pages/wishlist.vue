@@ -65,8 +65,8 @@ function formatPrice(value) {
 .wishlist-page { min-height: 100vh; background: #f8fafc; padding: 28px 16px; }
 .container { max-width: 800px; margin: 0 auto; }
 .top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 8px; }
-.top a { color: #4f46e5; text-decoration: none; }
-.top h1 { margin: 0; font-size: 22px; color: #111827; }
+.top a { color: #d4af64; text-decoration: none; }
+.top h1 { margin: 0; font-size: 22px; color: #111827; font-family: 'Cormorant Garamond', serif; }
 .empty { color: #6b7280; margin: 0; }
 .list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
 .row {
@@ -116,7 +116,7 @@ function formatPrice(value) {
   line-height: 1.35;
 }
 .title-btn:hover { color: #d4af64; }
-.price { font-size: 16px; color: #4f46e5; font-weight: 700; margin: 0 0 12px; }
+.price { font-size: 16px; color: #d4af64; font-weight: 700; margin: 0 0 12px; }
 .actions { display: flex; flex-wrap: wrap; gap: 8px; }
 .btn {
   border-radius: 8px;
@@ -131,7 +131,9 @@ function formatPrice(value) {
   background: #111827;
   color: #fff;
   border-color: #111827;
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
 }
+.btn.primary:hover { background: #d4af64; color: #0a0806; border-color: #d4af64; }
 .btn.secondary:hover { background: #fef2f2; border-color: #fecaca; color: #991b1b; }
 @media (max-width: 520px) {
   .wishlist-page { padding: 18px 10px; }
