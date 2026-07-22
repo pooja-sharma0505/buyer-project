@@ -171,8 +171,8 @@ function toggleWishlist() {
 .qty-input::-webkit-outer-spin-button,
 .qty-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
 .qty-input { -moz-appearance: textfield; }
-.add-btn { width: 100%; padding: 8px; font-size: 13px; border: 1px solid #d1d5db; border-radius: 8px; background: transparent; color: #374151; cursor: pointer; transition: all .15s ease; }
-.add-btn:hover { background: #d4af64; color: #0a0806; border-color: #d4af64; }
+.add-btn { width: 100%; padding: 10px 8px; font-size: 13px; border: none; border-radius: 8px; background: #111827; color: #fff; cursor: pointer; transition: all .15s ease; }
+.add-btn:hover { background: #d4af64; color: #0a0806; }
 .add-btn.added { background: #d1fae5; border-color: #6ee7b7; color: #065f46; }
 @media (max-width: 640px) {
   .img-wrapper { padding: 10px; }

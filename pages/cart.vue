@@ -120,8 +120,8 @@ const placeOrder = async () => {
 .top a { color: #d4af64; text-decoration: none; }
 .top h1 { margin: 0; font-size: 22px; color: #111827; font-family: 'Cormorant Garamond', serif; }
 .layout { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; }
-.items { display: grid; gap: 10px; }
-.summary { background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 16px; height: fit-content; }
+.items { display: grid; gap: 12px; }
+.summary { background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 20px; height: fit-content; box-shadow: 0 1px 4px rgba(0,0,0,0.04); }
 .summary h2 { margin-top: 0; color: #111827; }
 .row { display: flex; justify-content: space-between; margin-bottom: 10px; color: #4b5563; }
 .row.total { border-top: 1px solid #e5e7eb; padding-top: 10px; margin-top: 10px; color: #111827; }

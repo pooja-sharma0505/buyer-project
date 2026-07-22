@@ -54,7 +54,7 @@
       <p v-if="success" class="success">Login successful. Redirecting...</p>
 
       <div class="login-links">
-        <span class="link-placeholder" style="cursor:default;opacity:0.6;user-select:none">Forgot password?</span>
+        <NuxtLink to="/forgot-password" class="link-muted">Forgot password?</NuxtLink>
         <span class="divider">|</span>
         <NuxtLink to="/signup" class="link">Sign up</NuxtLink>
       </div>
@@ -161,31 +161,35 @@ const handleLogin = async () => {
 </script>
 
 <style scoped>
-.login-page { min-height: calc(100vh - 72px); display: flex; align-items: center; justify-content: center; background: #f8fafc; padding: 16px; }
-.card { width: 100%; max-width: 360px; background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 20px; }
-h1 { margin: 0 0 6px; color: #111827; font-family: 'Cormorant Garamond', serif; }
-p { margin: 0 0 12px; color: #6b7280; font-size: 14px; }
-form { display: grid; gap: 8px; }
-label { color: #374151; font-size: 13px; }
-input { border: 1px solid #d1d5db; border-radius: 8px; padding: 10px; }
+.login-page { min-height: calc(100vh - 72px); display: flex; align-items: center; justify-content: center; background: #f8fafc; padding: 40px 16px; }
+.card { width: 100%; max-width: 380px; background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 28px 24px; }
+h1 { margin: 0 0 8px; color: #111827; font-family: 'Cormorant Garamond', serif; font-size: 28px; }
+p { margin: 0 0 20px; color: #6b7280; font-size: 14px; }
+form { display: grid; gap: 10px; }
+label { color: #374151; font-size: 13px; font-weight: 500; }
+input { border: 1px solid #d1d5db; border-radius: 8px; padding: 12px; font-size: 14px; transition: border-color 0.2s ease, box-shadow 0.2s ease; }
+input:focus { border-color: #d4af64; outline: none; box-shadow: 0 0 0 3px rgba(212,175,100,0.15); }
 input[aria-invalid="true"] { border-color: #dc2626; }
-.field-error { color: #dc2626; font-size: 12px; margin: -4px 0 4px; }
-button { margin-top: 8px; border: none; border-radius: 8px; background: #111827; color: #fff; padding: 10px; cursor: pointer; transition: background 0.2s ease; }
+input[aria-invalid="true"]:focus { box-shadow: 0 0 0 3px rgba(220,38,38,0.15); }
+.field-error { color: #dc2626; font-size: 12px; margin: -2px 0 4px; }
+button { margin-top: 8px; border: none; border-radius: 8px; background: #111827; color: #fff; padding: 12px; font-size: 14px; font-weight: 500; cursor: pointer; transition: background 0.2s ease; }
 button:hover { background: #d4af64; color: #0a0806; }
 button:disabled { opacity: 0.7; cursor: not-allowed; }
-.login-error { color: #dc2626; margin-top: 10px; }
-.success { color: #15803d; margin-top: 10px; }
-.login-links { display: flex; gap: 8px; justify-content: center; margin-top: 14px; font-size: 13px; color: #6b7280; }
-.link-placeholder { cursor: pointer; transition: color 0.2s ease; }
-.link-placeholder:hover { color: #d4af64; }
+.login-error { color: #dc2626; margin-top: 12px; font-size: 13px; }
+.success { color: #15803d; margin-top: 12px; font-size: 13px; }
+.login-links { display: flex; gap: 8px; justify-content: center; margin-top: 18px; font-size: 13px; color: #6b7280; }
+.link-muted { color: #6b7280; text-decoration: none; transition: color 0.2s ease; }
+.link-muted:hover { color: #d4af64; }
 .link { color: #d4af64; text-decoration: none; font-weight: 500; }
 .link:hover { text-decoration: underline; }
+.link-muted { color: #6b7280; text-decoration: none; font-weight: 400; transition: color 0.2s ease; }
+.link-muted:hover { color: #d4af64; }
 .divider { color: #d1d5db; }
 .demo-hint { margin-top: 16px; padding: 12px; background: #f8fafc; border: 1px solid #e5e7eb; border-radius: 8px; font-size: 12px; color: #6b7280; }
 .demo-hint code { background: #fff; padding: 2px 4px; border-radius: 4px; border: 1px solid #d1d5db; font-family: 'Courier New', monospace; color: #374151; }
 .demo-hint p { margin: 0; font-size: 12px; }
 @media (max-width: 480px) {
-  .login-page { align-items: flex-start; padding: 12px; }
-  .card { border-radius: 10px; padding: 16px; }
+  .login-page { align-items: center; padding: 24px 12px; }
+  .card { border-radius: 10px; padding: 24px 16px; }
 }
 </style>
