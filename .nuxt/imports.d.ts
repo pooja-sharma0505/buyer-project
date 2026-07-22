@@ -34,6 +34,6 @@ export { useAuth } from '../composables/useAuth';
 export { useCart } from '../composables/useCart';
 export { useDarkMode } from '../composables/useDarkMode';
 export { useDebounce } from '../composables/useDebounce';
-export { formatPrice } from '../composables/useFormatPrice';
+export { useFormatPrice } from '../composables/useFormatPrice';
 export { useToast } from '../composables/useToast';
 export { useWishlist } from '../composables/useWishlist';
