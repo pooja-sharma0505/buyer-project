@@ -32,4 +32,7 @@ export { definePageMeta } from '../node_modules/nuxt/dist/pages/runtime/composab
 export { defineLazyHydrationComponent } from '#app/composables/lazy-hydration';
 export { useAuth } from '../composables/useAuth';
 export { useCart } from '../composables/useCart';
+export { useDarkMode } from '../composables/useDarkMode';
+export { useDebounce } from '../composables/useDebounce';
+export { useToast } from '../composables/useToast';
 export { useWishlist } from '../composables/useWishlist';

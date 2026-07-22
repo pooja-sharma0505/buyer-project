@@ -18,6 +18,8 @@ interface _GlobalComponents {
   Footer: typeof import("../../components/Footer.vue")['default']
   Navbar: typeof import("../../components/Navbar.vue")['default']
   Productcard: typeof import("../../components/Productcard.vue")['default']
+  SkeletonLoader: typeof import("../../components/SkeletonLoader.vue")['default']
+  ToastContainer: typeof import("../../components/ToastContainer.vue")['default']
   NuxtWelcome: typeof import("../../node_modules/nuxt/dist/app/components/welcome.vue")['default']
   NuxtLayout: typeof import("../../node_modules/nuxt/dist/app/components/nuxt-layout")['default']
   NuxtErrorBoundary: typeof import("../../node_modules/nuxt/dist/app/components/nuxt-error-boundary.vue")['default']
@@ -45,6 +47,8 @@ interface _GlobalComponents {
   LazyFooter: LazyComponent<typeof import("../../components/Footer.vue")['default']>
   LazyNavbar: LazyComponent<typeof import("../../components/Navbar.vue")['default']>
   LazyProductcard: LazyComponent<typeof import("../../components/Productcard.vue")['default']>
+  LazySkeletonLoader: LazyComponent<typeof import("../../components/SkeletonLoader.vue")['default']>
+  LazyToastContainer: LazyComponent<typeof import("../../components/ToastContainer.vue")['default']>
   LazyNuxtWelcome: LazyComponent<typeof import("../../node_modules/nuxt/dist/app/components/welcome.vue")['default']>
   LazyNuxtLayout: LazyComponent<typeof import("../../node_modules/nuxt/dist/app/components/nuxt-layout")['default']>
   LazyNuxtErrorBoundary: LazyComponent<typeof import("../../node_modules/nuxt/dist/app/components/nuxt-error-boundary.vue")['default']>
