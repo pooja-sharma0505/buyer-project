@@ -6,10 +6,22 @@ export default defineEventHandler(async (event) => {
   const user = await requireUser(event)
   const pool = getPool()
 
-  const [rows] = await pool.query(
-    'SELECT product_id, qty FROM cart WHERE user_id = ? ORDER BY created_at DESC',
-    [user.id]
-  )
+  let rows
+  try {
+    [rows] = await pool.query(
+      'SELECT product_id, qty FROM cart WHERE user_id = ? ORDER BY created_at DESC',
+      [user.id]
+    )
+  } catch (err) {
+    if (err.code === 'ER_BAD_FIELD_ERROR' || err.errno === 1054) {
+      [rows] = await pool.query(
+        'SELECT product_id, qty FROM cart WHERE user_id = ?',
+        [user.id]
+      )
+    } else {
+      throw err
+    }
+  }
 
   const items = []
   for (const row of rows) {
