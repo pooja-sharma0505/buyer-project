@@ -7,12 +7,12 @@ export default defineEventHandler(async (event) => {
   const pool = getPool()
 
   if (body?.clearAll) {
-    await pool.query('DELETE FROM cart_items WHERE user_id = ?', [user.id])
+    await pool.query('DELETE FROM cart WHERE user_id = ?', [user.id])
     return { message: 'Cart cleared' }
   }
 
   if (body?.productId) {
-    await pool.query('DELETE FROM cart_items WHERE user_id = ? AND product_id = ?', [user.id, Number(body.productId)])
+    await pool.query('DELETE FROM cart WHERE user_id = ? AND product_id = ?', [user.id, Number(body.productId)])
     return { message: 'Item removed' }
   }
 

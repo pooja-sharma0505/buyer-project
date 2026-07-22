@@ -85,7 +85,7 @@ export async function seedDemoUserIfEmpty(pool, defaultPasswordHash) {
 
 export async function ensureCartTables(pool) {
   await pool.query(`
-    CREATE TABLE IF NOT EXISTS cart_items (
+    CREATE TABLE IF NOT EXISTS cart (
       id INT AUTO_INCREMENT PRIMARY KEY,
       user_id INT NOT NULL,
       product_id INT NOT NULL,
