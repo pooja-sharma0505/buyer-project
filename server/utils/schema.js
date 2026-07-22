@@ -7,6 +7,13 @@ export async function ensureAuthTables(pool) {
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )
   `)
+
+  // Add password_hash column if missing (migration for existing users table)
+  try {
+    await pool.query(`ALTER TABLE users ADD COLUMN password_hash VARCHAR(255) NULL AFTER phone`)
+  } catch (err) {
+    if (err.code !== 'ER_DUP_FIELDNAME' && err.code !== 'ER_BAD_FIELD_ERROR') throw err
+  }
 }
 
 export async function ensureOrderTables(pool) {
@@ -32,13 +39,13 @@ export async function ensureOrderTables(pool) {
   `)
 }
 
-export async function seedDemoUserIfEmpty(pool) {
+export async function seedDemoUserIfEmpty(pool, defaultPasswordHash) {
   const [rows] = await pool.query('SELECT COUNT(*) AS cnt FROM users')
   if (Number(rows[0]?.cnt) > 0) return
 
   await pool.query(
-    'INSERT INTO users (name, phone, role) VALUES (?, ?, ?)',
-    ['Demo User', '9876543210', 'customer']
+    'INSERT INTO users (name, phone, password_hash, role) VALUES (?, ?, ?, ?)',
+    ['Demo User', '9876543210', defaultPasswordHash, 'customer']
   )
-  console.log('[db] Seeded demo user — login with name "Demo User" and phone "9876543210"')
+  console.log('[db] Seeded demo user — login with name "Demo User" and phone "9876543210", password "demo123"')
 }

@@ -25,7 +25,21 @@
         <span class="rating-count">({{ rating.count }})</span>
       </div>
 
-      <p class="product-price">${{ Number(price || 0).toFixed(2) }}</p>
+      <p class="product-price">${{ formatPrice(price) }}</p>
+
+      <div class="qty-row" @click.stop>
+        <button type="button" class="qty-btn" @click="localQty > 1 && localQty--" aria-label="Decrease quantity">-</button>
+        <input
+          v-model.number="localQty"
+          type="number"
+          min="1"
+          max="99"
+          class="qty-input"
+          aria-label="Quantity"
+          @click.stop
+        />
+        <button type="button" class="qty-btn" @click="localQty < 99 && localQty++" aria-label="Increase quantity">+</button>
+      </div>
 
       <button class="add-btn" :class="{ added: isAdded }" @click.stop="handleAddToCart">
         {{ isAdded ? 'Added!' : '+ Add to Cart' }}
@@ -51,7 +65,7 @@ export default {
     return { wishlist }
   },
   data() {
-    return { isAdded: false, imgFailed: false }
+    return { isAdded: false, imgFailed: false, localQty: 1 }
   },
   computed: {
     inWishlist() {
@@ -63,6 +77,9 @@ export default {
     starDisplay() {
       const filled = Math.round(this.rating.rate)
       return '★'.repeat(filled) + '☆'.repeat(5 - filled)
+    },
+    formatPrice() {
+      return (value) => Number(value || 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
     }
   },
   watch: {
@@ -84,9 +101,11 @@ export default {
         title: this.title,
         price: this.price,
         category: this.category,
-        rating: this.rating
+        rating: this.rating,
+        qty: this.localQty
       })
       this.isAdded = true
+      this.localQty = 1
       setTimeout(() => {
         this.isAdded = false
       }, 1200)
@@ -158,6 +177,13 @@ export default {
 .stars { font-size: 12px; color: #f59e0b; }
 .rating-count { font-size: 11px; color: #9ca3af; }
 .product-price { font-size: 16px; font-weight: 600; color: #111827; margin-bottom: 10px; }
+.qty-row { display: flex; align-items: center; gap: 6px; margin-bottom: 10px; }
+.qty-btn { width: 28px; height: 28px; border: 1px solid #d1d5db; border-radius: 6px; background: #fff; color: #374151; cursor: pointer; font-size: 14px; display: flex; align-items: center; justify-content: center; }
+.qty-btn:hover { border-color: #d4af64; color: #d4af64; }
+.qty-input { width: 40px; text-align: center; border: 1px solid #d1d5db; border-radius: 6px; padding: 4px; font-size: 13px; color: #111827; }
+.qty-input::-webkit-outer-spin-button,
+.qty-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.qty-input { -moz-appearance: textfield; }
 .add-btn { width: 100%; padding: 8px; font-size: 13px; border: 1px solid #d1d5db; border-radius: 8px; background: transparent; color: #374151; cursor: pointer; transition: all .15s ease; }
 .add-btn:hover { background: #f3f4f6; }
 .add-btn.added { background: #d1fae5; border-color: #6ee7b7; color: #065f46; }

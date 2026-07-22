@@ -83,7 +83,9 @@ const navLinks = computed(() => {
     { to: '/wishlist', label: 'Wishlist' },
     { to: '/cart', label: 'Cart' }
   ]
-  if (!isLoggedIn.value) {
+  if (isLoggedIn.value) {
+    links.push({ to: '/orders', label: 'Orders' })
+  } else {
     links.push({ to: '/login', label: 'Login' })
   }
   return links
@@ -108,8 +110,6 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped>
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=Montserrat:wght@300;400;500&display=swap');
-
 .navbar {
   position: fixed;
   top: 0;

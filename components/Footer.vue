@@ -2,29 +2,26 @@
   <footer class="site-footer">
     <div class="footer-inner">
       <div class="grid">
-        <!-- Matches header brand + storefront name on home -->
+        <!-- About -->
         <div class="block">
           <h3 class="title">About</h3>
           <p class="muted">
-            <strong class="accent">LUMIÈRE</strong> · <strong class="accent">LUXESTORE</strong><br >
-            Browse products from your database, filter by category, search, add items to cart or wishlist,
-            open any product page, or sign in with name and phone.
+            <strong class="accent">LUMIÈRE</strong> is a curated collection of luxury essentials. Browse by category, save your favourites, and shop with ease.
           </p>
         </div>
 
-        <!-- Every real route from router -->
+        <!-- Pages -->
         <div class="block">
           <h3 class="title">Pages</h3>
           <ul class="links">
-            <li><NuxtLink class="footer-link" to="/">Home — catalog</NuxtLink></li>
+            <li><NuxtLink class="footer-link" to="/">Home</NuxtLink></li>
             <li><NuxtLink class="footer-link" to="/wishlist">Wishlist</NuxtLink></li>
-            <li><NuxtLink class="footer-link" to="/cart">Cart &amp; checkout</NuxtLink></li>
+            <li><NuxtLink class="footer-link" to="/cart">Cart</NuxtLink></li>
             <li><NuxtLink class="footer-link" to="/login">Login</NuxtLink></li>
-            <li><span class="muted small">Products also open via <code class="inline">/product/:id</code> from listing.</span></li>
           </ul>
         </div>
 
-        <!-- Same category chips as home (query sync) -->
+        <!-- Categories -->
         <div class="block">
           <h3 class="title">Categories</h3>
           <ul class="links">
@@ -36,16 +33,16 @@
           </ul>
         </div>
 
-        <!-- No separate help/privacy routes — describe what backend powers the app -->
+        <!-- Contact -->
         <div class="block">
-          <h3 class="title"></h3>
+          <h3 class="title">Contact</h3>
           <p class="muted small">
-           
+            support@lumiere.store
           </p>
         </div>
       </div>
 
-      <p class="copyright">© {{ year }} LUXESTORE demo. Footer lists only routes and behavior this site implements.</p>
+      <p class="copyright">© {{ year }} LUMIÈRE. All rights reserved.</p>
     </div>
   </footer>
 </template>

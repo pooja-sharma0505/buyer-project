@@ -5,6 +5,10 @@ let pool = null
 function resolveDbConfig() {
   const config = useRuntimeConfig()
 
+  if (process.env.NODE_ENV === 'production' && (!config.dbPassword || config.dbPassword === '')) {
+    console.warn('[security] DB_PASSWORD is empty in production — this is a critical security risk.')
+  }
+
   return {
     host: config.dbHost || '127.0.0.1',
     user: config.dbUser || 'root',

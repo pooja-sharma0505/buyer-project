@@ -2,14 +2,16 @@ import { randomBytes } from 'node:crypto'
 import { getPool } from '../../utils/db.js'
 import { ensureAuthTables } from '../../utils/schema.js'
 import { setSessionCookie } from '../../utils/auth.js'
+import bcrypt from 'bcryptjs'
 
 export default defineEventHandler(async (event) => {
   const body = await readBody(event)
   const name = String(body?.name ?? '').trim()
   const phone = String(body?.phone ?? '').trim()
+  const password = String(body?.password ?? '')
 
-  if (!name || !phone) {
-    throw createError({ statusCode: 400, message: 'Name and phone are required' })
+  if (!name || !phone || !password) {
+    throw createError({ statusCode: 400, message: 'Name, phone, and password are required' })
   }
 
   if (name.length < 2) {
@@ -20,11 +22,15 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, message: 'Phone must be 10–15 digits' })
   }
 
+  if (password.length < 6) {
+    throw createError({ statusCode: 400, message: 'Password must be at least 6 characters' })
+  }
+
   try {
     const pool = getPool()
     const [rows] = await pool.query(
       `
-      SELECT id, name, phone, role
+      SELECT id, name, phone, role, password_hash
       FROM users
       WHERE name = ? AND phone = ?
       LIMIT 1
@@ -36,6 +42,17 @@ export default defineEventHandler(async (event) => {
       throw createError({ statusCode: 401, message: 'Invalid credentials' })
     }
 
+    const user = rows[0]
+
+    if (!user.password_hash) {
+      throw createError({ statusCode: 401, message: 'Account not fully set up. Please contact support.' })
+    }
+
+    const valid = await bcrypt.compare(password, user.password_hash)
+    if (!valid) {
+      throw createError({ statusCode: 401, message: 'Invalid credentials' })
+    }
+
     await ensureAuthTables(pool)
 
     const token = randomBytes(32).toString('hex')
@@ -43,7 +60,7 @@ export default defineEventHandler(async (event) => {
 
     await pool.query('INSERT INTO sessions (token, user_id, expires_at) VALUES (?, ?, ?)', [
       token,
-      rows[0].id,
+      user.id,
       expires
     ])
 
@@ -51,7 +68,7 @@ export default defineEventHandler(async (event) => {
 
     return {
       message: 'Login successful',
-      user: rows[0]
+      user: { id: user.id, name: user.name, phone: user.phone, role: user.role }
     }
   } catch (error) {
     if (error.statusCode) throw error

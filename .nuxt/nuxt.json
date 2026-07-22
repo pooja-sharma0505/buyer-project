@@ -1,7 +1,7 @@
 {
-  "_hash": "Qwo76fTzP-ApS3wRuVUKvB5ozxUidore1A1xuqqwRds",
+  "_hash": "-cuQ_qVPMIoqtKQF7FiA8Zvc5QyXZ5IJ1l313-VXYx0",
   "project": {
-    "rootDir": "/Applications/XAMPP/xamppfiles/htdocs/buyer-project"
+    "rootDir": "/workspace"
   },
   "versions": {
     "nuxt": "3.21.8"

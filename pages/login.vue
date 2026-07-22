@@ -2,7 +2,7 @@
   <div class="login-page">
     <div class="card">
       <h1>Login</h1>
-      <p>Login using your name and phone from database users table.</p>
+      <p>Enter your account details to continue.</p>
 
       <form @submit.prevent="handleLogin">
         <label for="name">Name</label>
@@ -28,6 +28,17 @@
         />
         <p v-if="fieldErrors.phone" class="field-error">{{ fieldErrors.phone }}</p>
 
+        <label for="password">Password</label>
+        <input
+          id="password"
+          v-model="password"
+          type="password"
+          placeholder="Password"
+          autocomplete="current-password"
+          :aria-invalid="!!fieldErrors.password"
+        />
+        <p v-if="fieldErrors.password" class="field-error">{{ fieldErrors.password }}</p>
+
         <button type="submit" :disabled="loading">
           {{ loading ? 'Logging in...' : 'Login' }}
         </button>
@@ -40,17 +51,20 @@
 </template>
 
 <script setup>
+useHead({ title: 'Login' })
+
 const { login } = useAuth()
 
 const name = ref('')
 const phone = ref('')
+const password = ref('')
 const error = ref('')
 const success = ref('')
 const loading = ref(false)
-const fieldErrors = ref({ name: '', phone: '' })
+const fieldErrors = ref({ name: '', phone: '', password: '' })
 
 function validate() {
-  const next = { name: '', phone: '' }
+  const next = { name: '', phone: '', password: '' }
 
   if (!name.value) {
     next.name = 'Name is required'
@@ -64,8 +78,14 @@ function validate() {
     next.phone = 'Phone must be 10–15 digits only'
   }
 
+  if (!password.value) {
+    next.password = 'Password is required'
+  } else if (password.value.length < 6) {
+    next.password = 'Password must be at least 6 characters'
+  }
+
   fieldErrors.value = next
-  return !next.name && !next.phone
+  return !next.name && !next.phone && !next.password
 }
 
 const handleLogin = async () => {
@@ -76,7 +96,7 @@ const handleLogin = async () => {
 
   loading.value = true
   try {
-    await login(name.value, phone.value)
+    await login(name.value, phone.value, password.value)
     success.value = 'Success'
     await navigateTo('/')
   } catch (err) {

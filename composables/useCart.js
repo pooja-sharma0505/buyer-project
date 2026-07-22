@@ -1,16 +1,50 @@
+const STORAGE_KEY = 'buyer-cart-v1'
+
+function loadItems() {
+  if (import.meta.server) return []
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY)
+    if (!raw) return []
+    const parsed = JSON.parse(raw)
+    return Array.isArray(parsed) ? parsed : []
+  } catch {
+    return []
+  }
+}
+
+function persist(items) {
+  if (import.meta.server) return
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(items))
+  } catch {
+    /* private mode / quota */
+  }
+}
+
 export function useCart() {
   const items = useState('cart-items', () => [])
 
+  if (import.meta.client && items.value.length === 0) {
+    items.value = loadItems()
+  }
+
+  watch(
+    items,
+    (next) => persist(next),
+    { deep: true }
+  )
+
   const addToCart = (product) => {
+    const addQty = Number(product.qty) || 1
     const existing = items.value.find((item) => item.id === product.id)
     if (existing) {
-      existing.qty += 1
+      existing.qty += addQty
       return
     }
 
     items.value.push({
       ...product,
-      qty: 1
+      qty: addQty
     })
   }
 

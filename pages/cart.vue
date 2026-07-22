@@ -23,15 +23,15 @@
           <h2>Order Summary</h2>
           <div class="row">
             <span>Subtotal</span>
-            <strong>${{ Number(subtotal || 0).toFixed(2) }}</strong>
+            <strong>${{ formatPrice(subtotal) }}</strong>
           </div>
           <div class="row">
             <span>Tax (18%)</span>
-            <strong>${{ tax.toFixed(2) }}</strong>
+            <strong>${{ formatPrice(tax) }}</strong>
           </div>
           <div class="row total">
             <span>Total</span>
-            <strong>${{ total.toFixed(2) }}</strong>
+            <strong>${{ formatPrice(total) }}</strong>
           </div>
           <button
             class="order-btn"
@@ -50,6 +50,8 @@
 </template>
 
 <script setup>
+useHead({ title: 'Shopping Cart' })
+
 const { items, subtotal, updateQty, removeFromCart, clearCart } = useCart()
 const { isLoggedIn } = useAuth()
 
@@ -59,6 +61,10 @@ const orderError = ref('')
 
 const tax = computed(() => Number(subtotal.value || 0) * 0.18)
 const total = computed(() => Number(subtotal.value || 0) + tax.value)
+
+function formatPrice(value) {
+  return Number(value || 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+}
 
 const placeOrder = async () => {
   orderError.value = ''
@@ -109,7 +115,8 @@ const placeOrder = async () => {
 .summary h2 { margin-top: 0; color: #111827; }
 .row { display: flex; justify-content: space-between; margin-bottom: 10px; color: #4b5563; }
 .row.total { border-top: 1px solid #e5e7eb; padding-top: 10px; margin-top: 10px; color: #111827; }
-.order-btn { width: 100%; border: none; border-radius: 8px; background: #111827; color: #fff; padding: 10px; cursor: pointer; margin-top: 12px; }
+.order-btn { width: 100%; border: none; border-radius: 8px; background: #111827; color: #fff; padding: 10px; cursor: pointer; margin-top: 12px; transition: background 0.2s ease; }
+.order-btn:hover { background: #d4af64; color: #0a0806; }
 .order-btn:disabled { background: #9ca3af; cursor: not-allowed; }
 .hint { color: #6b7280; font-size: 13px; margin-top: 10px; }
 .error { color: #dc2626; margin-top: 10px; }
