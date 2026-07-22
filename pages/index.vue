@@ -102,7 +102,6 @@ const router = useRouter()
 
 const selectedCategory = ref('All')
 const search = ref('')
-const debouncedSearch = useDebounce(search, 350)
 const currentPage = ref(1)
 const pageSize = 12
 
@@ -175,13 +174,29 @@ watch(
   { immediate: true }
 )
 
+watch(
+  () => route.query.search,
+  (val) => {
+    search.value = typeof val === 'string' ? val : ''
+  },
+  { immediate: true }
+)
+
+watch(search, (val) => {
+  currentPage.value = 1
+  const cur = route.query.search
+  const curStr = typeof cur === 'string' ? cur : undefined
+  if (curStr === val || (!curStr && !val)) return
+  router.replace({ path: '/', query: val ? { ...route.query, search: val } : Object.fromEntries(Object.entries(route.query).filter(([k]) => k !== 'search')) })
+})
+
 watch(selectedCategory, (cat) => {
   currentPage.value = 1
   const want = cat === 'All' ? undefined : cat
   const cur = route.query.category
   const curStr = typeof cur === 'string' ? cur : undefined
   if (curStr === want || (!curStr && !want)) return
-  router.replace({ path: '/', query: want ? { category: want } : {} })
+  router.replace({ path: '/', query: want ? { ...route.query, category: want } : Object.fromEntries(Object.entries(route.query).filter(([k]) => k !== 'category')) })
 })
 </script>
 
