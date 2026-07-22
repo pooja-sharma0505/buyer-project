@@ -16,8 +16,14 @@
       <div class="qty-row">
         <button @click="decrease" aria-label="Decrease quantity">-</button>
         <span>{{ quantity }}</span>
-        <button @click="increase" aria-label="Increase quantity">+</button>
+        <button
+          @click="increase"
+          :disabled="isAtLimit"
+          aria-label="Increase quantity"
+          :aria-describedby="isAtLimit ? 'limit-msg-' + product.id : undefined"
+        >+</button>
       </div>
+      <p v-if="isAtLimit" :id="'limit-msg-' + product.id" class="limit-msg">Max {{ cart.MAX_QTY_PER_PRODUCT }} per product</p>
     </div>
 
     <div class="total">
@@ -31,6 +37,7 @@
 import { computed, ref, watch } from 'vue'
 
 const { formatPrice } = useFormatPrice()
+const cart = useCart()
 
 const props = defineProps({
   product: Object,
@@ -40,6 +47,8 @@ const props = defineProps({
 const emit = defineEmits(['update-qty', 'remove'])
 
 const thumbBroken = ref(false)
+
+const isAtLimit = computed(() => props.quantity >= cart.MAX_QTY_PER_PRODUCT)
 
 const displaySrc = computed(() => {
   if (thumbBroken.value) return '/placeholder-product.svg'
@@ -58,6 +67,7 @@ watch(
 )
 
 const increase = () => {
+  if (isAtLimit.value) return
   emit('update-qty', {
     id: props.product.id,
     quantity: props.quantity + 1
@@ -109,7 +119,9 @@ const decrease = () => {
 .meta p { margin: 0; font-size: 13px; color: #6b7280; }
 .qty-row { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
 .qty-row button { width: 28px; height: 28px; border: 1px solid #d1d5db; border-radius: 6px; background: #fff; cursor: pointer; transition: border-color 0.2s ease, color 0.2s ease; }
-.qty-row button:hover { border-color: #d4af64; color: #d4af64; }
+.qty-row button:hover:not(:disabled) { border-color: #d4af64; color: #d4af64; }
+.qty-row button:disabled { opacity: 0.4; cursor: not-allowed; }
+.limit-msg { font-size: 11px; color: #9ca3af; margin: 4px 0 0; }
 .total { text-align: right; }
 .total p { margin: 0 0 8px; font-weight: 600; color: #111827; }
 .remove { border: none; background: none; color: #dc2626; cursor: pointer; font-size: 12px; }

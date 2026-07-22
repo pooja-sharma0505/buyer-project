@@ -22,14 +22,27 @@
               v-model.number="detailQty"
               type="number"
               min="1"
-              max="99"
+              :max="remainingQty || 1"
               class="qty-input"
               aria-label="Quantity"
             />
-            <button type="button" class="qty-btn" @click="detailQty < 99 && detailQty++" aria-label="Increase quantity">+</button>
+            <button
+              type="button"
+              class="qty-btn"
+              :disabled="detailQty >= (remainingQty || 1)"
+              @click="detailQty < (remainingQty || 1) && detailQty++"
+              aria-label="Increase quantity"
+            >+</button>
           </div>
+          <p v-if="isAtLimit" class="limit-msg">Max {{ cart.MAX_QTY_PER_PRODUCT }} per product</p>
           <div class="cta-row">
-            <button class="add-btn" @click="addToCartWithQty">Add to Cart</button>
+            <button
+              class="add-btn"
+              :disabled="isAtLimit"
+              @click="addToCartWithQty"
+            >
+              {{ isAtLimit ? 'Max reached' : 'Add to Cart' }}
+            </button>
             <button
               type="button"
               class="wish-btn"
@@ -132,6 +145,10 @@ useSeoMeta(() => ({
 
 const detailImgBad = ref(false)
 const detailQty = ref(1)
+
+const cartQty = computed(() => cart.getCartQty(product.value?.id))
+const isAtLimit = computed(() => cartQty.value >= cart.MAX_QTY_PER_PRODUCT)
+const remainingQty = computed(() => Math.max(0, cart.MAX_QTY_PER_PRODUCT - cartQty.value))
 
 const { data: product, pending, error } = await useFetch(() => `/api/products/${route.params.id}`)
 

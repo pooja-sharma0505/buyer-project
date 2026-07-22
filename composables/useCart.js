@@ -1,4 +1,5 @@
 const STORAGE_KEY = 'buyer-cart-v1'
+const MAX_QTY_PER_PRODUCT = 2
 
 function loadItems() {
   if (import.meta.server) return []
@@ -85,9 +86,18 @@ export function useCart() {
     const addQty = Number(product.qty) || 1
     const existing = items.value.find((item) => item.id === product.id)
     if (existing) {
-      existing.qty += addQty
+      const newQty = existing.qty + addQty
+      if (newQty > MAX_QTY_PER_PRODUCT) {
+        existing.qty = MAX_QTY_PER_PRODUCT
+        if (import.meta.client) {
+          const toast = useToast()
+          toast.info(`Max ${MAX_QTY_PER_PRODUCT} per product. Quantity set to ${MAX_QTY_PER_PRODUCT}.`)
+        }
+        return
+      }
+      existing.qty = newQty
     } else {
-      items.value.push({ ...product, qty: addQty })
+      items.value.push({ ...product, qty: Math.min(addQty, MAX_QTY_PER_PRODUCT) })
     }
     if (import.meta.client) {
       const toast = useToast()
@@ -104,7 +114,18 @@ export function useCart() {
       return
     }
 
-    item.qty = qty
+    item.qty = Math.min(qty, MAX_QTY_PER_PRODUCT)
+  }
+
+  const canAddMore = (productId) => {
+    const item = items.value.find((entry) => entry.id === productId)
+    if (!item) return true
+    return item.qty < MAX_QTY_PER_PRODUCT
+  }
+
+  const getCartQty = (productId) => {
+    const item = items.value.find((entry) => entry.id === productId)
+    return item ? item.qty : 0
   }
 
   const removeFromCart = async (id) => {
@@ -151,6 +172,9 @@ export function useCart() {
     clearCart,
     itemCount,
     subtotal,
-    syncWithDb
+    syncWithDb,
+    canAddMore,
+    getCartQty,
+    MAX_QTY_PER_PRODUCT
   }
 }

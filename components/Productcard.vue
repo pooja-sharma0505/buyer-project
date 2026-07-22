@@ -33,16 +33,29 @@
           v-model.number="localQty"
           type="number"
           min="1"
-          max="99"
+          :max="remainingQty || 1"
           class="qty-input"
           aria-label="Quantity"
           @click.stop
         />
-        <button type="button" class="qty-btn" @click="localQty < 99 && localQty++" aria-label="Increase quantity">+</button>
+        <button
+          type="button"
+          class="qty-btn"
+          :disabled="localQty >= (remainingQty || 1)"
+          @click="localQty < (remainingQty || 1) && localQty++"
+          aria-label="Increase quantity"
+        >+</button>
       </div>
 
-      <button class="add-btn" :class="{ added: isAdded }" @click.stop="handleAddToCart">
-        {{ isAdded ? 'Added!' : '+ Add to Cart' }}
+      <p v-if="isAtLimit" class="limit-msg">Max {{ cart.MAX_QTY_PER_PRODUCT }} per product</p>
+
+      <button
+        class="add-btn"
+        :class="{ added: isAdded, disabled: isAtLimit }"
+        :disabled="isAtLimit"
+        @click.stop="handleAddToCart"
+      >
+        {{ isAdded ? 'Added!' : isAtLimit ? 'Max reached' : '+ Add to Cart' }}
       </button>
     </div>
   </div>
@@ -60,6 +73,7 @@ const props = defineProps({
 const emit = defineEmits(['add-to-cart'])
 
 const wishlist = useWishlist()
+const cart = useCart()
 const { formatPrice } = useFormatPrice()
 
 const isAdded = ref(false)
@@ -67,6 +81,9 @@ const imgFailed = ref(false)
 const localQty = ref(1)
 
 const inWishlist = computed(() => wishlist?.isInWishlist(props.id) ?? false)
+const cartQty = computed(() => cart.getCartQty(props.id))
+const isAtLimit = computed(() => cartQty.value >= cart.MAX_QTY_PER_PRODUCT)
+const remainingQty = computed(() => Math.max(0, cart.MAX_QTY_PER_PRODUCT - cartQty.value))
 const displaySrc = computed(() => imgFailed.value ? '/placeholder-product.svg' : props.image || '/placeholder-product.svg')
 const starDisplay = computed(() => {
   const filled = Math.round(props.rating.rate)
@@ -166,14 +183,17 @@ function toggleWishlist() {
 .product-price { font-size: 16px; font-weight: 600; color: #111827; margin-bottom: 10px; }
 .qty-row { display: flex; align-items: center; gap: 6px; margin-bottom: 10px; }
 .qty-btn { width: 28px; height: 28px; border: 1px solid #d1d5db; border-radius: 6px; background: #fff; color: #374151; cursor: pointer; font-size: 14px; display: flex; align-items: center; justify-content: center; }
-.qty-btn:hover { border-color: #d4af64; color: #d4af64; }
+.qty-btn:hover:not(:disabled) { border-color: #d4af64; color: #d4af64; }
+.qty-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 .qty-input { width: 40px; text-align: center; border: 1px solid #d1d5db; border-radius: 6px; padding: 4px; font-size: 13px; color: #111827; }
 .qty-input::-webkit-outer-spin-button,
 .qty-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
 .qty-input { -moz-appearance: textfield; }
+.limit-msg { font-size: 11px; color: #9ca3af; margin: -4px 0 6px; text-align: center; }
 .add-btn { width: 100%; padding: 10px 8px; font-size: 13px; border: none; border-radius: 8px; background: #111827; color: #fff; cursor: pointer; transition: all .15s ease; }
-.add-btn:hover { background: #d4af64; color: #0a0806; }
+.add-btn:hover:not(:disabled) { background: #d4af64; color: #0a0806; }
 .add-btn.added { background: #d1fae5; border-color: #6ee7b7; color: #065f46; }
+.add-btn:disabled { background: #e5e7eb; color: #9ca3af; cursor: not-allowed; }
 @media (max-width: 640px) {
   .img-wrapper { padding: 10px; }
   .card-body { padding: 12px; }
