@@ -54,7 +54,7 @@
       <p v-if="success" class="success">Login successful. Redirecting...</p>
 
       <div class="login-links">
-        <span class="link-placeholder">Forgot password?</span>
+        <span class="link-placeholder" style="cursor:default;opacity:0.6;user-select:none">Forgot password?</span>
         <span class="divider">|</span>
         <NuxtLink to="/signup" class="link">Sign up</NuxtLink>
       </div>
