@@ -1,10 +1,11 @@
-export async function ensureAuthTables(pool) {
+export async function ensureUsersTable(pool) {
   await pool.query(`
-    CREATE TABLE IF NOT EXISTS sessions (
-      token VARCHAR(64) PRIMARY KEY,
-      user_id INT NOT NULL,
-      expires_at DATETIME NOT NULL,
-      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    CREATE TABLE IF NOT EXISTS users (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      name VARCHAR(255) NOT NULL,
+      phone VARCHAR(255) NOT NULL UNIQUE,
+      password_hash VARCHAR(255) NULL,
+      role VARCHAR(50) DEFAULT 'customer'
     )
   `)
 
@@ -14,6 +15,38 @@ export async function ensureAuthTables(pool) {
   } catch (err) {
     if (err.code !== 'ER_DUP_FIELDNAME' && err.code !== 'ER_BAD_FIELD_ERROR') throw err
   }
+
+  // Add role column if missing
+  try {
+    await pool.query(`ALTER TABLE users ADD COLUMN role VARCHAR(50) DEFAULT 'customer' AFTER password_hash`)
+  } catch (err) {
+    if (err.code !== 'ER_DUP_FIELDNAME' && err.code !== 'ER_BAD_FIELD_ERROR') throw err
+  }
+}
+
+export async function ensureProductsTable(pool) {
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS products (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      name VARCHAR(255) NOT NULL,
+      price DECIMAL(10,2) NOT NULL,
+      old_price DECIMAL(10,2) NULL,
+      image VARCHAR(255) NULL,
+      description TEXT NULL,
+      category VARCHAR(100) NULL
+    )
+  `)
+}
+
+export async function ensureAuthTables(pool) {
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS sessions (
+      token VARCHAR(64) PRIMARY KEY,
+      user_id INT NOT NULL,
+      expires_at DATETIME NOT NULL,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+  `)
 }
 
 export async function ensureOrderTables(pool) {
@@ -48,6 +81,19 @@ export async function seedDemoUserIfEmpty(pool, defaultPasswordHash) {
     ['Demo User', '9876543210', defaultPasswordHash, 'customer']
   )
   console.log('[db] Seeded demo user — login with name "Demo User" and phone "9876543210", password "demo123"')
+}
+
+export async function ensureCartTables(pool) {
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS cart_items (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      user_id INT NOT NULL,
+      product_id INT NOT NULL,
+      qty INT NOT NULL DEFAULT 1,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      UNIQUE KEY unique_cart_item (user_id, product_id)
+    )
+  `)
 }
 
 export async function ensureReviewTables(pool) {

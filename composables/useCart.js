@@ -23,14 +23,61 @@ function persist(items) {
 
 export function useCart() {
   const items = useState('cart-items', () => [])
+  const { isLoggedIn } = useAuth()
+  const isHydrated = ref(false)
 
+  // Load from localStorage on client init (for guests or before auth resolves)
   if (import.meta.client && items.value.length === 0) {
     items.value = loadItems()
   }
 
+  // Sync with DB when logged in
+  const syncWithDb = async () => {
+    if (!isLoggedIn.value || !import.meta.client) return
+    try {
+      const dbCart = await $fetch('/api/cart')
+      if (dbCart?.items?.length) {
+        items.value = dbCart.items.map((item) => ({ ...item, qty: item.qty || 1 }))
+        persist(items.value)
+      }
+    } catch (err) {
+      // If DB cart is empty or fails, keep localStorage items
+    }
+  }
+
+  const saveToDb = async () => {
+    if (!isLoggedIn.value || !import.meta.client) return
+    try {
+      const payload = items.value.map((item) => ({
+        id: item.id,
+        qty: item.qty
+      }))
+      await $fetch('/api/cart', {
+        method: 'POST',
+        body: { items: payload }
+      })
+    } catch (err) {
+      // Silent fail — localStorage is backup
+    }
+  }
+
+  // Watch for auth state changes and sync cart
+  if (import.meta.client) {
+    watch(isLoggedIn, async (loggedIn) => {
+      if (loggedIn) {
+        await syncWithDb()
+      }
+    }, { immediate: true })
+  }
+
   watch(
     items,
-    (next) => persist(next),
+    (next) => {
+      persist(next)
+      if (isLoggedIn.value) {
+        saveToDb()
+      }
+    },
     { deep: true }
   )
 
@@ -60,12 +107,32 @@ export function useCart() {
     item.qty = qty
   }
 
-  const removeFromCart = (id) => {
+  const removeFromCart = async (id) => {
     items.value = items.value.filter((item) => item.id !== id)
+    if (isLoggedIn.value && import.meta.client) {
+      try {
+        await $fetch('/api/cart', {
+          method: 'DELETE',
+          body: { productId: id }
+        })
+      } catch (err) {
+        // Silent fail — localStorage is backup
+      }
+    }
   }
 
-  const clearCart = () => {
+  const clearCart = async () => {
     items.value = []
+    if (isLoggedIn.value && import.meta.client) {
+      try {
+        await $fetch('/api/cart', {
+          method: 'DELETE',
+          body: { clearAll: true }
+        })
+      } catch (err) {
+        // Silent fail
+      }
+    }
   }
 
   const itemCount = computed(() =>
@@ -83,6 +150,7 @@ export function useCart() {
     removeFromCart,
     clearCart,
     itemCount,
-    subtotal
+    subtotal,
+    syncWithDb
   }
 }

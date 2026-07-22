@@ -1,6 +1,6 @@
 import { getPool } from '../../utils/db.js'
 import { getDemoProductById } from '../../utils/demo-products.js'
-import { fetchProductRowById, toProductPayload } from '../../utils/products.js'
+import { fetchProductRowById, toProductPayload, fetchReviewStats } from '../../utils/products.js'
 
 export default defineEventHandler(async (event) => {
   const id = getRouterParam(event, 'id')
@@ -13,7 +13,8 @@ export default defineEventHandler(async (event) => {
       throw createError({ statusCode: 404, message: 'Product not found' })
     }
 
-    return toProductPayload(rows[0], hasCategory)
+    const reviewStats = await fetchReviewStats(pool, [rows[0].id])
+    return toProductPayload(rows[0], hasCategory, reviewStats.get(rows[0].id))
   } catch (error) {
     if (error.statusCode) throw error
 
