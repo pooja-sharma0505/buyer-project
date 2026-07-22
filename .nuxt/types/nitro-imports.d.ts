@@ -43,6 +43,7 @@ declare global {
   const destroySession: typeof import('../../server/utils/auth').destroySession
   const dynamicEventHandler: typeof import('../../node_modules/h3').dynamicEventHandler
   const ensureAuthTables: typeof import('../../server/utils/schema').ensureAuthTables
+  const ensureCartTables: typeof import('../../server/utils/schema').ensureCartTables
   const ensureOrderTables: typeof import('../../server/utils/schema').ensureOrderTables
   const ensureReviewTables: typeof import('../../server/utils/schema').ensureReviewTables
   const eventHandler: typeof import('../../node_modules/h3').eventHandler
@@ -60,6 +61,8 @@ declare global {
   const getHeaders: typeof import('../../node_modules/h3').getHeaders
   const getMethod: typeof import('../../node_modules/h3').getMethod
   const getPool: typeof import('../../server/utils/db').getPool
+  const getProductRatings: typeof import('../../server/utils/products').getProductRatings
+  const getProductsRatings: typeof import('../../server/utils/products').getProductsRatings
   const getProxyRequestHeaders: typeof import('../../node_modules/h3').getProxyRequestHeaders
   const getQuery: typeof import('../../node_modules/h3').getQuery
   const getRequestFingerprint: typeof import('../../node_modules/h3').getRequestFingerprint
@@ -169,5 +172,5 @@ export { defineAppConfig } from '/workspace/node_modules/@nuxt/nitro-server/dist
 export { getSessionToken, getUserFromSession, requireUser, setSessionCookie, clearSessionCookie, destroySession } from '/workspace/server/utils/auth';
 export { getPool, testDbConnection, resetPool } from '/workspace/server/utils/db';
 export { getDemoProducts, getDemoProductById } from '/workspace/server/utils/demo-products';
-export { fetchProductsPage, fetchAllProductsRows, fetchProductRowById, toProductPayload } from '/workspace/server/utils/products';
-export { ensureAuthTables, ensureOrderTables, seedDemoUserIfEmpty, ensureReviewTables } from '/workspace/server/utils/schema';
+export { getProductsRatings, getProductRatings, fetchProductsPage, fetchAllProductsRows, fetchProductRowById, toProductPayload } from '/workspace/server/utils/products';
+export { ensureCartTables, ensureAuthTables, ensureOrderTables, seedDemoUserIfEmpty, ensureReviewTables } from '/workspace/server/utils/schema';

@@ -4,6 +4,42 @@ function isMissingColumnError(err) {
   return err && (err.code === 'ER_BAD_FIELD_ERROR' || err.errno === 1054)
 }
 
+export async function getProductsRatings(pool, productIds) {
+  if (!productIds.length) return new Map()
+  try {
+    const [rows] = await pool.query(
+      `SELECT product_id, AVG(rating) as avg_rating, COUNT(*) as count FROM reviews WHERE product_id IN (?) GROUP BY product_id`,
+      [productIds]
+    )
+    const map = new Map()
+    for (const r of rows) {
+      map.set(Number(r.product_id), {
+        rate: Math.round(Number(r.avg_rating) * 10) / 10,
+        count: Number(r.count)
+      })
+    }
+    return map
+  } catch {
+    return new Map()
+  }
+}
+
+export async function getProductRatings(pool, productId) {
+  try {
+    const [rows] = await pool.query(
+      `SELECT rating FROM reviews WHERE product_id = ?`,
+      [productId]
+    )
+    if (!rows.length) return null
+    const ratings = rows.map(r => Number(r.rating)).filter(Number.isFinite)
+    if (!ratings.length) return null
+    const avg = ratings.reduce((a, b) => a + b, 0) / ratings.length
+    return { rate: Math.round(avg * 10) / 10, count: ratings.length }
+  } catch {
+    return null
+  }
+}
+
 export async function fetchProductsPage(pool, { limit = 12, offset = 0, category = null } = {}) {
   const hasCategory = await checkColumnExists(pool, 'category')
   let baseQuery = `SELECT id, name, price, old_price, image, description${hasCategory ? ', category' : ''} FROM products`
@@ -132,10 +168,10 @@ function generateRating(id) {
   return { rate, count }
 }
 
-export function toProductPayload(row, hasCategory) {
+export function toProductPayload(row, hasCategory, ratingFromReviews = null) {
   const dbCat = hasCategory ? normalizeDbCategory(row.category) : ''
   const category = dbCat || inferCategoryFromName(row.name)
-  const rating = generateRating(row.id)
+  const rating = ratingFromReviews || generateRating(row.id)
   return {
     id: row.id,
     title: row.name,

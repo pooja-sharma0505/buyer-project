@@ -1,4 +1,5 @@
 const STORAGE_KEY = 'buyer-cart-v1'
+let syncTimer = null
 
 function loadItems() {
   if (import.meta.server) return []
@@ -23,14 +24,63 @@ function persist(items) {
 
 export function useCart() {
   const items = useState('cart-items', () => [])
+  const user = useState('auth-user', () => null)
 
-  if (import.meta.client && items.value.length === 0) {
-    items.value = loadItems()
+  const isLoggedIn = computed(() => !!user.value)
+
+  // Load cart on client: first from localStorage, then sync with server if logged in
+  if (import.meta.client) {
+    // Try localStorage first for immediate display
+    if (items.value.length === 0) {
+      items.value = loadItems()
+    }
+
+    // Watch login state changes to sync with server cart
+    let lastSync = false
+    watch(isLoggedIn, (loggedIn) => {
+      if (loggedIn && !lastSync) {
+        lastSync = true
+        syncFromServer()
+      } else if (!loggedIn) {
+        lastSync = false
+      }
+    }, { immediate: true })
+  }
+
+  async function syncFromServer() {
+    try {
+      const data = await $fetch('/api/cart')
+      if (data.items?.length) {
+        items.value = data.items
+        persist(data.items)
+      }
+    } catch {
+      // silent fail — keep localStorage items
+    }
+  }
+
+  async function syncToServer() {
+    if (!isLoggedIn.value) return
+    try {
+      await $fetch('/api/cart', {
+        method: 'POST',
+        body: { items: items.value }
+      })
+    } catch {
+      // silent fail — cart is still in localStorage
+    }
   }
 
   watch(
     items,
-    (next) => persist(next),
+    (next) => {
+      persist(next)
+      // Sync to server if logged in, debounced
+      if (import.meta.client && isLoggedIn.value) {
+        if (syncTimer) clearTimeout(syncTimer)
+        syncTimer = setTimeout(() => syncToServer(), 500)
+      }
+    },
     { deep: true }
   )
 

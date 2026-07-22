@@ -1,3 +1,19 @@
+export async function ensureCartTables(pool) {
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS cart (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      user_id INT NOT NULL,
+      product_id INT NOT NULL,
+      title VARCHAR(255) NOT NULL,
+      price DECIMAL(10,2) NOT NULL,
+      qty INT NOT NULL DEFAULT 1,
+      image VARCHAR(500),
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      UNIQUE KEY unique_cart_item (user_id, product_id)
+    )
+  `)
+}
+
 export async function ensureAuthTables(pool) {
   await pool.query(`
     CREATE TABLE IF NOT EXISTS sessions (

@@ -1,6 +1,6 @@
 import { getPool } from '../../utils/db.js'
 import { getDemoProducts } from '../../utils/demo-products.js'
-import { fetchProductsPage, fetchAllProductsRows, toProductPayload } from '../../utils/products.js'
+import { fetchProductsPage, fetchAllProductsRows, toProductPayload, getProductsRatings } from '../../utils/products.js'
 
 export default defineEventHandler(async (event) => {
   const query = getQuery(event)
@@ -14,8 +14,10 @@ export default defineEventHandler(async (event) => {
     if (query.page || query.limit) {
       const offset = (page - 1) * limit
       const { rows, hasCategory, total } = await fetchProductsPage(pool, { limit, offset, category })
+      const ids = rows.map(r => r.id)
+      const ratingsMap = await getProductsRatings(pool, ids)
       return {
-        products: rows.map((row) => toProductPayload(row, hasCategory)),
+        products: rows.map((row) => toProductPayload(row, hasCategory, ratingsMap.get(row.id) || null)),
         total,
         page,
         limit
@@ -23,7 +25,9 @@ export default defineEventHandler(async (event) => {
     }
 
     const { rows, hasCategory } = await fetchAllProductsRows(pool)
-    return rows.map((row) => toProductPayload(row, hasCategory))
+    const ids = rows.map(r => r.id)
+    const ratingsMap = await getProductsRatings(pool, ids)
+    return rows.map((row) => toProductPayload(row, hasCategory, ratingsMap.get(row.id) || null))
   } catch (error) {
     if (process.env.NODE_ENV === 'production') {
       console.error('Database products failed in production:', error?.message || String(error))
