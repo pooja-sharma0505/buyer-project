@@ -12,7 +12,7 @@
 
     <div class="meta">
       <h2>{{ product.title }}</h2>
-      <p>${{ formatPrice(product.price) }}</p>
+      <p>{{ formatPrice(product.price) }}</p>
       <div class="qty-row">
         <button @click="decrease" aria-label="Decrease quantity">-</button>
         <span>{{ quantity }}</span>
@@ -21,7 +21,7 @@
     </div>
 
     <div class="total">
-      <p>${{ formatPrice(product.price * quantity) }}</p>
+      <p>{{ formatPrice(product.price * quantity) }}</p>
       <button class="remove" @click="$emit('remove', product.id)">Remove</button>
     </div>
   </div>
@@ -29,6 +29,8 @@
 
 <script setup>
 import { computed, ref, watch } from 'vue'
+
+const { formatPrice } = useFormatPrice()
 
 const props = defineProps({
   product: Object,
@@ -69,10 +71,6 @@ const decrease = () => {
       quantity: props.quantity - 1
     })
   }
-}
-
-function formatPrice(value) {
-  return Number(value || 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 }
 </script>
 

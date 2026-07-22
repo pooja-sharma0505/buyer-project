@@ -3,13 +3,19 @@
     <div class="container">
       <div class="top-row">
         <h1 class="brand">LUMIÈRE</h1>
-        <input
-          v-model.trim="search"
-          type="search"
-          aria-label="Search in current category"
-          placeholder="Search in category…"
-          class="search-input"
-        />
+        <div class="search-wrapper">
+          <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8" />
+            <line x1="21" y1="21" x2="16.65" y2="16.65" />
+          </svg>
+          <input
+            v-model.trim="search"
+            type="search"
+            aria-label="Search in current category"
+            placeholder="Search in category…"
+            class="search-input"
+          />
+        </div>
       </div>
 
       <div class="filters">
@@ -178,7 +184,10 @@ watch(selectedCategory, (cat) => {
 .container { max-width: 1200px; margin: 0 auto; }
 .top-row { display: flex; flex-wrap: wrap; gap: 12px; justify-content: space-between; align-items: center; margin-bottom: 18px; }
 .brand { font-size: 22px; color: #111827; font-family: 'Cormorant Garamond', serif; }
-.search-input { width: 280px; max-width: 100%; border: 1px solid #d1d5db; border-radius: 999px; padding: 10px 14px; background: #fff; font: inherit; }
+.search-wrapper { display: flex; align-items: center; gap: 8px; background: #fff; border: 1px solid #d1d5db; border-radius: 999px; padding: 10px 14px; width: 280px; max-width: 100%; }
+.search-wrapper:focus-within { border-color: #d4af64; outline: 2px solid #d4af64; outline-offset: 2px; }
+.search-icon { flex-shrink: 0; }
+.search-input { border: none; background: transparent; padding: 0; width: 100%; font: inherit; outline: none; }
 .search-input::placeholder { color: #9ca3af; }
 .filters { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
 .filter-btn { border: 1px solid #d1d5db; background: #fff; color: #4b5563; border-radius: 999px; padding: 8px 14px; cursor: pointer; }
@@ -205,7 +214,7 @@ watch(selectedCategory, (cat) => {
   .home-page { padding: 20px 12px; }
   .top-row { margin-bottom: 14px; }
   .brand { font-size: 20px; }
-  .search-input { width: 100%; }
+  .search-wrapper { width: 100%; }
   .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
 }
 @media (max-width: 640px) {

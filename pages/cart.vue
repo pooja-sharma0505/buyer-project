@@ -35,15 +35,15 @@
           <h2>Order Summary</h2>
           <div class="row">
             <span>Subtotal</span>
-            <strong>${{ formatPrice(subtotal) }}</strong>
+            <strong>{{ formatPrice(subtotal) }}</strong>
           </div>
           <div class="row">
             <span>Tax (18%)</span>
-            <strong>${{ formatPrice(tax) }}</strong>
+            <strong>{{ formatPrice(tax) }}</strong>
           </div>
           <div class="row total">
             <span>Total</span>
-            <strong>${{ formatPrice(total) }}</strong>
+            <strong>{{ formatPrice(total) }}</strong>
           </div>
           <button
             class="order-btn"
@@ -72,6 +72,7 @@ useSeoMeta({
 
 const { items, subtotal, updateQty, removeFromCart, clearCart } = useCart()
 const { isLoggedIn } = useAuth()
+const { formatPrice } = useFormatPrice()
 
 const success = ref(false)
 const placing = ref(false)
@@ -79,10 +80,6 @@ const orderError = ref('')
 
 const tax = computed(() => Number(subtotal.value || 0) * 0.18)
 const total = computed(() => Number(subtotal.value || 0) + tax.value)
-
-function formatPrice(value) {
-  return Number(value || 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
-}
 
 const placeOrder = async () => {
   orderError.value = ''

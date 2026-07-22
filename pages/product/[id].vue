@@ -14,7 +14,7 @@
         <div>
           <p class="category">{{ product.category }}</p>
           <h1 class="title">{{ product.title }}</h1>
-          <p class="price">${{ formatPrice(product.price) }}</p>
+          <p class="price">{{ formatPrice(product.price) }}</p>
           <p class="description">{{ product.description }}</p>
           <div class="qty-row">
             <button type="button" class="qty-btn" @click="detailQty > 1 && detailQty--" aria-label="Decrease quantity">-</button>
@@ -117,6 +117,7 @@ const route = useRoute()
 const cart = useCart()
 const wishlist = useWishlist()
 const { user } = useAuth()
+const { formatPrice } = useFormatPrice()
 
 useHead(() => ({
   title: product.value?.title || 'Product'
@@ -208,10 +209,6 @@ const addToCartWithQty = () => {
   if (!product.value) return
   cart.addToCart({ ...product.value, qty: detailQty.value })
   detailQty.value = 1
-}
-
-function formatPrice(value) {
-  return Number(value || 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 }
 
 watch(product, () => {

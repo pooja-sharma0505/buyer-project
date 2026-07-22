@@ -31,28 +31,28 @@
               <span class="order-id">Order #{{ order.id }}</span>
               <span class="order-date">{{ formatDate(order.createdAt) }}</span>
             </div>
-            <span class="order-total">${{ formatPrice(order.total) }}</span>
+            <span class="order-total">{{ formatPrice(order.total) }}</span>
           </div>
 
           <ul class="items">
             <li v-for="item in order.items" :key="item.productId" class="item">
               <span class="item-title">{{ item.title }}</span>
-              <span class="item-meta">x{{ item.qty }} @ ${{ formatPrice(item.price) }}</span>
+              <span class="item-meta">x{{ item.qty }} @ {{ formatPrice(item.price) }}</span>
             </li>
           </ul>
 
           <div class="order-summary">
             <div class="summary-row">
               <span>Subtotal</span>
-              <span>${{ formatPrice(order.subtotal) }}</span>
+              <span>{{ formatPrice(order.subtotal) }}</span>
             </div>
             <div class="summary-row">
               <span>Tax (18%)</span>
-              <span>${{ formatPrice(order.tax) }}</span>
+              <span>{{ formatPrice(order.tax) }}</span>
             </div>
             <div class="summary-row total">
               <span>Total</span>
-              <span>${{ formatPrice(order.total) }}</span>
+              <span>{{ formatPrice(order.total) }}</span>
             </div>
           </div>
         </div>
@@ -71,6 +71,7 @@ useSeoMeta({
 })
 
 const { data, pending, error } = await useFetch('/api/orders', { server: false })
+const { formatPrice } = useFormatPrice()
 
 const orders = computed(() => data.value?.orders || [])
 
@@ -78,10 +79,6 @@ function formatDate(raw) {
   if (!raw) return ''
   const d = new Date(raw)
   return d.toLocaleDateString('en-IN', { year: 'numeric', month: 'short', day: 'numeric' })
-}
-
-function formatPrice(value) {
-  return Number(value || 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 }
 </script>
 
