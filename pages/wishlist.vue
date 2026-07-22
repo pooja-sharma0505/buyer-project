@@ -7,14 +7,12 @@
       </div>
 
       <div v-if="items.length === 0" class="empty-state">
-        <div class="empty-icon">
-          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-          </svg>
+        <div class="empty-wrap">
+          <i class="bi bi-heart-fill empty-icon"></i>
+          <h2 class="empty-title">Your wishlist is empty</h2>
+          <p class="empty-text">Save items you love to your wishlist and they'll be here when you're ready.</p>
+          <NuxtLink to="/" class="empty-cta">Browse Products</NuxtLink>
         </div>
-        <h2 class="empty-title">Your wishlist is empty</h2>
-        <p class="empty-text">Save items you love to your wishlist and they'll be here when you're ready.</p>
-        <NuxtLink to="/" class="empty-cta">Browse Products</NuxtLink>
       </div>
 
       <ul v-else class="list">
@@ -74,6 +72,13 @@ const addToCart = (item) => {
 .top a { color: #d4af64; text-decoration: none; }
 .top h1 { margin: 0; font-size: 22px; color: #111827; font-family: 'Cormorant Garamond', serif; }
 .empty { color: #6b7280; margin: 0; }
+.empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 80px 20px; text-align: center; }
+.empty-wrap { display: flex; flex-direction: column; align-items: center; justify-content: center; max-width: 400px; }
+.empty-icon { font-size: 56px; color: #9ca3af; margin-bottom: 24px; line-height: 1; }
+.empty-title { font-family: 'Cormorant Garamond', serif; font-size: 24px; font-weight: 600; color: #111827; margin: 0 0 10px; }
+.empty-text { color: #6b7280; font-size: 15px; margin: 0 0 28px; line-height: 1.5; }
+.empty-cta { display: inline-block; padding: 14px 32px; background: #111827; color: #fff; border-radius: 10px; text-decoration: none; font-size: 15px; font-weight: 500; transition: background 0.2s ease, transform 0.15s ease; }
+.empty-cta:hover { background: #d4af64; color: #0a0806; transform: translateY(-1px); }
 .list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
 .row {
   display: grid;

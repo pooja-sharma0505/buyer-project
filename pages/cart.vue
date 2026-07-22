@@ -17,17 +17,12 @@
             @remove="removeFromCart"
           />
           <div v-if="items.length === 0" class="empty-state">
-            <div class="empty-icon">
-              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                <path d="M6 6h15l-1.5 9h-12z"/>
-                <circle cx="9" cy="20" r="1"/>
-                <circle cx="18" cy="20" r="1"/>
-                <path d="M6 6L5 3H2"/>
-              </svg>
+            <div class="empty-wrap">
+              <i class="bi bi-bag-x-fill empty-icon"></i>
+              <h2 class="empty-title">Your cart is empty</h2>
+              <p class="empty-text">Looks like you haven't added anything to your cart yet.</p>
+              <NuxtLink to="/" class="empty-cta">Continue Shopping</NuxtLink>
             </div>
-            <h2 class="empty-title">Your cart is empty</h2>
-            <p class="empty-text">Looks like you haven't added anything to your cart yet.</p>
-            <NuxtLink to="/" class="empty-cta">Continue Shopping</NuxtLink>
           </div>
         </div>
 
@@ -138,12 +133,13 @@ const placeOrder = async () => {
 .error { color: #dc2626; margin-top: 10px; }
 .success { color: #15803d; margin-top: 10px; }
 .empty { color: #6b7280; }
-.empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 48px 20px; text-align: center; background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; }
-.empty-icon { color: #d1d5db; margin-bottom: 16px; }
-.empty-title { font-family: 'Cormorant Garamond', serif; font-size: 20px; color: #111827; margin: 0 0 6px; }
-.empty-text { color: #6b7280; font-size: 14px; margin: 0 0 16px; }
-.empty-cta { display: inline-block; padding: 10px 20px; background: #111827; color: #fff; border-radius: 8px; text-decoration: none; font-size: 14px; transition: background 0.2s ease; }
-.empty-cta:hover { background: #d4af64; color: #0a0806; }
+.empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 80px 20px; text-align: center; }
+.empty-wrap { display: flex; flex-direction: column; align-items: center; justify-content: center; max-width: 400px; }
+.empty-icon { font-size: 56px; color: #9ca3af; margin-bottom: 24px; line-height: 1; }
+.empty-title { font-family: 'Cormorant Garamond', serif; font-size: 24px; font-weight: 600; color: #111827; margin: 0 0 10px; }
+.empty-text { color: #6b7280; font-size: 15px; margin: 0 0 28px; line-height: 1.5; }
+.empty-cta { display: inline-block; padding: 14px 32px; background: #111827; color: #fff; border-radius: 10px; text-decoration: none; font-size: 15px; font-weight: 500; transition: background 0.2s ease, transform 0.15s ease; }
+.empty-cta:hover { background: #d4af64; color: #0a0806; transform: translateY(-1px); }
 @media (max-width: 900px) {
   .layout { grid-template-columns: 1fr; }
   .summary { position: static; }
