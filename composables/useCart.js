@@ -39,13 +39,13 @@ export function useCart() {
     const existing = items.value.find((item) => item.id === product.id)
     if (existing) {
       existing.qty += addQty
-      return
+    } else {
+      items.value.push({ ...product, qty: addQty })
     }
-
-    items.value.push({
-      ...product,
-      qty: addQty
-    })
+    if (import.meta.client) {
+      const toast = useToast()
+      toast.success(`${product.title || 'Item'} added to cart`)
+    }
   }
 
   const updateQty = (id, qty) => {

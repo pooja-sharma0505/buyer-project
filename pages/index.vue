@@ -24,13 +24,25 @@
         </button>
       </div>
 
-      <p v-if="pending" class="status-text">Loading products...</p>
+      <div v-if="pending" class="grid">
+        <SkeletonLoader v-for="n in 12" :key="n" type="card" />
+      </div>
       <p v-else-if="fetchError" class="status-text error">{{ fetchError.message || 'Unable to load products' }}</p>
 
       <template v-else>
-        <p v-if="!paginatedProducts.length" class="status-text">
-          No products match{{ selectedCategory === 'All' ? '' : ` in “${selectedCategory}”` }}{{ search ? ' for your search' : '' }}.
-        </p>
+        <div v-if="!paginatedProducts.length" class="empty-state">
+          <div class="empty-icon">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <circle cx="11" cy="11" r="8"/>
+              <path d="M21 21l-4.35-4.35"/>
+              <line x1="11" y1="8" x2="11" y2="14"/>
+              <line x1="8" y1="11" x2="14" y2="11"/>
+            </svg>
+          </div>
+          <h2 class="empty-title">No products found</h2>
+          <p class="empty-text">No products match{{ selectedCategory === 'All' ? '' : ` in “${selectedCategory}”` }}{{ search ? ' for your search' : '' }}.</p>
+          <button class="empty-cta" @click="selectedCategory = 'All'; search = ''">Clear Filters</button>
+        </div>
         <div v-else class="grid">
           <Productcard
             v-for="product in paginatedProducts"
@@ -84,6 +96,7 @@ const router = useRouter()
 
 const selectedCategory = ref('All')
 const search = ref('')
+const debouncedSearch = useDebounce(search, 350)
 const currentPage = ref(1)
 const pageSize = 12
 
@@ -116,7 +129,7 @@ function categoryMatches(productCategory, chip) {
 const filteredProducts = computed(() =>
   (products.value || []).filter((p) => {
     if (!categoryMatches(p.category, selectedCategory.value)) return false
-    const q = norm(search.value)
+    const q = norm(debouncedSearch.value)
     if (!q) return true
     const title = norm(p.title)
     const desc = norm(p.description)
@@ -177,6 +190,12 @@ watch(selectedCategory, (cat) => {
 }
 .status-text { color: #6b7280; margin: 12px 0; }
 .status-text.error { color: #dc2626; }
+.empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 48px 20px; text-align: center; background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; grid-column: 1 / -1; }
+.empty-icon { color: #d1d5db; margin-bottom: 16px; }
+.empty-title { font-family: 'Cormorant Garamond', serif; font-size: 20px; color: #111827; margin: 0 0 6px; }
+.empty-text { color: #6b7280; font-size: 14px; margin: 0 0 16px; }
+.empty-cta { padding: 10px 20px; background: #111827; color: #fff; border: none; border-radius: 8px; font-size: 14px; cursor: pointer; transition: background 0.2s ease; }
+.empty-cta:hover { background: #d4af64; color: #0a0806; }
 .pagination { display: flex; justify-content: center; align-items: center; gap: 12px; margin-top: 24px; }
 .page-btn { border: 1px solid #d1d5db; background: #fff; color: #374151; border-radius: 8px; padding: 8px 14px; cursor: pointer; font-size: 13px; }
 .page-btn:hover:not(:disabled) { border-color: #d4af64; color: #d4af64; }

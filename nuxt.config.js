@@ -10,6 +10,11 @@ export default defineNuxtConfig({
         { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' },
         { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=Montserrat:wght@300;400;500&display=swap' }
       ]
+    },
+    pageTransition: {
+      name: 'page',
+      mode: 'out-in',
+      appear: true
     }
   },
 

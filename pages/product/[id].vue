@@ -3,7 +3,9 @@
     <div class="container">
       <NuxtLink to="/" class="back-link">← Back to Products</NuxtLink>
 
-      <p v-if="pending" class="not-found">Loading product...</p>
+      <div v-if="pending" class="layout">
+        <SkeletonLoader type="detail" />
+      </div>
       <div v-else-if="product" class="layout">
         <div class="image-box">
           <img :src="detailImgSrc" :alt="product.title" loading="lazy" @error="detailImgBad = true" />
@@ -57,13 +59,14 @@
               :key="n"
               type="button"
               class="star-btn"
-              :class="{ active: n <= newRating }"
-              @click="newRating = n"
+              :class="{ active: n <= newRating, error: !!reviewFieldErrors.rating }"
+              @click="newRating = n; reviewFieldErrors.rating = ''"
               :aria-label="`${n} star${n > 1 ? 's' : ''}`"
             >
               ★
             </button>
           </div>
+          <p v-if="reviewFieldErrors.rating" class="review-error">{{ reviewFieldErrors.rating }}</p>
 
           <label class="review-label" for="review-comment">Comment</label>
           <textarea
@@ -72,7 +75,10 @@
             rows="3"
             placeholder="Share your experience..."
             class="review-textarea"
+            :class="{ error: !!reviewFieldErrors.comment }"
+            @input="reviewFieldErrors.comment = ''"
           />
+          <p v-if="reviewFieldErrors.comment" class="review-error">{{ reviewFieldErrors.comment }}</p>
 
           <button
             type="button"
@@ -137,15 +143,25 @@ const newComment = ref('')
 const reviewPending = ref(false)
 const reviewError = ref('')
 const reviewSuccess = ref(false)
+const reviewFieldErrors = ref({ rating: '', comment: '' })
+
+function validateReview() {
+  const errors = { rating: '', comment: '' }
+  if (newRating.value < 1 || newRating.value > 5) {
+    errors.rating = 'Please select a rating between 1 and 5 stars.'
+  }
+  if (newComment.value.trim().length < 5) {
+    errors.comment = 'Comment must be at least 5 characters.'
+  }
+  reviewFieldErrors.value = errors
+  return !errors.rating && !errors.comment
+}
 
 const submitReview = async () => {
   reviewError.value = ''
   reviewSuccess.value = false
 
-  if (newRating.value < 1 || newRating.value > 5) {
-    reviewError.value = 'Please select a rating between 1 and 5 stars.'
-    return
-  }
+  if (!validateReview()) return
 
   reviewPending.value = true
   try {
@@ -276,9 +292,11 @@ watch(product, () => {
 .review-form { display: grid; gap: 8px; margin-bottom: 20px; }
 .review-label { font-size: 13px; color: #374151; }
 .star-rating { display: flex; gap: 4px; }
-.star-btn { font-size: 20px; background: none; border: none; color: #d1d5db; cursor: pointer; padding: 0; line-height: 1; }
+.star-btn { font-size: 20px; background: none; border: none; color: #d1d5db; cursor: pointer; padding: 0; line-height: 1; transition: color 0.2s ease; }
 .star-btn.active { color: #d4af64; }
+.star-btn.error { color: #fca5a5; }
 .review-textarea { border: 1px solid #d1d5db; border-radius: 8px; padding: 10px; font: inherit; resize: vertical; }
+.review-textarea.error { border-color: #dc2626; }
 .review-submit { justify-self: start; border: none; border-radius: 8px; background: #111827; color: #fff; padding: 10px 16px; cursor: pointer; }
 .review-submit:hover { background: #d4af64; color: #0a0806; }
 .review-submit:disabled { opacity: 0.7; cursor: not-allowed; }
