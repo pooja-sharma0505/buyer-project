@@ -18,7 +18,7 @@ export default defineEventHandler(async (event) => {
     if (!productId || !Number.isFinite(qty) || qty < 1) continue
 
     await pool.query(
-      `INSERT INTO cart (user_id, product_id, qty) VALUES (?, ?, ?)
+      `INSERT INTO cart_items (user_id, product_id, qty) VALUES (?, ?, ?)
        ON DUPLICATE KEY UPDATE qty = ?`,
       [user.id, productId, qty, qty]
     )
