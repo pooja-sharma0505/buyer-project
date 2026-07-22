@@ -1,50 +1,51 @@
 import process from 'node:process';globalThis._importMeta_={url:import.meta.url,env:process.env};import { tmpdir } from 'node:os';
-import { defineEventHandler, handleCacheHeaders, splitCookiesString, createEvent, fetchWithEvent, isEvent, eventHandler, setHeaders, createError, sendRedirect, proxyRequest, getRequestHeader, setResponseHeaders, setResponseStatus, send, getRequestHeaders, setResponseHeader, appendResponseHeader, getRequestURL, getResponseHeader, removeResponseHeader, getQuery as getQuery$1, readBody, createApp, createRouter as createRouter$1, toNodeListener, lazyEventHandler, getResponseStatus, getRouterParam, setCookie, getCookie, deleteCookie, getResponseStatusText } from 'file:///Applications/XAMPP/xamppfiles/htdocs/buyer-project/node_modules/h3/dist/index.mjs';
+import { defineEventHandler, handleCacheHeaders, splitCookiesString, createEvent, fetchWithEvent, isEvent, eventHandler, setHeaders, createError, sendRedirect, proxyRequest, getRequestHeader, setResponseHeaders, setResponseStatus, send, getRequestHeaders, setResponseHeader, appendResponseHeader, getRequestURL, getResponseHeader, removeResponseHeader, getQuery as getQuery$1, readBody, createApp, createRouter as createRouter$1, toNodeListener, lazyEventHandler, getResponseStatus, getRouterParam, setCookie, getCookie, deleteCookie, getResponseStatusText } from 'file:///workspace/node_modules/h3/dist/index.mjs';
 import { Server } from 'node:http';
 import path, { resolve, dirname, join } from 'node:path';
 import crypto$1, { randomBytes } from 'node:crypto';
 import { parentPort, threadId } from 'node:worker_threads';
-import { escapeHtml } from 'file:///Applications/XAMPP/xamppfiles/htdocs/buyer-project/node_modules/@vue/shared/dist/shared.cjs.js';
-import viteNodeEntry_mjs from 'file:///Applications/XAMPP/xamppfiles/htdocs/buyer-project/node_modules/@nuxt/vite-builder/dist/vite-node-entry.mjs';
-import { viteNodeFetch } from 'file:///Applications/XAMPP/xamppfiles/htdocs/buyer-project/node_modules/@nuxt/vite-builder/dist/vite-node.mjs';
+import { escapeHtml } from 'file:///workspace/node_modules/@vue/shared/dist/shared.cjs.js';
+import viteNodeEntry_mjs from 'file:///workspace/node_modules/@nuxt/vite-builder/dist/vite-node-entry.mjs';
+import { viteNodeFetch } from 'file:///workspace/node_modules/@nuxt/vite-builder/dist/vite-node.mjs';
+import bcrypt from 'file:///workspace/node_modules/bcryptjs/index.js';
 import { Buffer as Buffer$1 } from 'node:buffer';
-import formidable from 'file:///Applications/XAMPP/xamppfiles/htdocs/buyer-project/node_modules/formidable/src/index.js';
+import formidable from 'file:///workspace/node_modules/formidable/src/index.js';
 import fs, { promises } from 'node:fs';
-import { createRenderer, getRequestDependencies, getPreloadLinks, getPrefetchLinks } from 'file:///Applications/XAMPP/xamppfiles/htdocs/buyer-project/node_modules/vue-bundle-renderer/dist/runtime.mjs';
-import { parseURL, withoutBase, joinURL, getQuery, withQuery, withTrailingSlash, decodePath, withLeadingSlash, withoutTrailingSlash, encodePath, joinRelativeURL } from 'file:///Applications/XAMPP/xamppfiles/htdocs/buyer-project/node_modules/ufo/dist/index.mjs';
-import { renderToString } from 'file:///Applications/XAMPP/xamppfiles/htdocs/buyer-project/node_modules/vue/server-renderer/index.mjs';
-import destr, { destr as destr$1 } from 'file:///Applications/XAMPP/xamppfiles/htdocs/buyer-project/node_modules/destr/dist/index.mjs';
-import { createHooks } from 'file:///Applications/XAMPP/xamppfiles/htdocs/buyer-project/node_modules/hookable/dist/index.mjs';
-import { createFetch, Headers as Headers$1 } from 'file:///Applications/XAMPP/xamppfiles/htdocs/buyer-project/node_modules/ofetch/dist/node.mjs';
-import { fetchNodeRequestHandler, callNodeRequestHandler } from 'file:///Applications/XAMPP/xamppfiles/htdocs/buyer-project/node_modules/node-mock-http/dist/index.mjs';
-import { createStorage, defineDriver, prefixStorage } from 'file:///Applications/XAMPP/xamppfiles/htdocs/buyer-project/node_modules/unstorage/dist/index.mjs';
-import unstorage_47drivers_47fs from 'file:///Applications/XAMPP/xamppfiles/htdocs/buyer-project/node_modules/unstorage/drivers/fs.mjs';
-import fsDriver from 'file:///Applications/XAMPP/xamppfiles/htdocs/buyer-project/node_modules/unstorage/drivers/fs-lite.mjs';
-import lruCache from 'file:///Applications/XAMPP/xamppfiles/htdocs/buyer-project/node_modules/unstorage/drivers/lru-cache.mjs';
-import { digest, hash as hash$1 } from 'file:///Applications/XAMPP/xamppfiles/htdocs/buyer-project/node_modules/ohash/dist/index.mjs';
-import { klona } from 'file:///Applications/XAMPP/xamppfiles/htdocs/buyer-project/node_modules/klona/dist/index.mjs';
-import defu, { defuFn } from 'file:///Applications/XAMPP/xamppfiles/htdocs/buyer-project/node_modules/defu/dist/defu.mjs';
-import { snakeCase } from 'file:///Applications/XAMPP/xamppfiles/htdocs/buyer-project/node_modules/scule/dist/index.mjs';
-import { getContext } from 'file:///Applications/XAMPP/xamppfiles/htdocs/buyer-project/node_modules/unctx/dist/index.mjs';
-import { toRouteMatcher, createRouter } from 'file:///Applications/XAMPP/xamppfiles/htdocs/buyer-project/node_modules/radix3/dist/index.mjs';
+import { createRenderer, getRequestDependencies, getPreloadLinks, getPrefetchLinks } from 'file:///workspace/node_modules/vue-bundle-renderer/dist/runtime.mjs';
+import { parseURL, withoutBase, joinURL, getQuery, withQuery, withTrailingSlash, decodePath, withLeadingSlash, withoutTrailingSlash, encodePath, joinRelativeURL } from 'file:///workspace/node_modules/ufo/dist/index.mjs';
+import { renderToString } from 'file:///workspace/node_modules/vue/server-renderer/index.mjs';
+import destr, { destr as destr$1 } from 'file:///workspace/node_modules/destr/dist/index.mjs';
+import { createHooks } from 'file:///workspace/node_modules/hookable/dist/index.mjs';
+import { createFetch, Headers as Headers$1 } from 'file:///workspace/node_modules/ofetch/dist/node.mjs';
+import { fetchNodeRequestHandler, callNodeRequestHandler } from 'file:///workspace/node_modules/node-mock-http/dist/index.mjs';
+import { createStorage, defineDriver, prefixStorage } from 'file:///workspace/node_modules/unstorage/dist/index.mjs';
+import unstorage_47drivers_47fs from 'file:///workspace/node_modules/unstorage/drivers/fs.mjs';
+import fsDriver from 'file:///workspace/node_modules/unstorage/drivers/fs-lite.mjs';
+import lruCache from 'file:///workspace/node_modules/unstorage/drivers/lru-cache.mjs';
+import { digest, hash as hash$1 } from 'file:///workspace/node_modules/ohash/dist/index.mjs';
+import { klona } from 'file:///workspace/node_modules/klona/dist/index.mjs';
+import defu, { defuFn } from 'file:///workspace/node_modules/defu/dist/defu.mjs';
+import { snakeCase } from 'file:///workspace/node_modules/scule/dist/index.mjs';
+import { getContext } from 'file:///workspace/node_modules/unctx/dist/index.mjs';
+import { toRouteMatcher, createRouter } from 'file:///workspace/node_modules/radix3/dist/index.mjs';
 import { readFile } from 'node:fs/promises';
-import consola, { consola as consola$1 } from 'file:///Applications/XAMPP/xamppfiles/htdocs/buyer-project/node_modules/consola/dist/index.mjs';
-import { ErrorParser } from 'file:///Applications/XAMPP/xamppfiles/htdocs/buyer-project/node_modules/youch-core/build/index.js';
-import { Youch } from 'file:///Applications/XAMPP/xamppfiles/htdocs/buyer-project/node_modules/youch/build/index.js';
-import { SourceMapConsumer } from 'file:///Applications/XAMPP/xamppfiles/htdocs/buyer-project/node_modules/source-map/source-map.js';
+import consola, { consola as consola$1 } from 'file:///workspace/node_modules/consola/dist/index.mjs';
+import { ErrorParser } from 'file:///workspace/node_modules/youch-core/build/index.js';
+import { Youch } from 'file:///workspace/node_modules/youch/build/index.js';
+import { SourceMapConsumer } from 'file:///workspace/node_modules/source-map/source-map.js';
 import { AsyncLocalStorage } from 'node:async_hooks';
-import { stringify, uneval } from 'file:///Applications/XAMPP/xamppfiles/htdocs/buyer-project/node_modules/devalue/index.js';
-import { captureRawStackTrace, parseRawStackTrace } from 'file:///Applications/XAMPP/xamppfiles/htdocs/buyer-project/node_modules/errx/dist/index.js';
-import { isVNode, isRef, toValue } from 'file:///Applications/XAMPP/xamppfiles/htdocs/buyer-project/node_modules/vue/index.mjs';
-import mysql from 'file:///Applications/XAMPP/xamppfiles/htdocs/buyer-project/node_modules/mysql2/promise.js';
-import _wH6JrtIxmaSoA8lCPWFnE9z4lQeXW6H5z3l5aymEQw from 'file:///Applications/XAMPP/xamppfiles/htdocs/buyer-project/node_modules/@nuxt/vite-builder/dist/fix-stacktrace.mjs';
+import { stringify, uneval } from 'file:///workspace/node_modules/devalue/index.js';
+import { captureRawStackTrace, parseRawStackTrace } from 'file:///workspace/node_modules/errx/dist/index.js';
+import { isVNode, isRef, toValue } from 'file:///workspace/node_modules/vue/index.mjs';
+import mysql from 'file:///workspace/node_modules/mysql2/promise.js';
+import _wH6JrtIxmaSoA8lCPWFnE9z4lQeXW6H5z3l5aymEQw from 'file:///workspace/node_modules/@nuxt/vite-builder/dist/fix-stacktrace.mjs';
 import { fileURLToPath } from 'node:url';
-import { dirname as dirname$1, resolve as resolve$1 } from 'file:///Applications/XAMPP/xamppfiles/htdocs/buyer-project/node_modules/pathe/dist/index.mjs';
-import { createHead as createHead$1, propsToString, renderSSRHead } from 'file:///Applications/XAMPP/xamppfiles/htdocs/buyer-project/node_modules/unhead/dist/server.mjs';
-import { DeprecationsPlugin, PromisesPlugin, TemplateParamsPlugin, AliasSortingPlugin } from 'file:///Applications/XAMPP/xamppfiles/htdocs/buyer-project/node_modules/unhead/dist/plugins.mjs';
-import { walkResolver } from 'file:///Applications/XAMPP/xamppfiles/htdocs/buyer-project/node_modules/unhead/dist/utils.mjs';
+import { dirname as dirname$1, resolve as resolve$1 } from 'file:///workspace/node_modules/pathe/dist/index.mjs';
+import { createHead as createHead$1, propsToString, renderSSRHead } from 'file:///workspace/node_modules/unhead/dist/server.mjs';
+import { DeprecationsPlugin, PromisesPlugin, TemplateParamsPlugin, AliasSortingPlugin } from 'file:///workspace/node_modules/unhead/dist/plugins.mjs';
+import { walkResolver } from 'file:///workspace/node_modules/unhead/dist/utils.mjs';
 
-const serverAssets = [{"baseName":"server","dir":"/Applications/XAMPP/xamppfiles/htdocs/buyer-project/server/assets"}];
+const serverAssets = [{"baseName":"server","dir":"/workspace/server/assets"}];
 
 const assets$1 = createStorage();
 
@@ -65,7 +66,7 @@ function normalizeFsKey (item) {
   return `${prefix}-${hash}`
 }
 
-const _47Applications_47XAMPP_47xamppfiles_47htdocs_47buyer_45project_47node_modules_47_64nuxt_47nitro_45server_47dist_47runtime_47utils_47cache_45driver_46js = defineDriver(
+const _47workspace_47node_modules_47_64nuxt_47nitro_45server_47dist_47runtime_47utils_47cache_45driver_46js = defineDriver(
   /**
    * @param {{ base?: string }} opts
    */
@@ -95,12 +96,12 @@ const storage = createStorage({});
 
 storage.mount('/assets', assets$1);
 
-storage.mount('root', unstorage_47drivers_47fs({"driver":"fs","readOnly":true,"base":"/Applications/XAMPP/xamppfiles/htdocs/buyer-project","watchOptions":{"ignored":[null]}}));
-storage.mount('src', unstorage_47drivers_47fs({"driver":"fs","readOnly":true,"base":"/Applications/XAMPP/xamppfiles/htdocs/buyer-project/server","watchOptions":{"ignored":[null]}}));
-storage.mount('cache:nuxt:payload', _47Applications_47XAMPP_47xamppfiles_47htdocs_47buyer_45project_47node_modules_47_64nuxt_47nitro_45server_47dist_47runtime_47utils_47cache_45driver_46js({"driver":"/Applications/XAMPP/xamppfiles/htdocs/buyer-project/node_modules/@nuxt/nitro-server/dist/runtime/utils/cache-driver.js","base":"/Applications/XAMPP/xamppfiles/htdocs/buyer-project/.nuxt/cache/nuxt/payload"}));
-storage.mount('build', unstorage_47drivers_47fs({"driver":"fs","readOnly":false,"base":"/Applications/XAMPP/xamppfiles/htdocs/buyer-project/.nuxt"}));
-storage.mount('cache', unstorage_47drivers_47fs({"driver":"fs","readOnly":false,"base":"/Applications/XAMPP/xamppfiles/htdocs/buyer-project/.nuxt/cache"}));
-storage.mount('data', unstorage_47drivers_47fs({"driver":"fs","base":"/Applications/XAMPP/xamppfiles/htdocs/buyer-project/.data/kv"}));
+storage.mount('root', unstorage_47drivers_47fs({"driver":"fs","readOnly":true,"base":"/workspace","watchOptions":{"ignored":[null]}}));
+storage.mount('src', unstorage_47drivers_47fs({"driver":"fs","readOnly":true,"base":"/workspace/server","watchOptions":{"ignored":[null]}}));
+storage.mount('cache:nuxt:payload', _47workspace_47node_modules_47_64nuxt_47nitro_45server_47dist_47runtime_47utils_47cache_45driver_46js({"driver":"/workspace/node_modules/@nuxt/nitro-server/dist/runtime/utils/cache-driver.js","base":"/workspace/.nuxt/cache/nuxt/payload"}));
+storage.mount('build', unstorage_47drivers_47fs({"driver":"fs","readOnly":false,"base":"/workspace/.nuxt"}));
+storage.mount('cache', unstorage_47drivers_47fs({"driver":"fs","readOnly":false,"base":"/workspace/.nuxt/cache"}));
+storage.mount('data', unstorage_47drivers_47fs({"driver":"fs","base":"/workspace/.data/kv"}));
 
 function useStorage(base = "") {
   return base ? prefixStorage(storage, base) : storage;
@@ -2099,13 +2100,13 @@ if (!window.__NUXT_DEVTOOLS_TIME_METRIC__) {
 window.__NUXT_DEVTOOLS_TIME_METRIC__.appInit = Date.now()
 `;
 
-const _PpqceD7fswj1UfimwaDBspJs4Z39gi9WjvyRwZzEyRo = (function(nitro) {
+const _Uc1WNQ8xxzQuLF30Zxh9ytOTRPUA5rMtoFe5m8xUlug = (function(nitro) {
   nitro.hooks.hook("render:html", (htmlContext) => {
     htmlContext.head.push(`<script>${script}<\/script>`);
   });
 });
 
-const rootDir = "/Applications/XAMPP/xamppfiles/htdocs/buyer-project";
+const rootDir = "/workspace";
 
 const appHead = {"meta":[{"name":"viewport","content":"width=device-width, initial-scale=1"},{"charset":"utf-8"}],"link":[],"style":[],"script":[],"noscript":[]};
 
@@ -2131,7 +2132,7 @@ const asyncContext = getContext("nuxt-dev", {
 	asyncContext: true,
 	AsyncLocalStorage
 });
-const _9rfXMpeYhOOF6xG5EUH4XlvPoUFLVe65TU1_gXjGbQ = (nitroApp) => {
+const _jpB3azUL9t3qdmDhEaZsczEpfhE9NnQDefE4lNHbZNs = (nitroApp) => {
 	const handler = nitroApp.h3App.handler;
 	nitroApp.h3App.handler = (event) => {
 		return asyncContext.callAsync({
@@ -2243,6 +2244,11 @@ async function ensureAuthTables(pool) {
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )
   `);
+  try {
+    await pool.query(`ALTER TABLE users ADD COLUMN password_hash VARCHAR(255) NULL AFTER phone`);
+  } catch (err) {
+    if (err.code !== "ER_DUP_FIELDNAME" && err.code !== "ER_BAD_FIELD_ERROR") throw err;
+  }
 }
 async function ensureOrderTables(pool) {
   await pool.query(`
@@ -2266,24 +2272,25 @@ async function ensureOrderTables(pool) {
     )
   `);
 }
-async function seedDemoUserIfEmpty(pool) {
+async function seedDemoUserIfEmpty(pool, defaultPasswordHash) {
   var _a;
   const [rows] = await pool.query("SELECT COUNT(*) AS cnt FROM users");
   if (Number((_a = rows[0]) == null ? void 0 : _a.cnt) > 0) return;
   await pool.query(
-    "INSERT INTO users (name, phone, role) VALUES (?, ?, ?)",
-    ["Demo User", "9876543210", "customer"]
+    "INSERT INTO users (name, phone, password_hash, role) VALUES (?, ?, ?, ?)",
+    ["Demo User", "9876543210", defaultPasswordHash, "customer"]
   );
-  console.log('[db] Seeded demo user \u2014 login with name "Demo User" and phone "9876543210"');
+  console.log('[db] Seeded demo user \u2014 login with name "Demo User" and phone "9876543210", password "demo123"');
 }
 
-const _iFb_mPLY7tOkGUZIItYoEseJqGj0usdA6s8NR1SToo = defineNitroPlugin(async () => {
+const _IEgNPeZmXliSsPta1ZXS1ApT9AcGtT5uKsAFwCqaD30 = defineNitroPlugin(async () => {
   try {
     await testDbConnection();
     const pool = getPool();
     await ensureAuthTables(pool);
     await ensureOrderTables(pool);
-    await seedDemoUserIfEmpty(pool);
+    const defaultPasswordHash = await bcrypt.hash("demo123", 10);
+    await seedDemoUserIfEmpty(pool, defaultPasswordHash);
     const config = useRuntimeConfig();
     console.log(`[db] Connected to MySQL database: ${config.dbName}`);
   } catch (error) {
@@ -2295,9 +2302,9 @@ const _iFb_mPLY7tOkGUZIItYoEseJqGj0usdA6s8NR1SToo = defineNitroPlugin(async () =
 });
 
 const plugins = [
-  _PpqceD7fswj1UfimwaDBspJs4Z39gi9WjvyRwZzEyRo,
-_9rfXMpeYhOOF6xG5EUH4XlvPoUFLVe65TU1_gXjGbQ,
-_iFb_mPLY7tOkGUZIItYoEseJqGj0usdA6s8NR1SToo,
+  _Uc1WNQ8xxzQuLF30Zxh9ytOTRPUA5rMtoFe5m8xUlug,
+_jpB3azUL9t3qdmDhEaZsczEpfhE9NnQDefE4lNHbZNs,
+_IEgNPeZmXliSsPta1ZXS1ApT9AcGtT5uKsAFwCqaD30,
 _wH6JrtIxmaSoA8lCPWFnE9z4lQeXW6H5z3l5aymEQw
 ];
 
@@ -2326,7 +2333,7 @@ function getAsset (id) {
 
 const METHODS = /* @__PURE__ */ new Set(["HEAD", "GET"]);
 const EncodingMap = { gzip: ".gz", br: ".br" };
-const _huEVnG = eventHandler((event) => {
+const _wKQydp = eventHandler((event) => {
   if (event.method && !METHODS.has(event.method)) {
     return;
   }
@@ -2832,29 +2839,31 @@ async function getIslandContext(event) {
 	};
 }
 
-const _lazy_f4tz4H = () => Promise.resolve().then(function () { return login_post$1; });
-const _lazy_1siqco = () => Promise.resolve().then(function () { return logout_post$1; });
-const _lazy_tKXINE = () => Promise.resolve().then(function () { return me_get$1; });
-const _lazy_LzKshD = () => Promise.resolve().then(function () { return health_get$1; });
-const _lazy_3tyIuF = () => Promise.resolve().then(function () { return orders_post$1; });
-const _lazy_9Njx_K = () => Promise.resolve().then(function () { return _id__get$1; });
-const _lazy_fs_rw3 = () => Promise.resolve().then(function () { return index_get$1; });
-const _lazy_qj7Rkn = () => Promise.resolve().then(function () { return upload_post$1; });
-const _lazy_9zgQBg = () => Promise.resolve().then(function () { return renderer; });
+const _lazy_ZGEaqQ = () => Promise.resolve().then(function () { return login_post$1; });
+const _lazy_dIHeUa = () => Promise.resolve().then(function () { return logout_post$1; });
+const _lazy_SrHZiG = () => Promise.resolve().then(function () { return me_get$1; });
+const _lazy_DL6rhh = () => Promise.resolve().then(function () { return health_get$1; });
+const _lazy_ekOJQk = () => Promise.resolve().then(function () { return orders_post$1; });
+const _lazy_dzqMO3 = () => Promise.resolve().then(function () { return index_get$3; });
+const _lazy_RPancN = () => Promise.resolve().then(function () { return _id__get$1; });
+const _lazy_KsX2mc = () => Promise.resolve().then(function () { return index_get$1; });
+const _lazy_hxGqqV = () => Promise.resolve().then(function () { return upload_post$1; });
+const _lazy_LuixcS = () => Promise.resolve().then(function () { return renderer; });
 
 const handlers = [
-  { route: '', handler: _huEVnG, lazy: false, middleware: true, method: undefined },
-  { route: '/api/auth/login', handler: _lazy_f4tz4H, lazy: true, middleware: false, method: "post" },
-  { route: '/api/auth/logout', handler: _lazy_1siqco, lazy: true, middleware: false, method: "post" },
-  { route: '/api/auth/me', handler: _lazy_tKXINE, lazy: true, middleware: false, method: "get" },
-  { route: '/api/health', handler: _lazy_LzKshD, lazy: true, middleware: false, method: "get" },
-  { route: '/api/orders', handler: _lazy_3tyIuF, lazy: true, middleware: false, method: "post" },
-  { route: '/api/products/:id', handler: _lazy_9Njx_K, lazy: true, middleware: false, method: "get" },
-  { route: '/api/products', handler: _lazy_fs_rw3, lazy: true, middleware: false, method: "get" },
-  { route: '/api/upload', handler: _lazy_qj7Rkn, lazy: true, middleware: false, method: "post" },
-  { route: '/__nuxt_error', handler: _lazy_9zgQBg, lazy: true, middleware: false, method: undefined },
+  { route: '', handler: _wKQydp, lazy: false, middleware: true, method: undefined },
+  { route: '/api/auth/login', handler: _lazy_ZGEaqQ, lazy: true, middleware: false, method: "post" },
+  { route: '/api/auth/logout', handler: _lazy_dIHeUa, lazy: true, middleware: false, method: "post" },
+  { route: '/api/auth/me', handler: _lazy_SrHZiG, lazy: true, middleware: false, method: "get" },
+  { route: '/api/health', handler: _lazy_DL6rhh, lazy: true, middleware: false, method: "get" },
+  { route: '/api/orders', handler: _lazy_ekOJQk, lazy: true, middleware: false, method: "post" },
+  { route: '/api/orders', handler: _lazy_dzqMO3, lazy: true, middleware: false, method: "get" },
+  { route: '/api/products/:id', handler: _lazy_RPancN, lazy: true, middleware: false, method: "get" },
+  { route: '/api/products', handler: _lazy_KsX2mc, lazy: true, middleware: false, method: "get" },
+  { route: '/api/upload', handler: _lazy_hxGqqV, lazy: true, middleware: false, method: "post" },
+  { route: '/__nuxt_error', handler: _lazy_LuixcS, lazy: true, middleware: false, method: undefined },
   { route: '/__nuxt_island/**', handler: handler$1, lazy: false, middleware: false, method: undefined },
-  { route: '/**', handler: _lazy_9zgQBg, lazy: true, middleware: false, method: undefined }
+  { route: '/**', handler: _lazy_LuixcS, lazy: true, middleware: false, method: undefined }
 ];
 
 function createNitroApp() {
@@ -3256,12 +3265,13 @@ async function destroySession(event) {
 }
 
 const login_post = defineEventHandler(async (event) => {
-  var _a, _b;
+  var _a, _b, _c;
   const body = await readBody(event);
   const name = String((_a = body == null ? void 0 : body.name) != null ? _a : "").trim();
   const phone = String((_b = body == null ? void 0 : body.phone) != null ? _b : "").trim();
-  if (!name || !phone) {
-    throw createError({ statusCode: 400, message: "Name and phone are required" });
+  const password = String((_c = body == null ? void 0 : body.password) != null ? _c : "");
+  if (!name || !phone || !password) {
+    throw createError({ statusCode: 400, message: "Name, phone, and password are required" });
   }
   if (name.length < 2) {
     throw createError({ statusCode: 400, message: "Name must be at least 2 characters" });
@@ -3269,11 +3279,14 @@ const login_post = defineEventHandler(async (event) => {
   if (!/^\d{10,15}$/.test(phone)) {
     throw createError({ statusCode: 400, message: "Phone must be 10\u201315 digits" });
   }
+  if (password.length < 6) {
+    throw createError({ statusCode: 400, message: "Password must be at least 6 characters" });
+  }
   try {
     const pool = getPool();
     const [rows] = await pool.query(
       `
-      SELECT id, name, phone, role
+      SELECT id, name, phone, role, password_hash
       FROM users
       WHERE name = ? AND phone = ?
       LIMIT 1
@@ -3283,18 +3296,26 @@ const login_post = defineEventHandler(async (event) => {
     if (!rows.length) {
       throw createError({ statusCode: 401, message: "Invalid credentials" });
     }
+    const user = rows[0];
+    if (!user.password_hash) {
+      throw createError({ statusCode: 401, message: "Account not fully set up. Please contact support." });
+    }
+    const valid = await bcrypt.compare(password, user.password_hash);
+    if (!valid) {
+      throw createError({ statusCode: 401, message: "Invalid credentials" });
+    }
     await ensureAuthTables(pool);
     const token = randomBytes(32).toString("hex");
     const expires = new Date(Date.now() + 7 * 24 * 60 * 60 * 1e3);
     await pool.query("INSERT INTO sessions (token, user_id, expires_at) VALUES (?, ?, ?)", [
       token,
-      rows[0].id,
+      user.id,
       expires
     ]);
     setSessionCookie(event, token);
     return {
       message: "Login successful",
-      user: rows[0]
+      user: { id: user.id, name: user.name, phone: user.phone, role: user.role }
     };
   } catch (error) {
     if (error.statusCode) throw error;
@@ -3358,28 +3379,45 @@ const orders_post = defineEventHandler(async (event) => {
   }
   for (const item of items) {
     const qty = Number(item.qty);
-    const price = Number(item.price);
-    if (!item.id || !item.title || !Number.isFinite(qty) || qty < 1 || !Number.isFinite(price) || price < 0) {
+    if (!item.id || !Number.isFinite(qty) || qty < 1 || qty > 999) {
       throw createError({ statusCode: 400, message: "Invalid order items" });
     }
   }
-  const subtotal = items.reduce((sum, item) => sum + Number(item.price) * Number(item.qty), 0);
-  const tax = subtotal * 0.18;
-  const total = subtotal + tax;
   const pool = getPool();
   await ensureOrderTables(pool);
   const connection = await pool.getConnection();
   try {
+    const productIds = items.map((item) => Number(item.id));
+    const [productRows] = await connection.query(
+      `SELECT id, name, price FROM products WHERE id IN (${productIds.map(() => "?").join(",")})`,
+      productIds
+    );
+    const productMap = new Map(productRows.map((p) => [p.id, p]));
+    const resolvedItems = items.map((item) => {
+      const product = productMap.get(Number(item.id));
+      if (!product) {
+        throw createError({ statusCode: 400, message: `Product not found: ${item.id}` });
+      }
+      return {
+        id: item.id,
+        title: product.name,
+        price: Number(product.price),
+        qty: Number(item.qty)
+      };
+    });
+    const subtotal = resolvedItems.reduce((sum, item) => sum + item.price * item.qty, 0);
+    const tax = subtotal * 0.18;
+    const total = subtotal + tax;
     await connection.beginTransaction();
     const [orderResult] = await connection.query(
       "INSERT INTO orders (user_id, subtotal, tax, total) VALUES (?, ?, ?, ?)",
       [user.id, subtotal, tax, total]
     );
     const orderId = orderResult.insertId;
-    for (const item of items) {
+    for (const item of resolvedItems) {
       await connection.query(
         "INSERT INTO order_items (order_id, product_id, title, price, qty) VALUES (?, ?, ?, ?, ?)",
-        [orderId, item.id, item.title, Number(item.price), Number(item.qty)]
+        [orderId, item.id, item.title, item.price, item.qty]
       );
     }
     await connection.commit();
@@ -3392,6 +3430,7 @@ const orders_post = defineEventHandler(async (event) => {
     };
   } catch (error) {
     await connection.rollback();
+    if (error.statusCode) throw error;
     throw createError({
       statusCode: 500,
       message: "Failed to place order",
@@ -3405,6 +3444,48 @@ const orders_post = defineEventHandler(async (event) => {
 const orders_post$1 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
   __proto__: null,
   default: orders_post
+}, Symbol.toStringTag, { value: 'Module' }));
+
+const index_get$2 = defineEventHandler(async (event) => {
+  const user = await requireUser(event);
+  const pool = getPool();
+  await ensureOrderTables(pool);
+  const [rows] = await pool.query(
+    `
+    SELECT o.id AS order_id, o.subtotal, o.tax, o.total, o.created_at,
+           oi.product_id, oi.title, oi.price, oi.qty
+    FROM orders o
+    JOIN order_items oi ON oi.order_id = o.id
+    WHERE o.user_id = ?
+    ORDER BY o.created_at DESC, oi.id ASC
+    `,
+    [user.id]
+  );
+  const orderMap = /* @__PURE__ */ new Map();
+  for (const row of rows) {
+    if (!orderMap.has(row.order_id)) {
+      orderMap.set(row.order_id, {
+        id: row.order_id,
+        subtotal: Number(row.subtotal),
+        tax: Number(row.tax),
+        total: Number(row.total),
+        createdAt: row.created_at,
+        items: []
+      });
+    }
+    orderMap.get(row.order_id).items.push({
+      productId: row.product_id,
+      title: row.title,
+      price: Number(row.price),
+      qty: row.qty
+    });
+  }
+  return { orders: Array.from(orderMap.values()) };
+});
+
+const index_get$3 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
+  __proto__: null,
+  default: index_get$2
 }, Symbol.toStringTag, { value: 'Module' }));
 
 const demoProducts = [
@@ -3615,11 +3696,23 @@ const index_get$1 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.definePropert
   default: index_get
 }, Symbol.toStringTag, { value: 'Module' }));
 
+const ALLOWED_MIMETYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
+const ALLOWED_EXTENSIONS = [".jpg", ".jpeg", ".png", ".webp", ".gif"];
+const MAX_SIZE_BYTES = 5 * 1024 * 1024;
 const upload_post = defineEventHandler(async (event) => {
-  const form = formidable({ multiples: false });
+  await requireUser(event);
+  const form = formidable({
+    multiples: false,
+    maxFileSize: MAX_SIZE_BYTES
+  });
   return await new Promise((resolve, reject) => {
     form.parse(event.node.req, (err, _fields, files) => {
+      var _a;
       if (err) {
+        if ((_a = err.message) == null ? void 0 : _a.includes("maxFileSize")) {
+          reject(createError({ statusCode: 400, message: "File too large. Max size is 5 MB." }));
+          return;
+        }
         reject(createError({ statusCode: 400, message: "Failed to parse upload" }));
         return;
       }
@@ -3629,6 +3722,16 @@ const upload_post = defineEventHandler(async (event) => {
       }
       try {
         const file = files.image[0];
+        const mimetype = String(file.mimetype || "").toLowerCase();
+        const ext = path.extname(file.originalFilename || "").toLowerCase();
+        if (!ALLOWED_MIMETYPES.includes(mimetype)) {
+          reject(createError({ statusCode: 400, message: "Invalid file type. Only JPEG, PNG, WebP, and GIF are allowed." }));
+          return;
+        }
+        if (!ALLOWED_EXTENSIONS.includes(ext)) {
+          reject(createError({ statusCode: 400, message: "Invalid file extension. Only .jpg, .jpeg, .png, .webp, and .gif are allowed." }));
+          return;
+        }
         const oldPath = file.filepath;
         const fileName = `${Date.now()}_${file.originalFilename || "upload"}`;
         const uploadDir = path.join(process.cwd(), "public", "uploads");

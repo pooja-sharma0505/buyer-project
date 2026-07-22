@@ -23,7 +23,7 @@
         "../node_modules/@vue/compiler-sfc"
       ],
       "@nuxt/schema": [
-        "../node_modules/@nuxt/schema"
+        "../node_modules/nuxt/node_modules/@nuxt/schema"
       ],
       "defu": [
         "../node_modules/defu"
@@ -147,7 +147,7 @@
     "noUncheckedIndexedAccess": false,
     "forceConsistentCasingInFileNames": true,
     "noImplicitOverride": true,
-    "module": "preserve",
+    "module": "ESNext",
     "noEmit": true,
     "lib": [
       "ESNext",

@@ -12,10 +12,10 @@ export function useAuth() {
     }
   }
 
-  async function login(name, phone) {
+  async function login(name, phone, password) {
     const data = await $fetch('/api/auth/login', {
       method: 'POST',
-      body: { name, phone }
+      body: { name, phone, password }
     })
     user.value = data.user
     return data

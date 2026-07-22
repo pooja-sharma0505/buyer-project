@@ -12,10 +12,22 @@
         <div>
           <p class="category">{{ product.category }}</p>
           <h1 class="title">{{ product.title }}</h1>
-          <p class="price">${{ Number(product.price || 0).toFixed(2) }}</p>
+          <p class="price">${{ formatPrice(product.price) }}</p>
           <p class="description">{{ product.description }}</p>
+          <div class="qty-row">
+            <button type="button" class="qty-btn" @click="detailQty > 1 && detailQty--" aria-label="Decrease quantity">-</button>
+            <input
+              v-model.number="detailQty"
+              type="number"
+              min="1"
+              max="99"
+              class="qty-input"
+              aria-label="Quantity"
+            />
+            <button type="button" class="qty-btn" @click="detailQty < 99 && detailQty++" aria-label="Increase quantity">+</button>
+          </div>
           <div class="cta-row">
-            <button class="add-btn" @click="cart.addToCart(product)">Add to Cart</button>
+            <button class="add-btn" @click="addToCartWithQty">Add to Cart</button>
             <button
               type="button"
               class="wish-btn"
@@ -43,6 +55,7 @@ const cart = useCart()
 const wishlist = useWishlist()
 
 const detailImgBad = ref(false)
+const detailQty = ref(1)
 
 const { data: product, pending, error } = await useFetch(() => `/api/products/${route.params.id}`)
 
@@ -66,8 +79,19 @@ const toggleWishlist = () => {
   wishlist.toggleWishlist(product.value)
 }
 
+const addToCartWithQty = () => {
+  if (!product.value) return
+  cart.addToCart({ ...product.value, qty: detailQty.value })
+  detailQty.value = 1
+}
+
+function formatPrice(value) {
+  return Number(value || 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+}
+
 watch(product, () => {
   detailImgBad.value = false
+  detailQty.value = 1
 })
 </script>
 
@@ -99,10 +123,18 @@ watch(product, () => {
 }
 .category { color: #6b7280; margin-bottom: 8px; }
 .title { margin-bottom: 10px; color: #111827; }
-.price { color: #4f46e5; font-weight: 700; margin-bottom: 12px; }
+.price { color: #111827; font-weight: 700; margin-bottom: 12px; font-size: 18px; }
 .description { color: #4b5563; margin-bottom: 16px; }
+.qty-row { display: flex; align-items: center; gap: 6px; margin-bottom: 14px; }
+.qty-btn { width: 32px; height: 32px; border: 1px solid #d1d5db; border-radius: 6px; background: #fff; color: #374151; cursor: pointer; font-size: 14px; display: flex; align-items: center; justify-content: center; }
+.qty-btn:hover { border-color: #d4af64; color: #d4af64; }
+.qty-input { width: 48px; text-align: center; border: 1px solid #d1d5db; border-radius: 6px; padding: 5px; font-size: 14px; color: #111827; }
+.qty-input::-webkit-outer-spin-button,
+.qty-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.qty-input { -moz-appearance: textfield; }
 .cta-row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
 .add-btn { background: #111827; color: #fff; border: none; border-radius: 8px; padding: 10px 16px; cursor: pointer; }
+.add-btn:hover { background: #d4af64; color: #0a0806; }
 .wish-btn {
   display: inline-flex;
   align-items: center;

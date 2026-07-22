@@ -1,5 +1,6 @@
 import { getPool, testDbConnection } from '../utils/db.js'
 import { ensureAuthTables, ensureOrderTables, seedDemoUserIfEmpty } from '../utils/schema.js'
+import bcrypt from 'bcryptjs'
 
 export default defineNitroPlugin(async () => {
   try {
@@ -7,7 +8,8 @@ export default defineNitroPlugin(async () => {
     const pool = getPool()
     await ensureAuthTables(pool)
     await ensureOrderTables(pool)
-    await seedDemoUserIfEmpty(pool)
+    const defaultPasswordHash = await bcrypt.hash('demo123', 10)
+    await seedDemoUserIfEmpty(pool, defaultPasswordHash)
     const config = useRuntimeConfig()
     console.log(`[db] Connected to MySQL database: ${config.dbName}`)
   } catch (error) {
