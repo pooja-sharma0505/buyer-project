@@ -114,9 +114,28 @@ function publicImageUrl(image) {
   return `/uploads/${s}`
 }
 
+function hashIdToFloat(id) {
+  // Simple deterministic hash of an integer ID into [0, 1)
+  let hash = id
+  hash = ((hash >> 16) ^ hash) * 0x45d9f3b
+  hash = ((hash >> 16) ^ hash) * 0x45d9f3b
+  hash = (hash >> 16) ^ hash
+  return (Math.abs(hash) % 1000) / 1000
+}
+
+function generateRating(id) {
+  const f = hashIdToFloat(id)
+  // rate between 3.0 and 4.9, step 0.1
+  const rate = Math.round((3.0 + f * 1.9) * 10) / 10
+  // count between 20 and 200, step 5
+  const count = 20 + Math.round((f * 180) / 5) * 5
+  return { rate, count }
+}
+
 export function toProductPayload(row, hasCategory) {
   const dbCat = hasCategory ? normalizeDbCategory(row.category) : ''
   const category = dbCat || inferCategoryFromName(row.name)
+  const rating = generateRating(row.id)
   return {
     id: row.id,
     title: row.name,
@@ -125,9 +144,6 @@ export function toProductPayload(row, hasCategory) {
     category,
     image: publicImageUrl(row.image),
     description: row.description,
-    rating: {
-      rate: 4.5,
-      count: 120
-    }
+    rating
   }
 }

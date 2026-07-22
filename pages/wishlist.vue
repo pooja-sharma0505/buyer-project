@@ -25,7 +25,7 @@
           <div class="info">
             <p v-if="item.category" class="cat">{{ item.category }}</p>
             <button type="button" class="title-btn" @click="goProduct(item.id)">{{ item.title }}</button>
-            <p class="price">${{ formatPrice(item.price) }}</p>
+            <p class="price">{{ formatPrice(item.price) }}</p>
             <div class="actions">
               <button type="button" class="btn secondary" @click="removeFromWishlist(item.id)">Remove</button>
               <button type="button" class="btn primary" @click="addToCart(item)">Add to cart</button>
@@ -48,6 +48,7 @@ useSeoMeta({
 
 const { addToCart: addProductToCart } = useCart()
 const { items, removeFromWishlist } = useWishlist()
+const { formatPrice } = useFormatPrice()
 
 const goProduct = (id) => {
   navigateTo(`/product/${id}`)
@@ -63,10 +64,6 @@ const addToCart = (item) => {
     rating: item.rating || { rate: 0, count: 0 },
     qty: 1
   })
-}
-
-function formatPrice(value) {
-  return Number(value || 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 }
 </script>
 

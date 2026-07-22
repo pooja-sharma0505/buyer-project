@@ -50,8 +50,18 @@
         </button>
       </form>
 
-      <p v-if="error" class="error">{{ error }}</p>
+      <p v-if="error" class="login-error">{{ error }}</p>
       <p v-if="success" class="success">Login successful. Redirecting...</p>
+
+      <div class="login-links">
+        <span class="link-placeholder">Forgot password?</span>
+        <span class="divider">|</span>
+        <span class="link-placeholder">Sign up</span>
+      </div>
+
+      <div class="demo-hint">
+        <p><strong>Demo login:</strong> Name = <code>Demo User</code>, Phone = <code>9876543210</code>, Password = <code>demo123</code></p>
+      </div>
     </div>
   </div>
 </template>
@@ -163,8 +173,15 @@ input[aria-invalid="true"] { border-color: #dc2626; }
 button { margin-top: 8px; border: none; border-radius: 8px; background: #111827; color: #fff; padding: 10px; cursor: pointer; transition: background 0.2s ease; }
 button:hover { background: #d4af64; color: #0a0806; }
 button:disabled { opacity: 0.7; cursor: not-allowed; }
-.error { color: #dc2626; margin-top: 10px; }
+.login-error { color: #dc2626; margin-top: 10px; }
 .success { color: #15803d; margin-top: 10px; }
+.login-links { display: flex; gap: 8px; justify-content: center; margin-top: 14px; font-size: 13px; color: #6b7280; }
+.link-placeholder { cursor: pointer; transition: color 0.2s ease; }
+.link-placeholder:hover { color: #d4af64; }
+.divider { color: #d1d5db; }
+.demo-hint { margin-top: 16px; padding: 12px; background: #f8fafc; border: 1px solid #e5e7eb; border-radius: 8px; font-size: 12px; color: #6b7280; }
+.demo-hint code { background: #fff; padding: 2px 4px; border-radius: 4px; border: 1px solid #d1d5db; font-family: 'Courier New', monospace; color: #374151; }
+.demo-hint p { margin: 0; font-size: 12px; }
 @media (max-width: 480px) {
   .login-page { align-items: flex-start; padding: 12px; }
   .card { border-radius: 10px; padding: 16px; }

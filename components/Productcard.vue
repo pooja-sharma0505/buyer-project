@@ -25,7 +25,7 @@
         <span class="rating-count">({{ rating.count }})</span>
       </div>
 
-      <p class="product-price">${{ formatPrice(price) }}</p>
+      <p class="product-price">{{ formatPrice(price) }}</p>
 
       <div class="qty-row" @click.stop>
         <button type="button" class="qty-btn" @click="localQty > 1 && localQty--" aria-label="Decrease quantity">-</button>
@@ -62,7 +62,8 @@ export default {
   emits: ['add-to-cart'],
   setup() {
     const wishlist = useWishlist()
-    return { wishlist }
+    const { formatPrice } = useFormatPrice()
+    return { wishlist, formatPrice }
   },
   data() {
     return { isAdded: false, imgFailed: false, localQty: 1 }
@@ -77,9 +78,6 @@ export default {
     starDisplay() {
       const filled = Math.round(this.rating.rate)
       return '★'.repeat(filled) + '☆'.repeat(5 - filled)
-    },
-    formatPrice() {
-      return (value) => Number(value || 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
     }
   },
   watch: {
