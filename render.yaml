@@ -1,0 +1,6 @@
+services:
+  - type: web
+    name: buyer-project
+    env: node
+    buildCommand: npm install && rm -rf .nuxt .output && npm run build
+    startCommand: node .output/server/index.mjs

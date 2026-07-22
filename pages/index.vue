@@ -30,8 +30,8 @@
         </button>
       </div>
 
-      <div v-if="pending" class="grid">
-        <SkeletonLoader v-for="n in 12" :key="n" type="card" />
+      <div v-if="pending" class="row">
+        <SkeletonLoader v-for="n in 12" :key="n" type="card" class="col-6 col-md-4 col-lg-3" />
       </div>
       <p v-else-if="fetchError" class="status-text error">{{ fetchError.message || 'Unable to load products' }}</p>
 
@@ -49,7 +49,7 @@
           <p class="empty-text">No products match{{ selectedCategory === 'All' ? '' : ` in “${selectedCategory}”` }}{{ search ? ' for your search' : '' }}.</p>
           <button class="empty-cta" @click="selectedCategory = 'All'; search = ''">Clear Filters</button>
         </div>
-        <div v-else class="grid">
+        <div v-else class="row">
           <Productcard
             v-for="product in paginatedProducts"
             :key="product.id"
@@ -60,6 +60,7 @@
             :category="product.category"
             :rating="product.rating"
             @add-to-cart="cart.addToCart"
+            class="col-6 col-md-4 col-lg-3"
           />
         </div>
 
@@ -213,10 +214,25 @@ watch(selectedCategory, (cat) => {
 .filters { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
 .filter-btn { border: 1px solid #d1d5db; background: #fff; color: #4b5563; border-radius: 999px; padding: 8px 14px; cursor: pointer; }
 .filter-btn.active { background: #d4af64; color: #0a0806; border-color: #d4af64; }
-.grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 16px;
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  margin-right: -8px;
+  margin-left: -8px;
+}
+.col-6, .col-md-4, .col-lg-3 {
+  padding-right: 8px;
+  padding-left: 8px;
+  flex: 0 0 auto;
+  width: 100%;
+  margin-bottom: 16px;
+}
+.col-6 { flex: 0 0 50%; max-width: 50%; }
+@media (min-width: 768px) {
+  .col-md-4 { flex: 0 0 33.333333%; max-width: 33.333333%; }
+}
+@media (min-width: 992px) {
+  .col-lg-3 { flex: 0 0 25%; max-width: 25%; }
 }
 .status-text { color: #6b7280; margin: 12px 0; }
 .status-text.error { color: #dc2626; }

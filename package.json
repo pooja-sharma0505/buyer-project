@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "nuxt dev",
-    "build": "nuxt build",
+    "clean": "rm -rf .nuxt .output",
+    "build": "rm -rf .nuxt .output && nuxt build",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare"
   },
