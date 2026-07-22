@@ -245,7 +245,7 @@ watch(product, () => {
 }
 .category { color: #6b7280; margin-bottom: 8px; }
 .title { margin-bottom: 10px; color: #111827; font-family: 'Cormorant Garamond', serif; }
-.price { color: #111827; font-weight: 700; margin-bottom: 12px; font-size: 18px; }
+.price { color: #111827; font-weight: 600; margin-bottom: 12px; font-size: 18px; }
 .description { color: #4b5563; margin-bottom: 16px; }
 .qty-row { display: flex; align-items: center; gap: 6px; margin-bottom: 14px; }
 .qty-btn { width: 32px; height: 32px; border: 1px solid #d1d5db; border-radius: 6px; background: #fff; color: #374151; cursor: pointer; font-size: 14px; display: flex; align-items: center; justify-content: center; }
