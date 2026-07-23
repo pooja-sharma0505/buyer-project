@@ -11,6 +11,7 @@ function resolveDbConfig() {
 
   return {
     host: config.dbHost || '127.0.0.1',
+    port: Number(config.dbPort) || 3306,
     user: config.dbUser || 'root',
     password: config.dbPassword ?? '',
     database: config.dbName || 'demostore',
