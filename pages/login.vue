@@ -5,19 +5,6 @@
       <p>Enter your account details to continue.</p>
 
       <form @submit.prevent="handleLogin">
-        <label for="name">Name</label>
-        <input
-          id="name"
-          v-model.trim="name"
-          type="text"
-          placeholder="Name"
-          autocomplete="name"
-          :aria-invalid="!!fieldErrors.name"
-          @input="fieldErrors.name = ''"
-          @blur="validateField('name')"
-        />
-        <p v-if="fieldErrors.name" class="field-error">{{ fieldErrors.name }}</p>
-
         <label for="phone">Phone</label>
         <input
           id="phone"
@@ -54,13 +41,8 @@
       <p v-if="success" class="success">Login successful. Redirecting...</p>
 
       <div class="login-links">
-        <NuxtLink to="/forgot-password" class="link-muted">Forgot password?</NuxtLink>
-        <span class="divider">|</span>
+        <span>Already have an account?</span>
         <NuxtLink to="/signup" class="link">Sign up</NuxtLink>
-      </div>
-
-      <div class="demo-hint">
-        <p><strong>Demo login:</strong> Name = <code>Demo User</code>, Phone = <code>9876543210</code>, Password = <code>demo123</code></p>
       </div>
     </div>
   </div>
@@ -76,23 +58,17 @@ useSeoMeta({
 })
 
 const { login } = useAuth()
+const { success: toastSuccess } = useToast()
 
-const name = ref('')
 const phone = ref('')
 const password = ref('')
 const error = ref('')
 const success = ref('')
 const loading = ref(false)
-const fieldErrors = ref({ name: '', phone: '', password: '' })
+const fieldErrors = ref({ phone: '', password: '' })
 
 function validate() {
-  const next = { name: '', phone: '', password: '' }
-
-  if (!name.value) {
-    next.name = 'Name is required'
-  } else if (name.value.length < 2) {
-    next.name = 'Name must be at least 2 characters'
-  }
+  const next = { phone: '', password: '' }
 
   if (!phone.value) {
     next.phone = 'Phone is required'
@@ -107,20 +83,11 @@ function validate() {
   }
 
   fieldErrors.value = next
-  return !next.name && !next.phone && !next.password
+  return !next.phone && !next.password
 }
 
 function validateField(field) {
   const err = fieldErrors.value
-  if (field === 'name') {
-    if (!name.value) {
-      err.name = 'Name is required'
-    } else if (name.value.length < 2) {
-      err.name = 'Name must be at least 2 characters'
-    } else {
-      err.name = ''
-    }
-  }
   if (field === 'phone') {
     if (!phone.value) {
       err.phone = 'Phone is required'
@@ -149,7 +116,8 @@ const handleLogin = async () => {
 
   loading.value = true
   try {
-    await login(name.value, phone.value, password.value)
+    await login(phone.value, password.value)
+    toastSuccess('Login successful')
     success.value = 'Success'
     await navigateTo('/')
   } catch (err) {
@@ -178,18 +146,10 @@ button:disabled { opacity: 0.7; cursor: not-allowed; }
 .login-error { color: #dc2626; margin-top: 12px; font-size: 13px; }
 .success { color: #15803d; margin-top: 12px; font-size: 13px; }
 .login-links { display: flex; gap: 8px; justify-content: center; margin-top: 18px; font-size: 13px; color: #6b7280; }
-.link-muted { color: #6b7280; text-decoration: none; transition: color 0.2s ease; }
-.link-muted:hover { color: #d4af64; }
 .link { color: #d4af64; text-decoration: none; font-weight: 500; }
 .link:hover { text-decoration: underline; }
-.link-muted { color: #6b7280; text-decoration: none; font-weight: 400; transition: color 0.2s ease; }
-.link-muted:hover { color: #d4af64; }
-.divider { color: #d1d5db; }
-.demo-hint { margin-top: 16px; padding: 12px; background: #f8fafc; border: 1px solid #e5e7eb; border-radius: 8px; font-size: 12px; color: #6b7280; }
-.demo-hint code { background: #fff; padding: 2px 4px; border-radius: 4px; border: 1px solid #d1d5db; font-family: 'Courier New', monospace; color: #374151; }
-.demo-hint p { margin: 0; font-size: 12px; }
 @media (max-width: 480px) {
-  .login-page { align-items: center; padding: 24px 12px; }
+  .login-page { align-items: flex-start; padding: 24px 12px; }
   .card { border-radius: 10px; padding: 24px 16px; }
 }
 </style>

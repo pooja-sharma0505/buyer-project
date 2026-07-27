@@ -1,34 +1,48 @@
-import { ref, watch } from 'vue'
+import { computed, watch } from 'vue'
 
 const STORAGE_KEY = 'buyer-dark-mode'
 
-const isDark = ref(false)
-
 export function useDarkMode() {
-  if (import.meta.client && !isDark.value) {
+  // Use useState for SSR-safe reactive state that works in both
+  // client and server contexts. useStorage is not available in the
+  // Nitro server context during SSR, so we use useState and manually
+  // sync to localStorage on the client.
+  const darkMode = useState(STORAGE_KEY, () => {
+    if (import.meta.server) return 'false'
     try {
-      const stored = localStorage.getItem(STORAGE_KEY)
-      isDark.value = stored ? stored === 'true' : window.matchMedia('(prefers-color-scheme: dark)').matches
+      return localStorage.getItem(STORAGE_KEY) || 'false'
     } catch {
-      isDark.value = false
+      return 'false'
     }
-    if (isDark.value) {
-      document.documentElement.classList.add('dark')
-    }
-  }
-
-  watch(isDark, (dark) => {
-    if (!import.meta.client) return
-    if (dark) {
-      document.documentElement.classList.add('dark')
-    } else {
-      document.documentElement.classList.remove('dark')
-    }
-    try { localStorage.setItem(STORAGE_KEY, String(dark)) } catch {}
   })
 
+  const isDark = computed(() => darkMode.value === 'true')
+
   const toggle = () => {
-    isDark.value = !isDark.value
+    darkMode.value = isDark.value ? 'false' : 'true'
+  }
+
+  // Apply / remove the .dark class on the client so the toggle is
+  // immediately visible without waiting for a full re-render.
+  // This also handles the initial load case where the class needs to be set
+  // before the first paint based on the persisted preference.
+  if (import.meta.client) {
+    watch(isDark, (dark) => {
+      if (dark) {
+        document.documentElement.classList.add('dark')
+      } else {
+        document.documentElement.classList.remove('dark')
+      }
+    }, { immediate: true })
+
+    // Persist to localStorage on change
+    watch(darkMode, (val) => {
+      try {
+        localStorage.setItem(STORAGE_KEY, val)
+      } catch {
+        /* private mode / quota */
+      }
+    })
   }
 
   return { isDark, toggle }

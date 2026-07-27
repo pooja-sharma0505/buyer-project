@@ -1,4 +1,4 @@
-<template>
+l<template>
   <div class="orders-page">
     <div class="container">
       <div class="top">
@@ -81,12 +81,14 @@ function formatDate(raw) {
 .orders-page { min-height: 100vh; background: #f8fafc; padding: 28px 16px; }
 .container { max-width: 800px; margin: 0 auto; }
 .top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 8px; }
-.top a { color: #d4af64; text-decoration: none; }
+.top a { color: #d4af64; text-decoration: none; transition: color 0.2s ease; }
+.top a:hover { color: #b8860b; text-decoration: underline; }
 .top h1 { margin: 0; font-size: 22px; color: #111827; font-family: 'Cormorant Garamond', serif; }
 .status { color: #6b7280; margin: 0; }
 .status.error { color: #dc2626; }
 .orders-list { display: flex; flex-direction: column; gap: 16px; }
-.order-card { background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 16px; }
+.order-card { background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 16px; transition: box-shadow 0.2s ease, transform 0.1s ease; }
+.order-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.06); transform: translateY(-1px); }
 .order-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px; }
 .order-id { font-weight: 600; color: #111827; margin-right: 10px; }
 .order-date { color: #9ca3af; font-size: 13px; }

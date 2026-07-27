@@ -68,6 +68,7 @@ useSeoMeta({
 const { items, subtotal, updateQty, removeFromCart, clearCart } = useCart()
 const { isLoggedIn } = useAuth()
 const { formatPrice } = useFormatPrice()
+const { success: toastSuccess } = useToast()
 
 const success = ref(false)
 const placing = ref(false)
@@ -101,6 +102,7 @@ const placeOrder = async () => {
       }
     })
     clearCart()
+    toastSuccess('Order placed successfully')
     success.value = true
     setTimeout(() => {
       success.value = false
@@ -117,7 +119,8 @@ const placeOrder = async () => {
 .cart-page { min-height: 100vh; background: #f8fafc; padding: 28px 16px; }
 .container { max-width: 1100px; margin: 0 auto; }
 .top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 8px; }
-.top a { color: #d4af64; text-decoration: none; }
+.top a { color: #d4af64; text-decoration: none; transition: color 0.2s ease, text-shadow 0.2s ease; }
+.top a:hover { color: #b8860b; text-decoration: underline; }
 .top h1 { margin: 0; font-size: 22px; color: #111827; font-family: 'Cormorant Garamond', serif; }
 .layout { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; }
 .items { display: grid; gap: 12px; }

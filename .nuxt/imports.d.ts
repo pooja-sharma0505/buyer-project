@@ -37,3 +37,4 @@ export { useDebounce } from '../composables/useDebounce';
 export { useFormatPrice } from '../composables/useFormatPrice';
 export { useToast } from '../composables/useToast';
 export { useWishlist } from '../composables/useWishlist';
+export { useNuxtDevTools } from '../node_modules/@nuxt/devtools/dist/runtime/use-nuxt-devtools';

@@ -4,7 +4,7 @@
       <div class="top-row">
         <h1 class="brand">Luxury Essentials, Curated for You</h1>
         <div class="search-wrapper">
-          <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="11" cy="11" r="8" />
             <line x1="21" y1="21" x2="16.65" y2="16.65" />
           </svg>
@@ -12,7 +12,7 @@
             v-model.trim="search"
             type="search"
             aria-label="Search in current category"
-            placeholder="Search in category…"
+            placeholder="Search products…"
             class="search-input"
           />
         </div>
@@ -31,7 +31,7 @@
       </div>
 
       <div v-if="pending" class="row">
-        <SkeletonLoader v-for="n in 12" :key="n" type="card" class="col-6 col-md-4 col-lg-3" />
+        <SkeletonLoader v-for="n in 12" :key="n" type="card" />
       </div>
       <p v-else-if="fetchError" class="status-text error">{{ fetchError.message || 'Unable to load products' }}</p>
 
@@ -60,7 +60,6 @@
             :category="product.category"
             :rating="product.rating"
             @add-to-cart="cart.addToCart"
-            class="col-6 col-md-4 col-lg-3"
           />
         </div>
 
@@ -114,14 +113,22 @@ const { data: products, pending, error: fetchError, refresh } = await useFetch('
   })
 })
 
-watch(search, () => {
-  currentPage.value = 1
+// Normalize the API response: the endpoint returns a plain array when no
+// search/pagination params are sent, but returns { products, total, page, limit }
+// when a search query is present. This computed always yields an array so the
+// downstream filtering never crashes on an object shape.
+const allProducts = computed(() => {
+  const data = products.value
+  if (!data) return []
+  if (Array.isArray(data)) return data
+  if (data && Array.isArray(data.products)) return data.products
+  return []
 })
 
 const SHOP_CATEGORIES = ['Men', 'Women', 'Jewellery', 'Electronics']
 
 const categories = computed(() => {
-  const list = products.value || []
+  const list = allProducts.value
   const extras = new Set()
   for (const p of list) {
     const c = p.category
@@ -142,9 +149,16 @@ function categoryMatches(productCategory, chip) {
   return norm(productCategory) === norm(chip)
 }
 
+function searchMatches(product, term) {
+  if (!term) return true
+  const t = norm(term)
+  return norm(product.title).includes(t) || norm(product.description).includes(t) || norm(product.category).includes(t)
+}
+
 const filteredProducts = computed(() =>
-  (products.value || []).filter((p) => {
+  allProducts.value.filter((p) => {
     if (!categoryMatches(p.category, selectedCategory.value)) return false
+    if (!searchMatches(p, search.value)) return false
     return true
   })
 )
@@ -153,10 +167,6 @@ const pageCount = computed(() => Math.max(1, Math.ceil(filteredProducts.value.le
 const paginatedProducts = computed(() => {
   const start = (currentPage.value - 1) * pageSize
   return filteredProducts.value.slice(start, start + pageSize)
-})
-
-watch([selectedCategory, search], () => {
-  currentPage.value = 1
 })
 
 function canonicalCategoryFromQuery(raw) {
@@ -208,31 +218,22 @@ watch(selectedCategory, (cat) => {
 .brand { font-size: 22px; color: #111827; font-family: 'Cormorant Garamond', serif; }
 .search-wrapper { display: flex; align-items: center; gap: 8px; background: #fff; border: 1px solid #d1d5db; border-radius: 999px; padding: 10px 14px; width: 280px; max-width: 100%; }
 .search-wrapper:focus-within { border-color: #d4af64; outline: 2px solid #d4af64; outline-offset: 2px; }
-.search-icon { flex-shrink: 0; }
+.search-icon { flex-shrink: 0; color: #9ca3af; }
 .search-input { border: none; background: transparent; padding: 0; width: 100%; font: inherit; outline: none; }
 .search-input::placeholder { color: #9ca3af; }
 .filters { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
 .filter-btn { border: 1px solid #d1d5db; background: #fff; color: #4b5563; border-radius: 999px; padding: 8px 14px; cursor: pointer; }
 .filter-btn.active { background: #d4af64; color: #0a0806; border-color: #d4af64; }
 .row {
-  display: flex;
-  flex-wrap: wrap;
-  margin-right: -8px;
-  margin-left: -8px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
 }
-.col-6, .col-md-4, .col-lg-3 {
-  padding-right: 8px;
-  padding-left: 8px;
-  flex: 0 0 auto;
-  width: 100%;
-  margin-bottom: 16px;
-}
-.col-6 { flex: 0 0 50%; max-width: 50%; }
 @media (min-width: 768px) {
-  .col-md-4 { flex: 0 0 33.333333%; max-width: 33.333333%; }
+  .row { grid-template-columns: repeat(3, 1fr); }
 }
 @media (min-width: 992px) {
-  .col-lg-3 { flex: 0 0 25%; max-width: 25%; }
+  .row { grid-template-columns: repeat(4, 1fr); }
 }
 .status-text { color: #6b7280; margin: 12px 0; }
 .status-text.error { color: #dc2626; }

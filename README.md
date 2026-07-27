@@ -1,4 +1,6 @@
-# Buyer Project (Vue + Vite)
+# LUMIÈRE — Luxury Essentials Store
+
+A curated collection of luxury essentials built with **Nuxt 3** (Vue 3 + Vite). Shop jewellery, fashion, electronics, and more.
 
 ## Setup
 
@@ -8,26 +10,21 @@ Install dependencies:
 npm install
 ```
 
-## Run Development
+## Development
 
-Single command (**frontend + API**). This avoids proxy errors such as `ECONNREFUSED` on `/api/products`:
+Run the development server:
 
 ```bash
 npm run dev
 ```
 
-Optional:
+This starts both the frontend and the API on the same server (Nuxt 3 Nitro). No proxy configuration needed.
 
-- Frontend only — `npm run dev:vite-only` (needs `npm run dev:api` in another terminal, or `/api` will fail)
-- API only — `npm run dev:api`
+**Database:** Start MySQL in XAMPP. The app uses database `demostore` (configurable via environment variables).
 
-If port 3000 is already taken, Vite uses the next free port (for example `3001`). The API stays on **4001**.
-
-**Database:** Start MySQL in XAMPP. The API uses database `demostore` (`server/utils/db.js`)—adjust if your phpMyAdmin database name differs.
-
-**Categories:** The API reads MySQL column `products.category` when present. If that column does not exist, it falls back to inferring categories from names. Homepage filter chips include **Men, Women, Jewellery, Electronics** (plus any extras returned by your API).
-
-**Product images:** Relative filenames in DB are served from `server/uploads/` at `/uploads/<filename>`; add a PNG/JPG file there matching the stored name, use a full `http(s)` URL, or rely on the included placeholder SVG if the file is missing.
+**Demo credentials:**
+- Phone: `9876543210`
+- Password: `demo123`
 
 ## Build
 
@@ -35,4 +32,22 @@ If port 3000 is already taken, Vite uses the next free port (for example `3001`)
 npm run build
 npm run preview
 ```
-# Buyer-project
+
+## Environment Variables
+
+| Variable | Default | Description |
+| --- | --- | --- |
+| `DB_HOST` | `127.0.0.1` | MySQL host |
+| `DB_USER` | `root` | MySQL user |
+| `DB_PASSWORD` | *(empty)* | MySQL password |
+| `DB_NAME` | `demostore` | MySQL database name |
+| `DB_PORT` | `3306` | MySQL port |
+| `NODE_ENV` | `development` | `production` = stricter errors, no demo fallback |
+
+## Deployment
+
+Deployed to **Render** (`buyer-project.onrender.com`) via `render.yaml`.
+
+- Build command: `npm install && rm -rf .nuxt .output && npm run build`
+- Start command: `node .output/server/index.mjs`
+- MySQL is required at runtime

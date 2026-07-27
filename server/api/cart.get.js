@@ -2,7 +2,6 @@ import { getPool } from '../utils/db.js'
 import { requireUser } from '../utils/auth.js'
 import { fetchProductRowById, toProductPayload, fetchReviewStats } from '../utils/products.js'
 import { ensureCartTables } from '../utils/schema.js'
-// Force rebuild v3
 
 export default defineEventHandler(async (event) => {
   try {

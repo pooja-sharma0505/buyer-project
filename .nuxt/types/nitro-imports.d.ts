@@ -43,12 +43,16 @@ declare global {
   const destroySession: typeof import('../../server/utils/auth').destroySession
   const dynamicEventHandler: typeof import('../../node_modules/h3').dynamicEventHandler
   const ensureAuthTables: typeof import('../../server/utils/schema').ensureAuthTables
+  const ensureCartTables: typeof import('../../server/utils/schema').ensureCartTables
   const ensureOrderTables: typeof import('../../server/utils/schema').ensureOrderTables
+  const ensureProductsTable: typeof import('../../server/utils/schema').ensureProductsTable
   const ensureReviewTables: typeof import('../../server/utils/schema').ensureReviewTables
+  const ensureUsersTable: typeof import('../../server/utils/schema').ensureUsersTable
   const eventHandler: typeof import('../../node_modules/h3').eventHandler
   const fetchAllProductsRows: typeof import('../../server/utils/products').fetchAllProductsRows
   const fetchProductRowById: typeof import('../../server/utils/products').fetchProductRowById
   const fetchProductsPage: typeof import('../../server/utils/products').fetchProductsPage
+  const fetchReviewStats: typeof import('../../server/utils/products').fetchReviewStats
   const fetchWithEvent: typeof import('../../node_modules/h3').fetchWithEvent
   const fromNodeMiddleware: typeof import('../../node_modules/h3').fromNodeMiddleware
   const fromPlainHandler: typeof import('../../node_modules/h3').fromPlainHandler
@@ -164,10 +168,10 @@ export { getRouteRules } from 'nitropack/runtime/internal/route-rules';
 export { useEvent } from 'nitropack/runtime/internal/context';
 export { defineTask, runTask } from 'nitropack/runtime/internal/task';
 export { defineNitroErrorHandler } from 'nitropack/runtime/internal/error/utils';
-export { buildAssetsURL as __buildAssetsURL, publicAssetsURL as __publicAssetsURL } from '/workspace/node_modules/@nuxt/nitro-server/dist/runtime/utils/paths';
-export { defineAppConfig } from '/workspace/node_modules/@nuxt/nitro-server/dist/runtime/utils/config';
-export { getSessionToken, getUserFromSession, requireUser, setSessionCookie, clearSessionCookie, destroySession } from '/workspace/server/utils/auth';
-export { getPool, testDbConnection, resetPool } from '/workspace/server/utils/db';
-export { getDemoProducts, getDemoProductById } from '/workspace/server/utils/demo-products';
-export { fetchProductsPage, fetchAllProductsRows, fetchProductRowById, toProductPayload } from '/workspace/server/utils/products';
-export { ensureAuthTables, ensureOrderTables, seedDemoUserIfEmpty, ensureReviewTables } from '/workspace/server/utils/schema';
+export { buildAssetsURL as __buildAssetsURL, publicAssetsURL as __publicAssetsURL } from '/Applications/XAMPP/xamppfiles/htdocs/buyer-project/node_modules/@nuxt/nitro-server/dist/runtime/utils/paths';
+export { defineAppConfig } from '/Applications/XAMPP/xamppfiles/htdocs/buyer-project/node_modules/@nuxt/nitro-server/dist/runtime/utils/config';
+export { getSessionToken, getUserFromSession, requireUser, setSessionCookie, clearSessionCookie, destroySession } from '/Applications/XAMPP/xamppfiles/htdocs/buyer-project/server/utils/auth';
+export { getPool, testDbConnection, resetPool } from '/Applications/XAMPP/xamppfiles/htdocs/buyer-project/server/utils/db';
+export { getDemoProducts, getDemoProductById } from '/Applications/XAMPP/xamppfiles/htdocs/buyer-project/server/utils/demo-products';
+export { fetchProductsPage, fetchAllProductsRows, fetchProductRowById, fetchReviewStats, toProductPayload } from '/Applications/XAMPP/xamppfiles/htdocs/buyer-project/server/utils/products';
+export { ensureUsersTable, ensureProductsTable, ensureAuthTables, ensureOrderTables, seedDemoUserIfEmpty, ensureCartTables, ensureReviewTables } from '/Applications/XAMPP/xamppfiles/htdocs/buyer-project/server/utils/schema';

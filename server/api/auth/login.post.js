@@ -6,16 +6,11 @@ import bcrypt from 'bcryptjs'
 
 export default defineEventHandler(async (event) => {
   const body = await readBody(event)
-  const name = String(body?.name ?? '').trim()
   const phone = String(body?.phone ?? '').trim()
   const password = String(body?.password ?? '')
 
-  if (!name || !phone || !password) {
-    throw createError({ statusCode: 400, message: 'Name, phone, and password are required' })
-  }
-
-  if (name.length < 2) {
-    throw createError({ statusCode: 400, message: 'Name must be at least 2 characters' })
+  if (!phone || !password) {
+    throw createError({ statusCode: 400, message: 'Phone and password are required' })
   }
 
   if (!/^\d{10,15}$/.test(phone)) {
@@ -32,10 +27,10 @@ export default defineEventHandler(async (event) => {
       `
       SELECT id, name, phone, role, password_hash
       FROM users
-      WHERE name = ? AND phone = ?
+      WHERE phone = ?
       LIMIT 1
       `,
-      [name, phone]
+      [phone]
     )
 
     if (!rows.length) {

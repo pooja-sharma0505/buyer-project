@@ -79,7 +79,7 @@ export async function seedDemoUserIfEmpty(pool, defaultPasswordHash) {
       'INSERT INTO users (name, phone, password_hash, role) VALUES (?, ?, ?, ?)',
       ['Demo User', '9876543210', defaultPasswordHash, 'customer']
     )
-    console.log('[db] Seeded demo user — login with name "Demo User" and phone "9876543210", password "demo123"')
+    console.log('[db] Seeded default demo user')
     return
   }
 

@@ -124,6 +124,7 @@ const cart = useCart()
 const wishlist = useWishlist()
 const { user } = useAuth()
 const { formatPrice } = useFormatPrice()
+const { success: toastSuccess } = useToast()
 
 useHead(() => ({
   title: product.value?.title || 'Product'
@@ -183,6 +184,7 @@ const submitReview = async () => {
         comment: newComment.value
       }
     })
+    toastSuccess('Review submitted successfully')
     reviewSuccess.value = true
     newComment.value = ''
     newRating.value = 5
@@ -229,7 +231,8 @@ watch(product, () => {
 <style scoped>
 .detail-page { min-height: 100vh; background: #f8fafc; padding: 28px 16px; }
 .container { max-width: 1000px; margin: 0 auto; }
-.back-link { color: #d4af64; text-decoration: none; display: inline-block; margin-bottom: 14px; }
+.back-link { color: #d4af64; text-decoration: none; display: inline-block; margin-bottom: 14px; transition: color 0.2s ease; }
+.back-link:hover { color: #b8860b; text-decoration: underline; }
 .layout { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 20px; }
 .image-box {
   aspect-ratio: 1 / 1;

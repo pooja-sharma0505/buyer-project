@@ -12,10 +12,10 @@ export function useAuth() {
     }
   }
 
-  async function login(name, phone, password) {
+  async function login(phone, password) {
     const data = await $fetch('/api/auth/login', {
       method: 'POST',
-      body: { name, phone, password }
+      body: { phone, password }
     })
     user.value = data.user
     return data
@@ -26,6 +26,8 @@ export function useAuth() {
       await $fetch('/api/auth/logout', { method: 'POST' })
     } finally {
       user.value = null
+      const { success: toastSuccess } = useToast()
+      toastSuccess('Logged out successfully')
       await navigateTo('/')
     }
   }

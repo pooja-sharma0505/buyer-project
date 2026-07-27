@@ -14,9 +14,17 @@ export async function fetchProductsPage(pool, { limit = 12, offset = 0, category
 
   if (search && search.trim()) {
     const q = `%${search.trim()}%`
-    conditions.push(`(name LIKE ? OR description LIKE ?)`)
-    params.push(q, q)
-    countParams.push(q, q)
+    const searchCols = hasCategory
+      ? `(name LIKE ? OR description LIKE ? OR category LIKE ?)`
+      : `(name LIKE ? OR description LIKE ?)`
+    conditions.push(searchCols)
+    if (hasCategory) {
+      params.push(q, q, q)
+      countParams.push(q, q, q)
+    } else {
+      params.push(q, q)
+      countParams.push(q, q)
+    }
   }
 
   if (category && hasCategory) {

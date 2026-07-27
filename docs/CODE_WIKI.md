@@ -193,14 +193,14 @@ Responsibilities:
 
 Responsibilities:
 
-- performs simple client-side validation for `name` and `phone`
-- delegates authentication to `useAuth().login(name, phone)`
+- performs simple client-side validation for `phone` and `password`
+- delegates authentication to `useAuth().login(phone, password)`
 - redirects to the home page after successful login
 
 Notable behavior:
 
 - authentication is identity-based and expects a matching row in the database `users` table
-- there is no password field in the current implementation
+- login uses phone and password only (no name field required)
 
 ### Components
 
@@ -259,7 +259,7 @@ Key exports:
 - `user`: shared reactive state stored under `auth-user`
 - `isLoggedIn`: computed boolean derived from `user`
 - `fetchUser()`: fetches `/api/auth/me` and hydrates the current user
-- `login(name, phone)`: posts credentials to `/api/auth/login`
+- `login(phone, password)`: posts credentials to `/api/auth/login`
 - `logout()`: posts to `/api/auth/logout`, clears local auth state, and redirects home
 
 #### `composables/useCart.js`
@@ -309,7 +309,7 @@ Persistence model:
 
 Responsibilities:
 
-- reads `name` and `phone` from the request body
+- reads `phone` and `password` from the request body
 - validates presence and format
 - looks up a matching user in the `users` table
 - creates a random session token
@@ -449,7 +449,7 @@ The frontend consistently expects products in this shape:
 - Sessions: stored in MySQL `sessions`, referenced by the `auth_session` cookie
 - Orders: stored in MySQL `orders` and `order_items`
 - Wishlist: stored in browser `localStorage`
-- Cart: stored only in Nuxt client state during the current session
+- Cart: stored in browser `localStorage` and synced to MySQL when logged in
 
 ### Expected Database Tables
 
@@ -498,7 +498,7 @@ This project contains almost no traditional classes. The important units are com
 | Symbol | Location | Responsibility |
 | --- | --- | --- |
 | `fetchUser()` | `composables/useAuth.js` | Loads the current authenticated user from the server |
-| `login(name, phone)` | `composables/useAuth.js` | Logs in and stores the returned user in shared state |
+| `login(phone, password)` | `composables/useAuth.js` | Logs in and stores the returned user in shared state |
 | `logout()` | `composables/useAuth.js` | Ends the session and redirects home |
 | `addToCart(product)` | `composables/useCart.js` | Inserts or increments a cart line item |
 | `updateQty(id, qty)` | `composables/useCart.js` | Updates quantity or removes the line item |
@@ -603,8 +603,8 @@ npm run preview
 
 - `README.md` mentions extra scripts such as `dev:vite-only` and `dev:api`, but the current `package.json` only defines `dev`, `build`, `preview`, and `postinstall`
 - `Productcard.vue` uses the Options API, while the rest of the Vue code mostly uses Composition API with `<script setup>`
-- login is based on `name` and `phone` only; no password or hashing is implemented
-- cart state is not persisted, so page reloads clear the cart
+- login uses phone and password; no name field is required
+- cart state is persisted in `localStorage` and survives page reloads
 - wishlist state is persisted in `localStorage`, so it is browser-specific
 - the upload endpoint stores files in `public/uploads`, while Nitro configuration additionally exposes `server/uploads`; both contribute to the `/uploads/*` story and should be kept aligned
 - product ratings are static placeholder values generated in `toProductPayload()`

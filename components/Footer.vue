@@ -1,5 +1,5 @@
 <template>
-  <footer class="site-footer">
+  <footer class="site-footer footer">
     <div class="footer-inner">
       <div class="grid">
         <!-- About -->
