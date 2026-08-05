@@ -16,7 +16,10 @@ function resolveDbConfig() {
     password: config.dbPassword ?? '',
     database: config.dbName || 'demostore',
     waitForConnections: true,
-    connectionLimit: 10
+    connectionLimit: 10,
+    ssl: {
+      rejectUnauthorized: false
+    }
   }
 }
 
