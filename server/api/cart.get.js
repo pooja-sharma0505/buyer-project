@@ -46,6 +46,6 @@ export default defineEventHandler(async (event) => {
     return { items }
   } catch (err) {
     console.error('[cart.get] Error:', err.message, 'code:', err.code, 'errno:', err.errno)
-    throw createError({ statusCode: 500, message: 'Cart error: ' + err.message })
+    throw createError({ statusCode: 500, message: 'Failed to load cart' })
   }
 })

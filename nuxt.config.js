@@ -30,6 +30,7 @@ export default defineNuxtConfig({
     dbUser: process.env.DB_USER || 'root',
     dbPassword: process.env.DB_PASSWORD || '',
     dbName: process.env.DB_NAME || 'demostore',
-    dbPort: process.env.DB_PORT || '3306'
+    dbPort: process.env.DB_PORT || '3306',
+    dbSslRejectUnauthorized: process.env.DB_SSL_REJECT_UNAUTHORIZED !== 'false'
   }
 })

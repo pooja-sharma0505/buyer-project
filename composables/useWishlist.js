@@ -1,9 +1,9 @@
 const STORAGE_KEY = 'buyer-wishlist-v1'
 
-function loadItems() {
+function loadItems(key = STORAGE_KEY) {
   if (import.meta.server) return []
   try {
-    const raw = localStorage.getItem(STORAGE_KEY)
+    const raw = localStorage.getItem(key)
     if (!raw) return []
     const parsed = JSON.parse(raw)
     return Array.isArray(parsed) ? parsed : []
@@ -12,10 +12,10 @@ function loadItems() {
   }
 }
 
-function persist(items) {
+function persist(items, key = STORAGE_KEY) {
   if (import.meta.server) return
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(items))
+    localStorage.setItem(key, JSON.stringify(items))
   } catch {
     /* private mode / quota */
   }
@@ -23,14 +23,37 @@ function persist(items) {
 
 export function useWishlist() {
   const items = useState('wishlist-items', () => [])
+  const { isLoggedIn, user } = useAuth()
 
+  // User-scoped storage key so wishlists don't leak between accounts
+  // sharing the same browser.
+  const scopedKey = computed(() => {
+    const uid = user.value?.id
+    return uid ? `${STORAGE_KEY}-user-${uid}` : STORAGE_KEY
+  })
+
+  // Load from localStorage on client init
   if (import.meta.client && items.value.length === 0) {
-    items.value = loadItems()
+    items.value = loadItems(scopedKey.value)
+  }
+
+  // When the user changes (login/logout), switch to the correct scoped store.
+  if (import.meta.client) {
+    watch(
+      () => user.value?.id,
+      (newUserId, oldUserId) => {
+        if (newUserId !== oldUserId) {
+          items.value = loadItems(
+            newUserId ? `${STORAGE_KEY}-user-${newUserId}` : STORAGE_KEY
+          )
+        }
+      }
+    )
   }
 
   watch(
     items,
-    (next) => persist(next),
+    (next) => persist(next, scopedKey.value),
     { deep: true }
   )
 

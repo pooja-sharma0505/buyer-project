@@ -1,10 +1,10 @@
 const STORAGE_KEY = 'buyer-cart-v1'
 const MAX_QTY_PER_PRODUCT = 2
 
-function loadItems() {
+function loadItems(key) {
   if (import.meta.server) return []
   try {
-    const raw = localStorage.getItem(STORAGE_KEY)
+    const raw = localStorage.getItem(key)
     if (!raw) return []
     const parsed = JSON.parse(raw)
     return Array.isArray(parsed) ? parsed : []
@@ -13,10 +13,10 @@ function loadItems() {
   }
 }
 
-function persist(items) {
+function persist(items, key) {
   if (import.meta.server) return
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(items))
+    localStorage.setItem(key, JSON.stringify(items))
   } catch {
     /* private mode / quota */
   }
@@ -24,12 +24,33 @@ function persist(items) {
 
 export function useCart() {
   const items = useState('cart-items', () => [])
-  const { isLoggedIn } = useAuth()
+  const { isLoggedIn, user } = useAuth()
   const isHydrated = ref(false)
+
+  // User-scoped storage key so carts don't leak between accounts
+  // sharing the same browser.
+  const scopedKey = computed(() => {
+    const uid = user.value?.id
+    return uid ? `${STORAGE_KEY}-user-${uid}` : STORAGE_KEY
+  })
 
   // Load from localStorage on client init (for guests or before auth resolves)
   if (import.meta.client && items.value.length === 0) {
-    items.value = loadItems()
+    items.value = loadItems(scopedKey.value)
+  }
+
+  // When the user changes (login/logout), switch to the correct scoped store.
+  if (import.meta.client) {
+    watch(
+      () => user.value?.id,
+      (newUserId, oldUserId) => {
+        if (newUserId !== oldUserId) {
+          items.value = loadItems(
+            newUserId ? `${STORAGE_KEY}-user-${newUserId}` : STORAGE_KEY
+          )
+        }
+      }
+    )
   }
 
   // Sync with DB when logged in
@@ -39,7 +60,7 @@ export function useCart() {
       const dbCart = await $fetch('/api/cart')
       if (dbCart?.items?.length) {
         items.value = dbCart.items.map((item) => ({ ...item, qty: item.qty || 1 }))
-        persist(items.value)
+        persist(items.value, scopedKey.value)
       }
     } catch (err) {
       // If DB cart is empty or fails, keep localStorage items
@@ -74,7 +95,7 @@ export function useCart() {
   watch(
     items,
     (next) => {
-      persist(next)
+      persist(next, scopedKey.value)
       if (isLoggedIn.value) {
         saveToDb()
       }

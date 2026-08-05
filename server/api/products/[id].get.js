@@ -32,10 +32,10 @@ export default defineEventHandler(async (event) => {
       return fallbackProduct
     }
 
+    console.error(`[product/${id}] Unexpected error:`, error?.message || error)
     throw createError({
       statusCode: 500,
-      message: 'Failed to fetch product',
-      data: { error: error.message }
+      message: 'Failed to fetch product'
     })
   }
 })

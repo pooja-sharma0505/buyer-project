@@ -24,10 +24,10 @@ export default defineEventHandler(async (event) => {
 
     return { message: 'Review submitted' }
   } catch (error) {
+    console.error('[reviews.post] Unexpected error:', error?.message || error)
     throw createError({
       statusCode: 500,
-      message: 'Failed to submit review',
-      data: { error: error.message }
+      message: 'Failed to submit review'
     })
   }
 })

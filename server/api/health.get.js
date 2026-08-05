@@ -5,10 +5,10 @@ export default defineEventHandler(async () => {
     await getPool().query('SELECT 1')
     return { ok: true, database: 'connected' }
   } catch (error) {
+    console.error('[health] Database connection error:', error?.message || error)
     throw createError({
       statusCode: 500,
-      message: 'Database connection failed',
-      data: { error: error.message }
+      message: 'Database connection failed'
     })
   }
 })

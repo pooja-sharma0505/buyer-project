@@ -50,10 +50,10 @@ export default defineEventHandler(async (event) => {
     }
   } catch (error) {
     if (error.statusCode) throw error
+    console.error('[signup] Unexpected error:', error?.message || error)
     throw createError({
       statusCode: 500,
-      message: 'Signup failed',
-      data: { error: error.message }
+      message: 'Signup failed'
     })
   }
 })

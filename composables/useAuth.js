@@ -26,6 +26,22 @@ export function useAuth() {
       await $fetch('/api/auth/logout', { method: 'POST' })
     } finally {
       user.value = null
+      // Clear user-scoped localStorage so the next user on a shared browser
+      // doesn't see the previous user's cart or wishlist.
+      if (import.meta.client) {
+        try {
+          localStorage.removeItem('buyer-cart-v1')
+          localStorage.removeItem('buyer-wishlist-v1')
+          // Remove any user-scoped keys
+          Object.keys(localStorage).forEach((key) => {
+            if (key.startsWith('buyer-cart-v1-user-') || key.startsWith('buyer-wishlist-v1-user-')) {
+              localStorage.removeItem(key)
+            }
+          })
+        } catch {
+          /* private mode / quota */
+        }
+      }
       const { success: toastSuccess } = useToast()
       toastSuccess('Logged out successfully')
       await navigateTo('/')

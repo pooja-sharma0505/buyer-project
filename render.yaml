@@ -4,3 +4,26 @@ services:
     env: node
     buildCommand: npm install && rm -rf .nuxt .output && npm run build
     startCommand: node .output/server/index.mjs
+    envVars:
+      # Database — set these in Render's dashboard (Environment tab)
+      # DB_HOST, DB_USER, DB_PASSWORD, DB_NAME are required for production.
+      # Do NOT commit real credentials here; configure them in the Render dashboard.
+      - key: NODE_ENV
+        value: production
+      - key: DB_HOST
+        value: gateway01.ap-southeast-1.prod.aws.tidbcloud.com
+      - key: DB_PORT
+        value: 4000
+      - key: DB_NAME
+        value: demostore
+      - key: DB_USER
+        value: 2VQbbPrE7w7fDMX.root
+      - key: DB_PASSWORD
+        value: GyYV3X98AdqBpx6E
+      # SSL: set to false only if your DB provider uses a self-signed cert.
+      # - key: DB_SSL_REJECT_UNAUTHORIZED
+      #   value: false
+      # File uploads: local disk works on Render (persistent Node server).
+      # On Vercel, set UPLOAD_PROVIDER=cloud and configure S3-compatible storage.
+      - key: UPLOAD_PROVIDER
+        value: local

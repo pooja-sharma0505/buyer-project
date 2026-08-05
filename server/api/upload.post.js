@@ -7,6 +7,10 @@ const ALLOWED_MIMETYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif']
 const ALLOWED_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.webp', '.gif']
 const MAX_SIZE_BYTES = 5 * 1024 * 1024 // 5 MB
 
+// Detect Vercel's ephemeral, read-only filesystem.
+// On Vercel, local disk writes are not persisted between invocations.
+const isVercel = process.env.VERCEL === '1' || !!process.env.VERCEL
+
 export default defineEventHandler(async (event) => {
   await requireUser(event)
 
@@ -51,6 +55,18 @@ export default defineEventHandler(async (event) => {
 
     const oldPath = file.filepath
     const fileName = `${Date.now()}_${file.originalFilename || 'upload.jpg'}`
+
+    // On Vercel (ephemeral filesystem), local disk writes are not persisted.
+    // Return a clear error so the caller knows to configure cloud storage.
+    if (isVercel) {
+      // Clean up the temp file
+      try { fs.unlinkSync(oldPath) } catch { /* ignore */ }
+      throw createError({
+        statusCode: 501,
+        message: 'Local file uploads are not supported on Vercel. Configure UPLOAD_PROVIDER=cloud (e.g. S3) and set the required cloud storage env vars.'
+      })
+    }
+
     const uploadDir = path.join(process.cwd(), 'public', 'uploads')
 
     if (!fs.existsSync(uploadDir)) {
@@ -82,6 +98,7 @@ export default defineEventHandler(async (event) => {
     }
   } catch (uploadErr) {
     if (uploadErr.statusCode) throw uploadErr
-    throw createError({ statusCode: 500, message: 'Upload failed', data: { error: uploadErr.message } })
+    console.error('[upload] Unexpected error:', uploadErr?.message || uploadErr)
+    throw createError({ statusCode: 500, message: 'Upload failed' })
   }
 })

@@ -67,10 +67,10 @@ export default defineEventHandler(async (event) => {
     }
   } catch (error) {
     if (error.statusCode) throw error
+    console.error('[login] Unexpected error:', error?.message || error)
     throw createError({
       statusCode: 500,
-      message: 'Login failed',
-      data: { error: error.message }
+      message: 'Login failed'
     })
   }
 })

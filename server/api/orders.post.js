@@ -78,10 +78,10 @@ export default defineEventHandler(async (event) => {
   } catch (error) {
     await connection.rollback()
     if (error.statusCode) throw error
+    console.error('[orders.post] Unexpected error:', error?.message || error)
     throw createError({
       statusCode: 500,
-      message: 'Failed to place order',
-      data: { error: error.message }
+      message: 'Failed to place order'
     })
   } finally {
     connection.release()

@@ -1,5 +1,5 @@
-import { getPool } from '../../utils/db.js'
-import { ensureReviewTables } from '../../utils/schema.js'
+import { getPool } from '../utils/db.js'
+import { ensureReviewTables } from '../utils/schema.js'
 
 export default defineEventHandler(async (event) => {
   const productId = getRouterParam(event, 'productId')
@@ -28,10 +28,10 @@ export default defineEventHandler(async (event) => {
       }))
     }
   } catch (error) {
+    console.error('[reviews.get] Unexpected error:', error?.message || error)
     throw createError({
       statusCode: 500,
-      message: 'Failed to fetch reviews',
-      data: { error: error.message }
+      message: 'Failed to fetch reviews'
     })
   }
 })
