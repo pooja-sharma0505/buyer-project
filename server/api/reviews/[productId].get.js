@@ -1,5 +1,5 @@
-import { getPool } from '../utils/db.js'
-import { ensureReviewTables } from '../utils/schema.js'
+import { getPool } from '../../utils/db.js'
+import { ensureReviewTables } from '../../utils/schema.js'
 
 export default defineEventHandler(async (event) => {
   const productId = getRouterParam(event, 'productId')
