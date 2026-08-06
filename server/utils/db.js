@@ -46,14 +46,22 @@ function resolveDbConfig() {
 export function getPool() {
   if (pool) return pool
 
-  pool = mysql.createPool(resolveDbConfig())
+  const config = resolveDbConfig()
+  console.log('[db] Creating MySQL connection pool for database:', config.database, 'host:', config.host, 'port:', config.port)
+  pool = mysql.createPool(config)
   return pool
 }
 
 export async function testDbConnection() {
   const activePool = getPool()
-  await activePool.query('SELECT 1')
-  return true
+  try {
+    await activePool.query('SELECT 1')
+    console.log('[db] Database connection test successful')
+    return true
+  } catch (error) {
+    console.error('[db] Database connection test failed:', error?.message || String(error))
+    throw error
+  }
 }
 
 export function resetPool() {

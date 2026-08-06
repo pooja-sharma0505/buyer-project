@@ -18,8 +18,10 @@ export default defineEventHandler(async (event) => {
       const { rows, hasCategory, total } = await fetchProductsPage(pool, { limit, offset, category, search })
       const ids = rows.map((r) => r.id)
       const reviewStats = await fetchReviewStats(pool, ids)
+      const products = rows.map((row) => toProductPayload(row, hasCategory, reviewStats.get(row.id)))
+      console.log('[api/products] Returning paginated products:', products.length, 'of', total, 'total')
       return {
-        products: rows.map((row) => toProductPayload(row, hasCategory, reviewStats.get(row.id))),
+        products,
         total,
         page,
         limit
@@ -29,18 +31,24 @@ export default defineEventHandler(async (event) => {
     const { rows, hasCategory } = await fetchAllProductsRows(pool)
     const ids = rows.map((r) => r.id)
     const reviewStats = await fetchReviewStats(pool, ids)
-    return rows.map((row) => toProductPayload(row, hasCategory, reviewStats.get(row.id)))
+    const products = rows.map((row) => toProductPayload(row, hasCategory, reviewStats.get(row.id)))
+    console.log('[api/products] Returning all products:', products.length)
+    return products
   } catch (error) {
+    const message = error?.message || String(error)
+    console.error('[api/products] Error fetching products:', message)
+
     if (process.env.NODE_ENV === 'production') {
-      console.error('Database products failed in production:', error?.message || String(error))
+      console.error('[api/products] Database products failed in production:', message)
       throw createError({ statusCode: 500, message: 'Failed to load products' })
     }
 
-    const message = error?.message || String(error)
     console.warn(
-      'Falling back to demo products because database products could not be loaded:',
+      '[api/products] Falling back to demo products because database products could not be loaded:',
       message
     )
-    return getDemoProducts()
+    const demoProducts = getDemoProducts()
+    console.log('[api/products] Returning demo products:', demoProducts.length)
+    return demoProducts
   }
 })

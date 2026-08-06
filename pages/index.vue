@@ -113,6 +113,16 @@ const { data: products, pending, error: fetchError, refresh } = await useFetch('
   })
 })
 
+// Log the fetch result for debugging
+if (fetchError.value) {
+  console.error('[index] Failed to fetch products:', fetchError.value?.message || fetchError.value)
+} else if (products.value) {
+  const count = Array.isArray(products.value)
+    ? products.value.length
+    : (products.value.products?.length || 0)
+  console.log('[index] Products fetched successfully:', count)
+}
+
 // Normalize the API response: the endpoint returns a plain array when no
 // search/pagination params are sent, but returns { products, total, page, limit }
 // when a search query is present. This computed always yields an array so the
