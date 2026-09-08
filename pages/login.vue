@@ -59,6 +59,7 @@ useSeoMeta({
 
 const { login } = useAuth()
 const { success: toastSuccess } = useToast()
+const route = useRoute()
 
 const phone = ref('')
 const password = ref('')
@@ -119,7 +120,8 @@ const handleLogin = async () => {
     await login(phone.value, password.value)
     toastSuccess('Login successful')
     success.value = 'Success'
-    await navigateTo('/')
+    const redirect = route.query.redirect || '/'
+    await navigateTo(redirect)
   } catch (err) {
     error.value = err.data?.message || err.message || 'Login failed'
   } finally {

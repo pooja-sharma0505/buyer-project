@@ -48,6 +48,7 @@ declare global {
   const ensureProductsTable: typeof import('../../server/utils/schema').ensureProductsTable
   const ensureReviewTables: typeof import('../../server/utils/schema').ensureReviewTables
   const ensureUsersTable: typeof import('../../server/utils/schema').ensureUsersTable
+  const ensureWishlistTable: typeof import('../../server/utils/schema').ensureWishlistTable
   const eventHandler: typeof import('../../node_modules/h3').eventHandler
   const fetchAllProductsRows: typeof import('../../server/utils/products').fetchAllProductsRows
   const fetchProductRowById: typeof import('../../server/utils/products').fetchProductRowById
@@ -174,4 +175,4 @@ export { getSessionToken, getUserFromSession, requireUser, setSessionCookie, cle
 export { getPool, testDbConnection, resetPool } from '/Applications/XAMPP/xamppfiles/htdocs/buyer-project/server/utils/db';
 export { getDemoProducts, getDemoProductById } from '/Applications/XAMPP/xamppfiles/htdocs/buyer-project/server/utils/demo-products';
 export { fetchProductsPage, fetchAllProductsRows, fetchProductRowById, fetchReviewStats, toProductPayload } from '/Applications/XAMPP/xamppfiles/htdocs/buyer-project/server/utils/products';
-export { ensureUsersTable, ensureProductsTable, ensureAuthTables, ensureOrderTables, seedDemoUserIfEmpty, ensureCartTables, ensureReviewTables } from '/Applications/XAMPP/xamppfiles/htdocs/buyer-project/server/utils/schema';
+export { ensureUsersTable, ensureProductsTable, ensureAuthTables, ensureOrderTables, seedDemoUserIfEmpty, ensureCartTables, ensureReviewTables, ensureWishlistTable } from '/Applications/XAMPP/xamppfiles/htdocs/buyer-project/server/utils/schema';

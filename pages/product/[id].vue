@@ -16,6 +16,7 @@
           <h1 class="title">{{ product.title }}</h1>
           <p class="price">{{ formatPrice(product.price) }}</p>
           <p class="description">{{ product.description }}</p>
+          <p class="availability">Availability: <span>In Stock</span></p>
           <div class="qty-row">
             <button type="button" class="qty-btn" @click="detailQty > 1 && detailQty--" aria-label="Decrease quantity">-</button>
             <input
@@ -126,6 +127,18 @@ const { user } = useAuth()
 const { formatPrice } = useFormatPrice()
 const { success: toastSuccess } = useToast()
 
+const { data: product, pending, error } = await useFetch(() => `/api/products/${route.params.id}`)
+
+const { data: reviewsData, pending: reviewsPending, error: reviewsError, refresh: refreshReviews } = await useFetch(() => `/api/reviews/${route.params.id}`, { server: false })
+
+const reviews = computed(() => reviewsData.value?.reviews || [])
+
+const detailImgBad = ref(false)
+const detailQty = ref(1)
+
+const cartQty = computed(() => cart.getCartQty(product.value?.id))
+const remainingQty = computed(() => Math.max(0, cart.MAX_QTY_PER_PRODUCT - cartQty.value))
+
 useHead(() => ({
   title: product.value?.title || 'Product'
 }))
@@ -136,18 +149,6 @@ useSeoMeta(() => ({
   ogImage: product.value?.image || '/og-image.svg',
   ogType: 'product'
 }))
-
-const detailImgBad = ref(false)
-const detailQty = ref(1)
-
-const cartQty = computed(() => cart.getCartQty(product.value?.id))
-const remainingQty = computed(() => Math.max(0, cart.MAX_QTY_PER_PRODUCT - cartQty.value))
-
-const { data: product, pending, error } = await useFetch(() => `/api/products/${route.params.id}`)
-
-const { data: reviewsData, pending: reviewsPending, error: reviewsError, refresh: refreshReviews } = await useFetch(() => `/api/reviews/${route.params.id}`, { server: false })
-
-const reviews = computed(() => reviewsData.value?.reviews || [])
 
 const newRating = ref(5)
 const newComment = ref('')
@@ -259,6 +260,8 @@ watch(product, () => {
 .title { margin-bottom: 10px; color: #111827; font-family: 'Cormorant Garamond', serif; }
 .price { color: #111827; font-weight: 600; margin-bottom: 12px; font-size: 18px; }
 .description { color: #4b5563; margin-bottom: 16px; }
+.availability { color: #374151; margin-bottom: 14px; font-size: 14px; }
+.availability span { color: #15803d; font-weight: 600; }
 .qty-row { display: flex; align-items: center; gap: 6px; margin-bottom: 14px; }
 .qty-btn { width: 32px; height: 32px; border: 1px solid #d1d5db; border-radius: 6px; background: #fff; color: #374151; cursor: pointer; font-size: 14px; display: flex; align-items: center; justify-content: center; }
 .qty-btn:hover { border-color: #d4af64; color: #d4af64; }

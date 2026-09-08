@@ -9,11 +9,12 @@
             <line x1="21" y1="21" x2="16.65" y2="16.65" />
           </svg>
           <input
-            v-model.trim="search"
+            v-model="search"
             type="search"
-            aria-label="Search in current category"
+            aria-label="Search products"
             placeholder="Search products…"
             class="search-input"
+            @keyup.enter="onSearchEnter"
           />
         </div>
       </div>
@@ -23,15 +24,15 @@
           v-for="cat in categories"
           :key="cat"
           class="filter-btn"
-          :class="{ active: selectedCategory === cat }"
-          @click="selectedCategory = cat"
+          :class="{ active: norm(selectedCategory) === norm(cat) }"
+          @click="selectCategory(cat)"
         >
           {{ cat }}
         </button>
       </div>
 
       <div v-if="pending" class="row">
-        <SkeletonLoader v-for="n in 12" :key="n" type="card" />
+        <SkeletonLoader v-for="n in pageSize" :key="n" type="card" />
       </div>
       <p v-else-if="fetchError" class="status-text error">{{ fetchError.message || 'Unable to load products' }}</p>
 
@@ -47,7 +48,7 @@
           </div>
           <h2 class="empty-title">No products found</h2>
           <p class="empty-text">No products match{{ selectedCategory === 'All' ? '' : ` in “${selectedCategory}”` }}{{ search ? ' for your search' : '' }}.</p>
-          <button class="empty-cta" @click="selectedCategory = 'All'; search = ''">Clear Filters</button>
+          <button class="empty-cta" @click="clearFilters">Clear Filters</button>
         </div>
         <div v-else class="row">
           <Productcard
@@ -59,7 +60,6 @@
             :price="product.price"
             :category="product.category"
             :rating="product.rating"
-            @add-to-cart="cart.addToCart"
           />
         </div>
 
@@ -68,7 +68,7 @@
             type="button"
             class="page-btn"
             :disabled="currentPage <= 1"
-            @click="currentPage--"
+            @click="goToPage(currentPage - 1)"
           >
             Previous
           </button>
@@ -77,7 +77,7 @@
             type="button"
             class="page-btn"
             :disabled="currentPage >= pageCount"
-            @click="currentPage++"
+            @click="goToPage(currentPage + 1)"
           >
             Next
           </button>
@@ -100,91 +100,93 @@ const cart = useCart()
 const route = useRoute()
 const router = useRouter()
 
-const selectedCategory = ref('All')
+function getCategoryFromRoute() {
+  const raw = route.query.category
+  const r = Array.isArray(raw) ? String(raw[0] ?? '').trim() : typeof raw === 'string' ? raw.trim() : ''
+  return r || 'All'
+}
+
+const selectedCategory = ref(getCategoryFromRoute())
 const search = ref('')
 const currentPage = ref(1)
 const pageSize = 12
 
-const { data: products, pending, error: fetchError, refresh } = await useFetch('/api/products', {
-  query: computed(() => {
-    const q = {}
-    if (search.value.trim()) q.search = search.value.trim()
-    return q
-  })
+const searchDebounced = useDebounce(search, 300)
+
+const { data: categoriesData } = await useAsyncData('product-categories', () => $fetch('/api/categories'))
+
+const allCategoryProducts = computed(() => {
+  const data = categoriesData.value
+  if (!data) return []
+  return Array.isArray(data) ? data.map(c => ({ category: c })) : []
 })
 
-// Log the fetch result for debugging
-if (fetchError.value) {
-  console.error('[index] Failed to fetch products:', fetchError.value?.message || fetchError.value)
-} else if (products.value) {
-  const count = Array.isArray(products.value)
-    ? products.value.length
-    : (products.value.products?.length || 0)
-  console.log('[index] Products fetched successfully:', count)
+const categories = computed(() => {
+  const set = new Set()
+  for (const p of allCategoryProducts.value) {
+    const c = p.category
+    if (c) set.add(c)
+  }
+  return ['All', ...Array.from(set).sort((a, b) => a.localeCompare(b))]
+})
+
+const productsData = ref(null)
+const productsPending = ref(true)
+const productsError = ref(null)
+
+async function loadProducts() {
+  productsPending.value = true
+  productsError.value = null
+  try {
+    const q = {
+      page: currentPage.value,
+      limit: pageSize
+    }
+    if (searchDebounced.value.trim()) q.search = searchDebounced.value.trim()
+    if (selectedCategory.value !== 'All') q.category = selectedCategory.value
+    productsData.value = await $fetch('/api/products', { query: q })
+  } catch (err) {
+    productsError.value = err
+  } finally {
+    productsPending.value = false
+  }
 }
 
-// Normalize the API response: the endpoint returns a plain array when no
-// search/pagination params are sent, but returns { products, total, page, limit }
-// when a search query is present. This computed always yields an array so the
-// downstream filtering never crashes on an object shape.
-const allProducts = computed(() => {
-  const data = products.value
+await loadProducts()
+
+watch([selectedCategory, searchDebounced], () => {
+  currentPage.value = 1
+  loadProducts()
+})
+
+watch(currentPage, () => {
+  window.scrollTo({ top: 0, behavior: 'smooth' })
+})
+
+const pageData = computed(() => productsData.value)
+const pending = computed(() => productsPending.value)
+const fetchError = computed(() => productsError.value)
+
+const paginatedProducts = computed(() => {
+  const data = pageData.value
   if (!data) return []
   if (Array.isArray(data)) return data
   if (data && Array.isArray(data.products)) return data.products
   return []
 })
 
-const SHOP_CATEGORIES = ['Men', 'Women', 'Jewellery', 'Electronics']
-
-const categories = computed(() => {
-  const list = allProducts.value
-  const extras = new Set()
-  for (const p of list) {
-    const c = p.category
-    if (c && !SHOP_CATEGORIES.includes(c)) extras.add(c)
+const pageCount = computed(() => {
+  const data = pageData.value
+  if (data && typeof data.total === 'number') {
+    return Math.max(1, Math.ceil(data.total / pageSize))
   }
-  const extraSorted = Array.from(extras).sort((a, b) => a.localeCompare(b))
-  return ['All', ...SHOP_CATEGORIES, ...extraSorted]
-})
-
-function norm(s) {
-  return String(s ?? '')
-    .trim()
-    .toLowerCase()
-}
-
-function categoryMatches(productCategory, chip) {
-  if (chip === 'All') return true
-  return norm(productCategory) === norm(chip)
-}
-
-function searchMatches(product, term) {
-  if (!term) return true
-  const t = norm(term)
-  return norm(product.title).includes(t) || norm(product.description).includes(t) || norm(product.category).includes(t)
-}
-
-const filteredProducts = computed(() =>
-  allProducts.value.filter((p) => {
-    if (!categoryMatches(p.category, selectedCategory.value)) return false
-    if (!searchMatches(p, search.value)) return false
-    return true
-  })
-)
-
-const pageCount = computed(() => Math.max(1, Math.ceil(filteredProducts.value.length / pageSize)))
-const paginatedProducts = computed(() => {
-  const start = (currentPage.value - 1) * pageSize
-  return filteredProducts.value.slice(start, start + pageSize)
+  return 1
 })
 
 function canonicalCategoryFromQuery(raw) {
   const r = typeof raw === 'string' ? raw.trim() : Array.isArray(raw) ? String(raw[0] ?? '').trim() : ''
   if (!r) return 'All'
-  const list = categories.value.filter((c) => c !== 'All')
-  const found = list.find((c) => norm(c) === norm(r))
-  return found || 'All'
+  return r
 }
 
 watch(
@@ -219,6 +221,33 @@ watch(selectedCategory, (cat) => {
   if (curStr === want || (!curStr && !want)) return
   router.replace({ path: '/', query: want ? { ...route.query, category: want } : Object.fromEntries(Object.entries(route.query).filter(([k]) => k !== 'category')) })
 })
+
+watch(currentPage, () => {
+  window.scrollTo({ top: 0, behavior: 'smooth' })
+})
+
+function norm(s) {
+  return String(s ?? '')
+    .trim()
+    .toLowerCase()
+}
+
+function selectCategory(cat) {
+  selectedCategory.value = cat
+}
+
+function clearFilters() {
+  selectedCategory.value = 'All'
+  search.value = ''
+}
+
+function onSearchEnter() {
+  currentPage.value = 1
+}
+
+function goToPage(page) {
+  currentPage.value = page
+}
 </script>
 
 <style scoped>

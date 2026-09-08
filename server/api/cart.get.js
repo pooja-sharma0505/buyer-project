@@ -16,16 +16,10 @@ export default defineEventHandler(async (event) => {
       )
       rows = result[0] || []
     } catch (err) {
-      if (err.code === 'ER_BAD_FIELD_ERROR' || err.errno === 1054) {
-        const result = await pool.query(
-          'SELECT product_id, qty FROM cart WHERE user_id = ?',
-          [user.id]
-        )
-        rows = result[0] || []
-      } else if (err.code === 'ER_NO_SUCH_TABLE' || err.errno === 1146) {
+      if (err.code === 'ER_NO_SUCH_TABLE' || err.errno === 1146) {
         await ensureCartTables(pool)
         const result = await pool.query(
-          'SELECT product_id, qty FROM cart WHERE user_id = ?',
+          'SELECT product_id, qty FROM cart WHERE user_id = ? ORDER BY created_at DESC',
           [user.id]
         )
         rows = result[0] || []
@@ -46,6 +40,7 @@ export default defineEventHandler(async (event) => {
     return { items }
   } catch (err) {
     console.error('[cart.get] Error:', err.message, 'code:', err.code, 'errno:', err.errno)
+    if (err.statusCode) throw err
     throw createError({ statusCode: 500, message: 'Failed to load cart' })
   }
 })

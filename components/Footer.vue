@@ -17,7 +17,8 @@
             <li><NuxtLink class="footer-link" to="/">Home</NuxtLink></li>
             <li><NuxtLink class="footer-link" to="/wishlist">Wishlist</NuxtLink></li>
             <li><NuxtLink class="footer-link" to="/cart">Cart</NuxtLink></li>
-            <li><NuxtLink class="footer-link" to="/login">Login</NuxtLink></li>
+            <li v-if="isLoggedIn"><NuxtLink class="footer-link" to="/orders">Orders</NuxtLink></li>
+            <li v-else><NuxtLink class="footer-link" to="/login">Login</NuxtLink></li>
           </ul>
         </div>
 
@@ -25,11 +26,14 @@
         <div class="block">
           <h3 class="title">Categories</h3>
           <ul class="links">
-            <li><NuxtLink class="footer-link" :to="{ path: '/', query: {} }">All products</NuxtLink></li>
-            <li><NuxtLink class="footer-link" :to="{ path: '/', query: { category: 'Men' } }">Men</NuxtLink></li>
-            <li><NuxtLink class="footer-link" :to="{ path: '/', query: { category: 'Women' } }">Women</NuxtLink></li>
-            <li><NuxtLink class="footer-link" :to="{ path: '/', query: { category: 'Jewellery' } }">Jewellery</NuxtLink></li>
-            <li><NuxtLink class="footer-link" :to="{ path: '/', query: { category: 'Electronics' } }">Electronics</NuxtLink></li>
+            <li>
+              <NuxtLink class="footer-link" :to="{ path: '/', query: {} }">All products</NuxtLink>
+            </li>
+            <li v-for="cat in footerCategories" :key="cat">
+              <NuxtLink class="footer-link" :to="{ path: '/', query: { category: cat } }">
+                {{ cat }}
+              </NuxtLink>
+            </li>
           </ul>
         </div>
 
@@ -49,6 +53,15 @@
 
 <script setup>
 const year = new Date().getFullYear()
+const { isLoggedIn } = useAuth()
+
+const { data: categoriesList } = await useAsyncData('footer-categories', () => $fetch('/api/categories'))
+
+const footerCategories = computed(() => {
+  const list = categoriesList.value
+  if (!list) return []
+  return Array.isArray(list) ? list : []
+})
 </script>
 
 <style scoped>

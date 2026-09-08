@@ -20,12 +20,18 @@ declare module "nitropack/types" {
       'get': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/cart.get').default>>>>
       'post': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/cart.post').default>>>>
     }
+    '/api/categories': {
+      'get': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/categories.get').default>>>>
+    }
     '/api/health': {
       'get': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/health.get').default>>>>
     }
     '/api/orders': {
       'post': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/orders.post').default>>>>
       'get': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/orders/index.get').default>>>>
+    }
+    '/api/orders/:id': {
+      'get': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/orders/[id].get').default>>>>
     }
     '/api/products/:id': {
       'get': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/products/[id].get').default>>>>
@@ -39,8 +45,21 @@ declare module "nitropack/types" {
     '/api/reviews/:productId': {
       'get': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/reviews/[productId].get').default>>>>
     }
+    '/api/reviews/post': {
+      'default': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/reviews/post').default>>>>
+    }
+    '/api/test-db': {
+      'default': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/test-db').default>>>>
+    }
     '/api/upload': {
       'post': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/upload.post').default>>>>
+    }
+    '/api/wishlist/:productId': {
+      'delete': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/wishlist/[productId].delete').default>>>>
+    }
+    '/api/wishlist': {
+      'get': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/wishlist/index.get').default>>>>
+      'post': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/wishlist/index.post').default>>>>
     }
     '/__nuxt_error': {
       'default': Simplify<Serialize<Awaited<ReturnType<typeof import('../../node_modules/@nuxt/nitro-server/dist/runtime/handlers/renderer').default>>>>

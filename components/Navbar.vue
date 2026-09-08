@@ -91,6 +91,7 @@ const cart = useCart()
 const wishlist = useWishlist()
 const { user, isLoggedIn, logout } = useAuth()
 const { isDark, toggle } = useDarkMode()
+const route = useRoute()
 
 const isScrolled = ref(false)
 const mobileOpen = ref(false)
@@ -122,6 +123,10 @@ const handleMobileLogout = async () => {
 
 onMounted(() => {
   window.addEventListener('scroll', handleScroll)
+})
+
+watch(() => route.fullPath, () => {
+  mobileOpen.value = false
 })
 
 onBeforeUnmount(() => {

@@ -1,4 +1,5 @@
 <script setup>
+import { nextTick } from 'vue'
 const { isDark } = useDarkMode()
 
 useHead(computed(() => ({
@@ -11,9 +12,9 @@ useHead(computed(() => ({
   }
 })))
 
-// Scroll to top on every route change
 const router = useRouter()
-router.afterEach(() => {
+router.afterEach(async () => {
+  await nextTick()
   window.scrollTo(0, 0)
 })
 </script>
@@ -59,15 +60,15 @@ body {
 /* Page transitions */
 .page-enter-active,
 .page-leave-active {
-  transition: opacity 0.25s ease, transform 0.25s ease;
+  transition: opacity 0.12s ease, transform 0.12s ease;
 }
 .page-enter-from {
   opacity: 0;
-  transform: translateY(8px);
+  transform: translateY(6px);
 }
 .page-leave-to {
   opacity: 0;
-  transform: translateY(-8px);
+  transform: translateY(-6px);
 }
 
 /* Global focus-visible */

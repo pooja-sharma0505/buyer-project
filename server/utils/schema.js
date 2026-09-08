@@ -57,9 +57,17 @@ export async function ensureOrderTables(pool) {
       subtotal DECIMAL(10,2) NOT NULL,
       tax DECIMAL(10,2) NOT NULL,
       total DECIMAL(10,2) NOT NULL,
+      status VARCHAR(50) DEFAULT 'Processing',
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )
   `)
+  // Migration: add status column if missing
+  try {
+    await pool.query('ALTER TABLE orders ADD COLUMN status VARCHAR(50) DEFAULT \'Processing\' AFTER total')
+  } catch (err) {
+    if (err.code !== 'ER_DUP_FIELDNAME' && err.code !== 'ER_BAD_FIELD_ERROR') throw err
+  }
+
   await pool.query(`
     CREATE TABLE IF NOT EXISTS order_items (
       id INT AUTO_INCREMENT PRIMARY KEY,
@@ -107,11 +115,23 @@ export async function ensureCartTables(pool) {
       UNIQUE KEY unique_cart_item (user_id, product_id)
     )
   `)
+  // Migration: add user_id if missing (old deploys had cart without it)
+  try {
+    await pool.query('ALTER TABLE cart ADD COLUMN user_id INT NOT NULL DEFAULT 0 AFTER id')
+  } catch (err) {
+    if (err.code !== 'ER_DUP_FIELDNAME' && err.code !== 'ER_BAD_FIELD_ERROR') throw err
+  }
   // Migration: add created_at if missing (old deploys had cart without it)
   try {
     await pool.query('ALTER TABLE cart ADD COLUMN created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP')
   } catch (err) {
     if (err.code !== 'ER_DUP_FIELDNAME' && err.code !== 'ER_BAD_FIELD_ERROR') throw err
+  }
+  // Migration: add unique key if missing
+  try {
+    await pool.query('ALTER TABLE cart ADD UNIQUE KEY unique_cart_item (user_id, product_id)')
+  } catch (err) {
+    if (err.code !== 'ER_DUP_KEYNAME' && err.code !== 'ER_BAD_FIELD_ERROR') throw err
   }
 }
 
@@ -125,6 +145,18 @@ export async function ensureReviewTables(pool) {
       rating INT NOT NULL CHECK (rating BETWEEN 1 AND 5),
       comment TEXT,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+  `)
+}
+
+export async function ensureWishlistTable(pool) {
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS wishlist (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      user_id INT NOT NULL,
+      product_id INT NOT NULL,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      UNIQUE KEY unique_wishlist_item (user_id, product_id)
     )
   `)
 }

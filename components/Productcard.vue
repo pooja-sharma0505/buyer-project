@@ -50,24 +50,26 @@
       <button
         class="add-btn"
         :class="{ added: isAdded }"
+        :disabled="remainingQty < 1"
         @click.stop="handleAddToCart"
       >
-        {{ isAdded ? 'Added!' : '+ Add to Cart' }}
+        {{ remainingQty < 1 ? 'Max in cart' : (isAdded ? 'Added!' : '+ Add to Cart') }}
       </button>
     </div>
   </div>
 </template>
 
 <script setup>
+import { computed, ref, watch } from 'vue'
+
 const props = defineProps({
-  id: { type: Number, required: true },
+  id: { type: [Number, String], required: true },
   image: { type: String, required: true },
   title: { type: String, required: true },
   price: { type: Number, required: true },
   category: { type: String, default: '' },
   rating: { type: Object, default: () => ({ rate: 0, count: 0 }) }
 })
-const emit = defineEmits(['add-to-cart'])
 
 const wishlist = useWishlist()
 const cart = useCart()
@@ -82,12 +84,20 @@ const cartQty = computed(() => cart.getCartQty(props.id))
 const remainingQty = computed(() => Math.max(0, cart.MAX_QTY_PER_PRODUCT - cartQty.value))
 const displaySrc = computed(() => imgFailed.value ? '/placeholder-product.svg' : props.image || '/placeholder-product.svg')
 const starDisplay = computed(() => {
-  const filled = Math.round(props.rating.rate)
+  const filled = Math.max(0, Math.min(5, Math.round(Number(props.rating?.rate) || 0)))
   return '★'.repeat(filled) + '☆'.repeat(5 - filled)
 })
 
 watch(() => props.image, () => {
   imgFailed.value = false
+})
+
+watch(localQty, (val) => {
+  if (!val || val < 1) {
+    localQty.value = 1
+  } else if (val > remainingQty.value) {
+    localQty.value = remainingQty.value || 1
+  }
 })
 
 function onImgError() {
@@ -97,7 +107,7 @@ function goToDetail() {
   navigateTo(`/product/${props.id}`)
 }
 function handleAddToCart() {
-  emit('add-to-cart', {
+  const ok = cart.addToCart({
     id: props.id,
     image: props.image,
     title: props.title,
@@ -106,6 +116,7 @@ function handleAddToCart() {
     rating: props.rating,
     qty: localQty.value
   })
+  if (!ok) return
   isAdded.value = true
   localQty.value = 1
   setTimeout(() => {
@@ -186,8 +197,8 @@ function toggleWishlist() {
 .qty-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
 .qty-input { -moz-appearance: textfield; }
 .add-btn { width: 100%; padding: 10px 8px; font-size: 13px; border: none; border-radius: 8px; background: #111827; color: #fff; cursor: pointer; transition: all .15s ease; }
-.add-btn:hover { background: #d4af64; color: #0a0806; }
-.add-btn.added { background: #d1fae5; border-color: #6ee7b7; color: #065f46; }
+.add-btn:hover:not(:disabled) { background: #d4af64; color: #0a0806; }
+.add-btn:disabled { background: #9ca3af; cursor: not-allowed; }
 @media (max-width: 640px) {
   .img-wrapper { padding: 10px; }
   .card-body { padding: 12px; }

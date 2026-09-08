@@ -25,19 +25,15 @@ export function useWishlist() {
   const items = useState('wishlist-items', () => [])
   const { isLoggedIn, user } = useAuth()
 
-  // User-scoped storage key so wishlists don't leak between accounts
-  // sharing the same browser.
   const scopedKey = computed(() => {
     const uid = user.value?.id
     return uid ? `${STORAGE_KEY}-user-${uid}` : STORAGE_KEY
   })
 
-  // Load from localStorage on client init
   if (import.meta.client && items.value.length === 0) {
     items.value = loadItems(scopedKey.value)
   }
 
-  // When the user changes (login/logout), switch to the correct scoped store.
   if (import.meta.client) {
     watch(
       () => user.value?.id,
@@ -57,9 +53,58 @@ export function useWishlist() {
     { deep: true }
   )
 
+  const syncWithDb = async () => {
+    if (!isLoggedIn.value || !import.meta.client) return
+    try {
+      const dbWishlist = await $fetch('/api/wishlist')
+      if (dbWishlist?.items?.length) {
+        items.value = dbWishlist.items.map((item) => ({
+          id: item.id,
+          image: item.image,
+          title: item.title,
+          price: item.price,
+          category: item.category,
+          rating: item.rating
+        }))
+        persist(items.value, scopedKey.value)
+      }
+    } catch (err) {
+      // keep localStorage items
+    }
+  }
+
+  const saveToDb = async (productId) => {
+    if (!isLoggedIn.value || !import.meta.client) return
+    try {
+      await $fetch('/api/wishlist', {
+        method: 'POST',
+        body: { productId }
+      })
+    } catch (err) {
+      // silent
+    }
+  }
+
+  const removeFromDb = async (productId) => {
+    if (!isLoggedIn.value || !import.meta.client) return
+    try {
+      await $fetch(`/api/wishlist/${productId}`, { method: 'DELETE' })
+    } catch (err) {
+      // silent
+    }
+  }
+
+  if (import.meta.client) {
+    watch(isLoggedIn, async (loggedIn) => {
+      if (loggedIn) {
+        await syncWithDb()
+      }
+    }, { immediate: true })
+  }
+
   const isInWishlist = (id) => items.value.some((item) => item.id === id)
 
-  const addToWishlist = (product) => {
+  const addToWishlist = async (product) => {
     if (isInWishlist(product.id)) return
     items.value.push({
       id: product.id,
@@ -72,23 +117,25 @@ export function useWishlist() {
     if (import.meta.client) {
       const toast = useToast()
       toast.success(`${product.title || 'Item'} saved to wishlist`)
+      await saveToDb(product.id)
     }
   }
 
-  const removeFromWishlist = (id) => {
+  const removeFromWishlist = async (id) => {
     const removed = items.value.find((item) => item.id === id)
     items.value = items.value.filter((item) => item.id !== id)
     if (import.meta.client && removed) {
       const toast = useToast()
       toast.info(`${removed.title || 'Item'} removed from wishlist`)
+      await removeFromDb(id)
     }
   }
 
-  const toggleWishlist = (product) => {
+  const toggleWishlist = async (product) => {
     if (isInWishlist(product.id)) {
-      removeFromWishlist(product.id)
+      await removeFromWishlist(product.id)
     } else {
-      addToWishlist(product)
+      await addToWishlist(product)
     }
   }
 

@@ -1,5 +1,5 @@
 import { getPool, testDbConnection } from '../utils/db.js'
-import { ensureUsersTable, ensureProductsTable, ensureAuthTables, ensureOrderTables, seedDemoUserIfEmpty, ensureReviewTables, ensureCartTables } from '../utils/schema.js'
+import { ensureUsersTable, ensureProductsTable, ensureAuthTables, ensureOrderTables, seedDemoUserIfEmpty, ensureReviewTables, ensureCartTables, ensureWishlistTable } from '../utils/schema.js'
 import { getDemoProducts } from '../utils/demo-products.js'
 import bcrypt from 'bcryptjs'
 
@@ -13,6 +13,7 @@ export default defineNitroPlugin(async () => {
     await ensureOrderTables(pool)
     await ensureCartTables(pool)
     await ensureReviewTables(pool)
+    await ensureWishlistTable(pool)
     const defaultPasswordHash = await bcrypt.hash('demo123', 10)
     await seedDemoUserIfEmpty(pool, defaultPasswordHash)
     await seedDemoProductsIfEmpty(pool)

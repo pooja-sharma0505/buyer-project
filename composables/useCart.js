@@ -67,22 +67,6 @@ export function useCart() {
     }
   }
 
-  const saveToDb = async () => {
-    if (!isLoggedIn.value || !import.meta.client) return
-    try {
-      const payload = items.value.map((item) => ({
-        id: item.id,
-        qty: item.qty
-      }))
-      await $fetch('/api/cart', {
-        method: 'POST',
-        body: { items: payload }
-      })
-    } catch (err) {
-      // Silent fail — localStorage is backup
-    }
-  }
-
   // Watch for auth state changes and sync cart
   if (import.meta.client) {
     watch(isLoggedIn, async (loggedIn) => {
@@ -92,12 +76,33 @@ export function useCart() {
     }, { immediate: true })
   }
 
+  let saveTimeout
+  let savePromise = null
+
   watch(
     items,
     (next) => {
       persist(next, scopedKey.value)
       if (isLoggedIn.value) {
-        saveToDb()
+        clearTimeout(saveTimeout)
+        saveTimeout = setTimeout(async () => {
+          try {
+            const payload = items.value.map((item) => ({
+              id: item.id,
+              qty: item.qty
+            }))
+            if (savePromise) {
+              await savePromise
+            }
+            savePromise = $fetch('/api/cart', {
+              method: 'POST',
+              body: { items: payload }
+            })
+            await savePromise
+          } catch (err) {
+            // Silent fail — localStorage is backup
+          }
+        }, 120)
       }
     },
     { deep: true }

@@ -5,45 +5,57 @@ function isMissingColumnError(err) {
 }
 
 export async function fetchProductsPage(pool, { limit = 12, offset = 0, category = null, search = null } = {}) {
-  const hasCategory = await checkColumnExists(pool, 'category')
-  let baseQuery = `SELECT id, name, price, old_price, image, description${hasCategory ? ', category' : ''} FROM products`
-  let countQuery = `SELECT COUNT(*) as total FROM products`
-  const params = []
-  const countParams = []
-  const conditions = []
+  try {
+    const hasCategory = await checkColumnExists(pool, 'category')
+    console.log('[fetchProductsPage] hasCategory:', hasCategory, 'category:', category, 'search:', search)
+    const conditions = []
+    const params = []
+    const countParams = []
 
-  if (search && search.trim()) {
-    const q = `%${search.trim()}%`
-    const searchCols = hasCategory
-      ? `(name LIKE ? OR description LIKE ? OR category LIKE ?)`
-      : `(name LIKE ? OR description LIKE ?)`
-    conditions.push(searchCols)
-    if (hasCategory) {
-      params.push(q, q, q)
-      countParams.push(q, q, q)
-    } else {
-      params.push(q, q)
-      countParams.push(q, q)
+    if (search && search.trim()) {
+      const q = `%${search.trim()}%`
+      const searchCols = hasCategory
+        ? `(name LIKE ? OR description LIKE ? OR category LIKE ?)`
+        : `(name LIKE ? OR description LIKE ?)`
+      conditions.push(searchCols)
+      if (hasCategory) {
+        params.push(q, q, q)
+        countParams.push(q, q, q)
+      } else {
+        params.push(q, q)
+        countParams.push(q, q)
+      }
     }
+
+    const selectCols = `id, name, price, old_price, image, description${hasCategory ? ', category' : ''}`
+    const where = conditions.length ? ' WHERE ' + conditions.join(' AND ') : ''
+    const orderBy = ' ORDER BY id DESC'
+
+    const countQuery = `SELECT COUNT(*) as total FROM products${where}`
+    const [countRows] = await pool.query(countQuery, countParams)
+    let total = Number(countRows[0]?.total || 0)
+
+    let rows = []
+    if (category && hasCategory) {
+      const fullQuery = `SELECT ${selectCols} FROM products${where}${orderBy}`
+      const [allRows] = await pool.query(fullQuery, params)
+      const want = normalizeCategory(category)
+      rows = allRows.filter((r) => normalizeDbCategory(r.category) === want)
+      total = rows.length
+      const start = Math.max(0, offset)
+      rows = rows.slice(start, start + limit)
+    } else {
+      const pagedQuery = `SELECT ${selectCols} FROM products${where}${orderBy} LIMIT ? OFFSET ?`
+      const pagedParams = [...params, Number(limit), Number(offset)]
+      ;[rows] = await pool.query(pagedQuery, pagedParams)
+    }
+
+    console.log('[fetchProductsPage] returned', rows.length, 'rows, total:', total)
+    return { rows, hasCategory, total }
+  } catch (err) {
+    console.error('[fetchProductsPage] Error:', err?.message || err)
+    throw err
   }
-
-  if (category && hasCategory) {
-    conditions.push('category = ?')
-    params.push(category)
-    countParams.push(category)
-  }
-
-  if (conditions.length) {
-    baseQuery += ' WHERE ' + conditions.join(' AND ')
-    countQuery += ' WHERE ' + conditions.join(' AND ')
-  }
-
-  baseQuery += ' ORDER BY id DESC LIMIT ? OFFSET ?'
-  params.push(Number(limit), Number(offset))
-
-  const [rows] = await pool.query(baseQuery, params)
-  const [countRows] = await pool.query(countQuery, countParams)
-  return { rows, hasCategory, total: Number(countRows[0]?.total || 0) }
 }
 
 async function checkColumnExists(pool, column) {
@@ -120,6 +132,13 @@ function inferCategoryFromName(name = '') {
   }
 
   return 'General'
+}
+
+function normalizeCategory(value) {
+  if (value == null) return ''
+  const s = String(value).trim()
+  if (!s) return ''
+  return s.replace(/\s+/g, ' ')
 }
 
 function normalizeDbCategory(value) {

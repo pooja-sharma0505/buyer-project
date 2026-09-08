@@ -49,6 +49,16 @@ export default defineEventHandler(async (event) => {
     )
     const demoProducts = getDemoProducts()
     console.log('[api/products] Returning demo products:', demoProducts.length)
+    if (query.page || query.limit || search) {
+      const start = (page - 1) * limit
+      const paged = demoProducts.slice(start, start + limit)
+      return {
+        products: paged,
+        total: demoProducts.length,
+        page,
+        limit
+      }
+    }
     return demoProducts
   }
 })

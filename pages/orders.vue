@@ -1,4 +1,4 @@
-l<template>
+<template>
   <div class="orders-page">
     <div class="container">
       <div class="top">
@@ -49,6 +49,9 @@ l<template>
               <span>Total</span>
               <span>{{ formatPrice(order.total) }}</span>
             </div>
+            <div class="view-order">
+              <NuxtLink :to="`/orders/${order.id}`" class="btn primary">View Order</NuxtLink>
+            </div>
           </div>
         </div>
       </div>
@@ -63,6 +66,10 @@ useSeoMeta({
   ogDescription: 'View your order history at LUMIÈRE.',
   ogImage: '/og-image.svg',
   ogType: 'website'
+})
+
+definePageMeta({
+  middleware: 'auth'
 })
 
 const { data, pending, error } = await useFetch('/api/orders', { server: false })
@@ -100,6 +107,9 @@ function formatDate(raw) {
 .order-summary { border-top: 1px dashed #e5e7eb; padding-top: 10px; }
 .summary-row { display: flex; justify-content: space-between; font-size: 13px; color: #6b7280; margin-bottom: 4px; }
 .summary-row.total { font-weight: 600; color: #111827; font-size: 14px; margin-top: 4px; }
+.view-order { margin-top: 12px; }
+.view-order .btn { display: inline-block; padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 500; text-decoration: none; background: #111827; color: #fff; border: 1px solid #111827; }
+.view-order .btn:hover { background: #d4af64; color: #0a0806; border-color: #d4af64; }
 .empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 80px 20px; text-align: center; }
 .empty-wrap { display: flex; flex-direction: column; align-items: center; justify-content: center; max-width: 400px; }
 .empty-icon { font-size: 56px; color: #9ca3af; margin-bottom: 24px; line-height: 1; }
