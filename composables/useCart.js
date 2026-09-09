@@ -106,6 +106,11 @@ export function useCart() {
             if (savePromise) {
               await savePromise
             }
+            // Don't POST an empty cart: the server treats that as an error
+            // (400 "Cart items are required"), which would trigger a scary
+            // "couldn't be saved" toast even though nothing is wrong.
+            // Clearing the cart is handled by clearCart() via DELETE instead.
+            if (!items.value.length) return
             savePromise = $fetch('/api/cart', {
               method: 'POST',
               body: { items: payload }
