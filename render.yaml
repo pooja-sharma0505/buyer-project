@@ -19,7 +19,7 @@ services:
       - key: DB_USER
         value: 2VQbbPrE7w7fDMX.root
       - key: DB_PASSWORD
-        value: GyYV3X98AdqBpx6E
+        value: 31CpAuQm5Tt9Q601
       # SSL: set to false only if your DB provider uses a self-signed cert.
       # - key: DB_SSL_REJECT_UNAUTHORIZED
       #   value: false
