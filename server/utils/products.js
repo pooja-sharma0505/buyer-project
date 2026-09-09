@@ -26,28 +26,29 @@ export async function fetchProductsPage(pool, { limit = 12, offset = 0, category
       }
     }
 
+    // Filter by category in SQL (WHERE ... LIMIT/OFFSET) rather than pulling
+    // every matching row into memory and filtering/paginating in JavaScript.
+    // Falls back to ignoring the filter if the column doesn't exist yet.
+    if (category && category.trim() && hasCategory) {
+      const want = normalizeCategory(category)
+      if (want) {
+        conditions.push('TRIM(category) = ?')
+        params.push(want)
+        countParams.push(want)
+      }
+    }
+
     const selectCols = `id, name, price, old_price, image, description${hasCategory ? ', category' : ''}`
     const where = conditions.length ? ' WHERE ' + conditions.join(' AND ') : ''
     const orderBy = ' ORDER BY id DESC'
 
     const countQuery = `SELECT COUNT(*) as total FROM products${where}`
     const [countRows] = await pool.query(countQuery, countParams)
-    let total = Number(countRows[0]?.total || 0)
+    const total = Number(countRows[0]?.total || 0)
 
-    let rows = []
-    if (category && hasCategory) {
-      const fullQuery = `SELECT ${selectCols} FROM products${where}${orderBy}`
-      const [allRows] = await pool.query(fullQuery, params)
-      const want = normalizeCategory(category)
-      rows = allRows.filter((r) => normalizeDbCategory(r.category) === want)
-      total = rows.length
-      const start = Math.max(0, offset)
-      rows = rows.slice(start, start + limit)
-    } else {
-      const pagedQuery = `SELECT ${selectCols} FROM products${where}${orderBy} LIMIT ? OFFSET ?`
-      const pagedParams = [...params, Number(limit), Number(offset)]
-      ;[rows] = await pool.query(pagedQuery, pagedParams)
-    }
+    const pagedQuery = `SELECT ${selectCols} FROM products${where}${orderBy} LIMIT ? OFFSET ?`
+    const pagedParams = [...params, Number(limit), Number(offset)]
+    const [rows] = await pool.query(pagedQuery, pagedParams)
 
     return { rows, hasCategory, total }
   } catch (err) {

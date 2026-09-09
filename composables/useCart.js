@@ -1,6 +1,16 @@
 const STORAGE_KEY = 'buyer-cart-v1'
 const MAX_QTY_PER_PRODUCT = 2
 
+// Throttle identical warnings so a failing server/reload doesn't spam toasts.
+const lastWarnedAt = new Map()
+function warnThrottled(message, ttlMs = 5000) {
+  if (import.meta.server) return
+  const now = Date.now()
+  if (now - (lastWarnedAt.get(message) || 0) < ttlMs) return
+  lastWarnedAt.set(message, now)
+  useToast().error(message)
+}
+
 function loadItems(key) {
   if (import.meta.server) return []
   try {
@@ -63,7 +73,9 @@ export function useCart() {
         persist(items.value, scopedKey.value)
       }
     } catch (err) {
-      // If DB cart is empty or fails, keep localStorage items
+      // If the DB load fails, keep localStorage items but tell the user their
+      // server-side cart is out of sync.
+      warnThrottled("Couldn't load your saved cart from the server — showing this device's copy.")
     }
   }
 
@@ -100,7 +112,9 @@ export function useCart() {
             })
             await savePromise
           } catch (err) {
-            // Silent fail — localStorage is backup
+            // localStorage stays the working copy, but the user should know the
+            // server save failed so their cart isn't silently lost server-side.
+            warnThrottled("Your cart couldn't be saved to your account — it's only saved on this device.")
           }
         }, 120)
       }
@@ -162,7 +176,7 @@ export function useCart() {
           body: { productId: id }
         })
       } catch (err) {
-        // Silent fail — localStorage is backup
+        warnThrottled("The item couldn't be removed from your account cart — it may come back after refresh.")
       }
     }
   }
@@ -176,7 +190,7 @@ export function useCart() {
           body: { clearAll: true }
         })
       } catch (err) {
-        // Silent fail
+        warnThrottled("Your account cart couldn't be cleared on the server — it may come back after refresh.")
       }
     }
   }

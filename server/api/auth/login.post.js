@@ -2,9 +2,13 @@ import { randomBytes } from 'node:crypto'
 import { getPool } from '../../utils/db.js'
 import { ensureAuthTables } from '../../utils/schema.js'
 import { setSessionCookie } from '../../utils/auth.js'
+import { enforceRateLimit } from '../../utils/rate-limit.js'
 import bcrypt from 'bcryptjs'
 
 export default defineEventHandler(async (event) => {
+  // Basic brute-force protection: fixed-window per-IP counter (10 attempts / 15 min).
+  enforceRateLimit(event, { scope: 'login' })
+
   const body = await readBody(event)
   const phone = String(body?.phone ?? '').trim()
   const password = String(body?.password ?? '')

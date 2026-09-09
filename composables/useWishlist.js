@@ -1,5 +1,15 @@
 const STORAGE_KEY = 'buyer-wishlist-v1'
 
+// Throttle identical warnings so a failing server/reload doesn't spam toasts.
+const lastWarnedAt = new Map()
+function warnThrottled(message, ttlMs = 5000) {
+  if (import.meta.server) return
+  const now = Date.now()
+  if (now - (lastWarnedAt.get(message) || 0) < ttlMs) return
+  lastWarnedAt.set(message, now)
+  useToast().error(message)
+}
+
 function loadItems(key = STORAGE_KEY) {
   if (import.meta.server) return []
   try {
@@ -69,7 +79,8 @@ export function useWishlist() {
         persist(items.value, scopedKey.value)
       }
     } catch (err) {
-      // keep localStorage items
+      // Keep localStorage items, but tell the user the server copy is stale.
+      warnThrottled("Couldn't load your saved wishlist from the server — showing this device's copy.")
     }
   }
 
@@ -81,7 +92,7 @@ export function useWishlist() {
         body: { productId }
       })
     } catch (err) {
-      // silent
+      warnThrottled("Your wishlist couldn't be saved to your account — it's only saved on this device.")
     }
   }
 
@@ -90,7 +101,7 @@ export function useWishlist() {
     try {
       await $fetch(`/api/wishlist/${productId}`, { method: 'DELETE' })
     } catch (err) {
-      // silent
+      warnThrottled("The item couldn't be removed from your account wishlist — it may come back after refresh.")
     }
   }
 

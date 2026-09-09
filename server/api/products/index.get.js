@@ -13,7 +13,9 @@ export default defineEventHandler(async (event) => {
 
     const search = typeof query.search === 'string' ? query.search.trim() : null
 
-    if (query.page || query.limit || search) {
+    // Paginate whenever paging, searching, OR category filtering is requested
+    // so the category filter is always applied in SQL (never ignored).
+    if (query.page || query.limit || search || category) {
       const offset = (page - 1) * limit
       const { rows, hasCategory, total } = await fetchProductsPage(pool, { limit, offset, category, search })
       const ids = rows.map((r) => r.id)
@@ -49,12 +51,17 @@ export default defineEventHandler(async (event) => {
     )
     const demoProducts = getDemoProducts()
     console.log('[api/products] Returning demo products:', demoProducts.length)
-    if (query.page || query.limit || search) {
+    if (query.page || query.limit || search || category) {
+      let filtered = demoProducts
+      if (category && category.trim() && category.trim() !== 'All') {
+        const want = category.trim().replace(/\s+/g, ' ')
+        filtered = filtered.filter((p) => String(p.category || '').replace(/\s+/g, ' ') === want)
+      }
       const start = (page - 1) * limit
-      const paged = demoProducts.slice(start, start + limit)
+      const paged = filtered.slice(start, start + limit)
       return {
         products: paged,
-        total: demoProducts.length,
+        total: filtered.length,
         page,
         limit
       }

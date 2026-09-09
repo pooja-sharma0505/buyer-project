@@ -1,8 +1,12 @@
 import { getPool } from '../../utils/db.js'
 import { ensureUsersTable } from '../../utils/schema.js'
+import { enforceRateLimit } from '../../utils/rate-limit.js'
 import bcrypt from 'bcryptjs'
 
 export default defineEventHandler(async (event) => {
+  // Basic abuse protection: fixed-window per-IP counter (10 attempts / 15 min).
+  enforceRateLimit(event, { scope: 'signup' })
+
   const body = await readBody(event)
   const name = String(body?.name ?? '').trim()
   const phone = String(body?.phone ?? '').trim()
