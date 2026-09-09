@@ -58,12 +58,43 @@ export async function ensureOrderTables(pool) {
       tax DECIMAL(10,2) NOT NULL,
       total DECIMAL(10,2) NOT NULL,
       status VARCHAR(50) DEFAULT 'Processing',
+      full_name VARCHAR(255) NULL,
+      phone VARCHAR(50) NULL,
+      address VARCHAR(500) NULL,
+      city VARCHAR(100) NULL,
+      zip VARCHAR(20) NULL,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )
   `)
   // Migration: add status column if missing
   try {
     await pool.query('ALTER TABLE orders ADD COLUMN status VARCHAR(50) DEFAULT \'Processing\' AFTER total')
+  } catch (err) {
+    if (err.code !== 'ER_DUP_FIELDNAME' && err.code !== 'ER_BAD_FIELD_ERROR') throw err
+  }
+  // Migration: add shipping address columns if missing
+  try {
+    await pool.query('ALTER TABLE orders ADD COLUMN full_name VARCHAR(255) NULL AFTER status')
+  } catch (err) {
+    if (err.code !== 'ER_DUP_FIELDNAME' && err.code !== 'ER_BAD_FIELD_ERROR') throw err
+  }
+  try {
+    await pool.query('ALTER TABLE orders ADD COLUMN phone VARCHAR(50) NULL AFTER full_name')
+  } catch (err) {
+    if (err.code !== 'ER_DUP_FIELDNAME' && err.code !== 'ER_BAD_FIELD_ERROR') throw err
+  }
+  try {
+    await pool.query('ALTER TABLE orders ADD COLUMN address VARCHAR(500) NULL AFTER phone')
+  } catch (err) {
+    if (err.code !== 'ER_DUP_FIELDNAME' && err.code !== 'ER_BAD_FIELD_ERROR') throw err
+  }
+  try {
+    await pool.query('ALTER TABLE orders ADD COLUMN city VARCHAR(100) NULL AFTER address')
+  } catch (err) {
+    if (err.code !== 'ER_DUP_FIELDNAME' && err.code !== 'ER_BAD_FIELD_ERROR') throw err
+  }
+  try {
+    await pool.query('ALTER TABLE orders ADD COLUMN zip VARCHAR(20) NULL AFTER city')
   } catch (err) {
     if (err.code !== 'ER_DUP_FIELDNAME' && err.code !== 'ER_BAD_FIELD_ERROR') throw err
   }

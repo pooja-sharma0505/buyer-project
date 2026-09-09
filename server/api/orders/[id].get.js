@@ -13,7 +13,8 @@ export default defineEventHandler(async (event) => {
 
   const [orders] = await pool.query(
     `
-    SELECT o.id AS order_id, o.subtotal, o.tax, o.total, o.created_at
+    SELECT o.id AS order_id, o.subtotal, o.tax, o.total, o.status, o.created_at,
+           o.full_name, o.phone, o.address, o.city, o.zip
     FROM orders o
     WHERE o.id = ? AND o.user_id = ?
     LIMIT 1
@@ -42,6 +43,12 @@ export default defineEventHandler(async (event) => {
     subtotal: Number(order.subtotal),
     tax: Number(order.tax),
     total: Number(order.total),
+    status: order.status || 'Processing',
+    fullName: order.full_name,
+    phone: order.phone,
+    address: order.address,
+    city: order.city,
+    zip: order.zip,
     createdAt: order.created_at,
     items: items.map((item) => ({
       productId: item.product_id,

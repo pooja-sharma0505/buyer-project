@@ -134,7 +134,12 @@ const productsData = ref(null)
 const productsPending = ref(true)
 const productsError = ref(null)
 
+// Monotonic token so rapidly-issued requests (e.g. page + filter changes)
+// can't overwrite newer results with stale responses.
+let productsRequestId = 0
+
 async function loadProducts() {
+  const requestId = ++productsRequestId
   productsPending.value = true
   productsError.value = null
   try {
@@ -144,11 +149,16 @@ async function loadProducts() {
     }
     if (searchDebounced.value.trim()) q.search = searchDebounced.value.trim()
     if (selectedCategory.value !== 'All') q.category = selectedCategory.value
-    productsData.value = await $fetch('/api/products', { query: q })
+    const data = await $fetch('/api/products', { query: q })
+    if (requestId !== productsRequestId) return
+    productsData.value = data
   } catch (err) {
+    if (requestId !== productsRequestId) return
     productsError.value = err
   } finally {
-    productsPending.value = false
+    if (requestId === productsRequestId) {
+      productsPending.value = false
+    }
   }
 }
 
@@ -161,6 +171,7 @@ watch([selectedCategory, searchDebounced], () => {
 
 watch(currentPage, () => {
   window.scrollTo({ top: 0, behavior: 'smooth' })
+  loadProducts()
 })
 
 const pageData = computed(() => productsData.value)
@@ -224,6 +235,7 @@ watch(selectedCategory, (cat) => {
 
 watch(currentPage, () => {
   window.scrollTo({ top: 0, behavior: 'smooth' })
+  loadProducts()
 })
 
 function norm(s) {

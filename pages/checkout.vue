@@ -128,7 +128,12 @@ const placeOrder = async () => {
           title: item.title,
           price: item.price,
           qty: item.qty
-        }))
+        })),
+        fullName: form.value.fullName,
+        phone: form.value.phone,
+        address: form.value.address,
+        city: form.value.city,
+        zip: form.value.zip
       }
     })
     clearCart()

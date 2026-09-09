@@ -11,6 +11,16 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, message: 'Cart is empty' })
   }
 
+  const fullName = String(body?.fullName ?? '').trim()
+  const phone = String(body?.phone ?? '').trim()
+  const address = String(body?.address ?? '').trim()
+  const city = String(body?.city ?? '').trim()
+  const zip = String(body?.zip ?? '').trim()
+
+  if (!fullName || !phone || !address || !city || !zip) {
+    throw createError({ statusCode: 400, message: 'Please provide complete shipping details (name, phone, address, city, ZIP)' })
+  }
+
   const MAX_QTY = 2
   const resolvedItems = []
 
@@ -62,8 +72,8 @@ export default defineEventHandler(async (event) => {
     await connection.beginTransaction()
 
     const [orderResult] = await connection.query(
-      'INSERT INTO orders (user_id, subtotal, tax, total, status) VALUES (?, ?, ?, ?, ?)',
-      [user.id, subtotal, tax, total, 'Processing']
+      'INSERT INTO orders (user_id, subtotal, tax, total, status, full_name, phone, address, city, zip) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+      [user.id, subtotal, tax, total, 'Processing', fullName, phone, address, city, zip]
     )
 
     const orderId = orderResult.insertId

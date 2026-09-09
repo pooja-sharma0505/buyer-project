@@ -41,7 +41,7 @@
       <p v-if="success" class="success">Login successful. Redirecting...</p>
 
       <div class="login-links">
-        <span>Already have an account?</span>
+        <span>Don't have an account?</span>
         <NuxtLink to="/signup" class="link">Sign up</NuxtLink>
       </div>
     </div>

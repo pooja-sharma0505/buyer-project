@@ -9,7 +9,8 @@ export default defineEventHandler(async (event) => {
 
   const [rows] = await pool.query(
     `
-    SELECT o.id AS order_id, o.subtotal, o.tax, o.total, o.created_at,
+    SELECT o.id AS order_id, o.subtotal, o.tax, o.total, o.status, o.created_at,
+           o.full_name, o.phone, o.address, o.city, o.zip,
            oi.product_id, oi.title, oi.price, oi.qty
     FROM orders o
     JOIN order_items oi ON oi.order_id = o.id
@@ -27,6 +28,12 @@ export default defineEventHandler(async (event) => {
         subtotal: Number(row.subtotal),
         tax: Number(row.tax),
         total: Number(row.total),
+        status: row.status || 'Processing',
+        fullName: row.full_name,
+        phone: row.phone,
+        address: row.address,
+        city: row.city,
+        zip: row.zip,
         createdAt: row.created_at,
         items: []
       })

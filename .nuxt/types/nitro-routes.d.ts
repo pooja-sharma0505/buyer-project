@@ -45,12 +45,6 @@ declare module "nitropack/types" {
     '/api/reviews/:productId': {
       'get': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/reviews/[productId].get').default>>>>
     }
-    '/api/reviews/post': {
-      'default': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/reviews/post').default>>>>
-    }
-    '/api/test-db': {
-      'default': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/test-db').default>>>>
-    }
     '/api/upload': {
       'post': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/upload.post').default>>>>
     }

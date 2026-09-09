@@ -65,34 +65,12 @@ useSeoMeta({
 
 const { isLoggedIn } = useAuth()
 const { formatPrice } = useFormatPrice()
-const router = useRouter()
-
-const { data, pending, error, refresh } = await useFetch('/api/cart')
-
-const displayItems = computed(() => {
-  const raw = data.value?.items || []
-  const map = new Map()
-  for (const item of raw) {
-    const existing = map.get(item.id)
-    if (existing) {
-      existing.qty = Math.min(2, existing.qty + item.qty)
-    } else {
-      map.set(item.id, { ...item })
-    }
-  }
-  return Array.from(map.values())
-})
-
-const subtotal = computed(() =>
-  displayItems.value.reduce((sum, item) => sum + Number(item.price || 0) * item.qty, 0)
-)
+// Use the shared useCart() composable (localStorage-backed) so guests see
+// the same items the Navbar shows, instead of the auth-gated /api/cart.
+const { items: displayItems, updateQty, removeFromCart, itemCount: totalQty, subtotal } = useCart()
 
 const tax = computed(() => Number(subtotal.value || 0) * 0.18)
 const total = computed(() => Number(subtotal.value || 0) + tax.value)
-
-const totalQty = computed(() =>
-  displayItems.value.reduce((sum, item) => sum + item.qty, 0)
-)
 
 const goToCheckout = async () => {
   if (!isLoggedIn.value) {
@@ -103,20 +81,12 @@ const goToCheckout = async () => {
   await navigateTo('/checkout')
 }
 
-const handleUpdateQty = async ({ id, quantity }) => {
-  await $fetch('/api/cart', {
-    method: 'POST',
-    body: { items: [{ id, qty: quantity }] }
-  })
-  await refresh()
+const handleUpdateQty = ({ id, quantity }) => {
+  updateQty(id, quantity)
 }
 
-const handleRemove = async (id) => {
-  await $fetch('/api/cart', {
-    method: 'DELETE',
-    body: { productId: id }
-  })
-  await refresh()
+const handleRemove = (id) => {
+  removeFromCart(id)
 }
 </script>
 

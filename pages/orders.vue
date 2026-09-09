@@ -25,6 +25,7 @@
             <div>
               <span class="order-id">Order #{{ order.id }}</span>
               <span class="order-date">{{ formatDate(order.createdAt) }}</span>
+              <span class="status-badge" :class="statusClass(order.status)">{{ order.status }}</span>
             </div>
             <span class="order-total">{{ formatPrice(order.total) }}</span>
           </div>
@@ -82,6 +83,13 @@ function formatDate(raw) {
   const d = new Date(raw)
   return d.toLocaleDateString('en-IN', { year: 'numeric', month: 'short', day: 'numeric' })
 }
+
+function statusClass(status) {
+  const s = String(status ?? '').toLowerCase()
+  if (s.includes('deliver') || s.includes('complete') || s.includes('shipped')) return 'success'
+  if (s.includes('cancel')) return 'danger'
+  return ''
+}
 </script>
 
 <style scoped>
@@ -99,6 +107,9 @@ function formatDate(raw) {
 .order-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px; }
 .order-id { font-weight: 600; color: #111827; margin-right: 10px; }
 .order-date { color: #9ca3af; font-size: 13px; }
+.status-badge { display: inline-block; margin-left: 10px; padding: 2px 10px; border-radius: 999px; background: #f3f4f6; color: #6b7280; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.03em; }
+.status-badge.success { background: #dcfce7; color: #15803d; }
+.status-badge.danger { background: #fee2e2; color: #b91c1c; }
 .order-total { font-weight: 700; color: #d4af64; font-size: 16px; }
 .items { list-style: none; margin: 0 0 12px; padding: 0; display: flex; flex-direction: column; gap: 6px; }
 .item { display: flex; justify-content: space-between; font-size: 14px; color: #374151; }

@@ -7,7 +7,6 @@ function isMissingColumnError(err) {
 export async function fetchProductsPage(pool, { limit = 12, offset = 0, category = null, search = null } = {}) {
   try {
     const hasCategory = await checkColumnExists(pool, 'category')
-    console.log('[fetchProductsPage] hasCategory:', hasCategory, 'category:', category, 'search:', search)
     const conditions = []
     const params = []
     const countParams = []
@@ -50,7 +49,6 @@ export async function fetchProductsPage(pool, { limit = 12, offset = 0, category
       ;[rows] = await pool.query(pagedQuery, pagedParams)
     }
 
-    console.log('[fetchProductsPage] returned', rows.length, 'rows, total:', total)
     return { rows, hasCategory, total }
   } catch (err) {
     console.error('[fetchProductsPage] Error:', err?.message || err)

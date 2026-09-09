@@ -16,6 +16,15 @@
       <div v-else class="layout">
         <div class="info">
           <p class="date">{{ formatDate(order.createdAt) }}</p>
+          <p class="status-line">
+            <span class="status-badge" :class="statusClass(order.status)">{{ order.status }}</span>
+          </p>
+
+          <h2>Shipping</h2>
+          <p class="shipping-line"><strong>{{ order.fullName }}</strong></p>
+          <p class="shipping-line">{{ order.address }}</p>
+          <p class="shipping-line">{{ order.city }}{{ order.zip ? ', ' + order.zip : '' }}</p>
+          <p class="shipping-line">{{ order.phone }}</p>
 
           <h2>Items</h2>
           <div v-for="item in order.items" :key="item.productId" class="item-row">
@@ -82,6 +91,13 @@ function formatDate(raw) {
   const d = new Date(raw)
   return d.toLocaleDateString('en-IN', { year: 'numeric', month: 'short', day: 'numeric' })
 }
+
+function statusClass(status) {
+  const s = String(status ?? '').toLowerCase()
+  if (s.includes('deliver') || s.includes('complete') || s.includes('shipped')) return 'success'
+  if (s.includes('cancel')) return 'danger'
+  return ''
+}
 </script>
 
 <style scoped>
@@ -96,6 +112,12 @@ function formatDate(raw) {
 .layout { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
 .info { background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 20px; }
 .date { color: #9ca3af; font-size: 13px; margin: 0 0 16px; }
+.status-line { margin: 0 0 16px; }
+.status-badge { display: inline-block; padding: 2px 10px; border-radius: 999px; background: #f3f4f6; color: #6b7280; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.03em; }
+.status-badge.success { background: #dcfce7; color: #15803d; }
+.status-badge.danger { background: #fee2e2; color: #b91c1c; }
+.shipping-line { margin: 0 0 4px; color: #4b5563; font-size: 14px; }
+.shipping-line strong { color: #111827; }
 .info h2 { margin: 20px 0 10px; font-size: 16px; color: #111827; }
 .item-row { display: flex; justify-content: space-between; font-size: 14px; color: #374151; margin-bottom: 6px; }
 .item-title { font-weight: 500; }
