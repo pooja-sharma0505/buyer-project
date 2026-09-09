@@ -233,11 +233,6 @@ watch(selectedCategory, (cat) => {
   router.replace({ path: '/', query: want ? { ...route.query, category: want } : Object.fromEntries(Object.entries(route.query).filter(([k]) => k !== 'category')) })
 })
 
-watch(currentPage, () => {
-  window.scrollTo({ top: 0, behavior: 'smooth' })
-  loadProducts()
-})
-
 function norm(s) {
   return String(s ?? '')
     .trim()
