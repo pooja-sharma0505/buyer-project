@@ -30,10 +30,11 @@ export default defineEventHandler(async (event) => {
 
   const [items] = await pool.query(
     `
-    SELECT product_id, title, price, qty
-    FROM order_items
-    WHERE order_id = ?
-    ORDER BY id ASC
+    SELECT oi.product_id, oi.title, oi.price, oi.qty, p.image
+    FROM order_items oi
+    LEFT JOIN products p ON p.id = oi.product_id
+    WHERE oi.order_id = ?
+    ORDER BY oi.id ASC
     `,
     [id]
   )
@@ -54,7 +55,8 @@ export default defineEventHandler(async (event) => {
       productId: item.product_id,
       title: item.title,
       price: Number(item.price),
-      qty: item.qty
+      qty: item.qty,
+      image: item.image || null
     }))
   }
 })

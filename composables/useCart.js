@@ -36,6 +36,7 @@ export function useCart() {
   const items = useState('cart-items', () => [])
   const { isLoggedIn, user } = useAuth()
   const isHydrated = ref(false)
+  const isSyncing = ref(false)
 
   // User-scoped storage key so carts don't leak between accounts
   // sharing the same browser.
@@ -45,8 +46,15 @@ export function useCart() {
   })
 
   // Load from localStorage on client init (for guests or before auth resolves)
+  const hydrateFromStorage = () => {
+    if (import.meta.client) {
+      items.value = loadItems(scopedKey.value)
+    }
+  }
+
+  // Initial hydration from localStorage
   if (import.meta.client && items.value.length === 0) {
-    items.value = loadItems(scopedKey.value)
+    hydrateFromStorage()
   }
 
   // When the user changes (login/logout), switch to the correct scoped store.
@@ -63,9 +71,10 @@ export function useCart() {
     )
   }
 
-  // Sync with DB when logged in
+  // Sync with DB when logged in - returns a promise so callers can await
   const syncWithDb = async () => {
     if (!isLoggedIn.value || !import.meta.client) return
+    isSyncing.value = true
     try {
       const dbCart = await $fetch('/api/cart')
       if (dbCart?.items?.length) {
@@ -76,6 +85,9 @@ export function useCart() {
       // If the DB load fails, keep localStorage items but tell the user their
       // server-side cart is out of sync.
       warnThrottled("Couldn't load your saved cart from the server — showing this device's copy.")
+    } finally {
+      isSyncing.value = false
+      isHydrated.value = true
     }
   }
 
@@ -84,6 +96,9 @@ export function useCart() {
     watch(isLoggedIn, async (loggedIn) => {
       if (loggedIn) {
         await syncWithDb()
+      } else {
+        // Mark as hydrated when not logged in (localStorage is the source of truth)
+        isHydrated.value = true
       }
     }, { immediate: true })
   }
@@ -219,6 +234,8 @@ export function useCart() {
     syncWithDb,
     canAddMore,
     getCartQty,
-    MAX_QTY_PER_PRODUCT
+    MAX_QTY_PER_PRODUCT,
+    isHydrated,
+    isSyncing
   }
 }

@@ -11,9 +11,10 @@ export default defineEventHandler(async (event) => {
     `
     SELECT o.id AS order_id, o.subtotal, o.tax, o.total, o.status, o.created_at,
            o.full_name, o.phone, o.address, o.city, o.zip,
-           oi.product_id, oi.title, oi.price, oi.qty
+           oi.product_id, oi.title, oi.price, oi.qty, p.image
     FROM orders o
     JOIN order_items oi ON oi.order_id = o.id
+    LEFT JOIN products p ON p.id = oi.product_id
     WHERE o.user_id = ?
     ORDER BY o.created_at DESC, oi.id ASC
     `,
@@ -42,7 +43,8 @@ export default defineEventHandler(async (event) => {
       productId: row.product_id,
       title: row.title,
       price: Number(row.price),
-      qty: row.qty
+      qty: row.qty,
+      image: row.image || null
     })
   }
 

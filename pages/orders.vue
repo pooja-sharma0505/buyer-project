@@ -10,7 +10,7 @@
         <SkeletonLoader v-for="n in 3" :key="n" type="text" lines="3" />
       </div>
       <div v-else-if="error" class="status error">{{ error }}</div>
-      <div v-else-if="!orders.length" class="empty-state">
+      <div v-else-if="orders.length === 0" class="empty-state">
         <div class="empty-wrap">
           <i class="bi bi-file-earmark-text-fill empty-icon"></i>
           <h2 class="empty-title">No orders yet</h2>
@@ -73,10 +73,21 @@ definePageMeta({
   middleware: 'auth'
 })
 
-const { data, pending, error } = await useFetch('/api/orders', { server: false })
+const { data, pending, error, refresh } = await useFetch('/api/orders', { server: false })
 const { formatPrice } = useFormatPrice()
 
 const orders = computed(() => data.value?.orders || [])
+
+// Refresh orders when page is mounted to ensure latest data is shown
+onMounted(() => {
+  refresh()
+})
+
+// Also refresh when route changes (e.g., navigating from order-success page)
+const route = useRoute()
+watch(() => route.path, () => {
+  refresh()
+})
 
 function formatDate(raw) {
   if (!raw) return ''
