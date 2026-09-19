@@ -47,13 +47,54 @@ export function useAuth() {
   // Function to wait for auth to be ready
   const waitForAuthReady = () => authReadyPromise
 
-  async function login(phone, password) {
+  async function login(phone, password, rememberMe = false) {
     const data = await $fetch('/api/auth/login', {
       method: 'POST',
-      body: { phone, password }
+      body: { phone, password, rememberMe }
     })
     user.value = data.user
     return data
+  }
+
+  // Merge guest cart and wishlist after login
+  async function mergeGuestData() {
+    if (!isLoggedIn.value || import.meta.server) return
+
+    try {
+      const cart = useCart()
+      const wishlist = useWishlist()
+
+      // Merge guest cart
+      const guestCartKey = 'buyer-cart-v1'
+      const guestCart = JSON.parse(localStorage.getItem(guestCartKey) || '[]')
+      if (guestCart.length > 0) {
+        const payload = guestCart.map(item => ({ id: item.id, qty: item.qty }))
+        await $fetch('/api/cart', { method: 'POST', body: { items: payload } })
+        // Clear guest cart from localStorage
+        localStorage.removeItem(guestCartKey)
+        // Sync with DB
+        await cart.syncWithDb()
+      }
+
+      // Merge guest wishlist
+      const guestWishlistKey = 'buyer-wishlist-v1'
+      const guestWishlist = JSON.parse(localStorage.getItem(guestWishlistKey) || '[]')
+      if (guestWishlist.length > 0) {
+        for (const item of guestWishlist) {
+          try {
+            await $fetch('/api/wishlist', { method: 'POST', body: item })
+          } catch {
+            // Ignore duplicates
+          }
+        }
+        localStorage.removeItem(guestWishlistKey)
+        // Refresh wishlist
+        wishlist.refreshFromDb()
+      }
+    } catch (err) {
+      console.error('[mergeGuestData] Error:', err)
+      // Don't throw - merging is best effort
+    }
   }
 
   async function logout() {
@@ -82,5 +123,5 @@ export function useAuth() {
     }
   }
 
-  return { user, isLoggedIn, isAuthLoading, fetchUser, login, logout, waitForAuthReady, resetAuthReady }
+  return { user, isLoggedIn, isAuthLoading, fetchUser, login, logout, waitForAuthReady, resetAuthReady, mergeGuestData }
 }

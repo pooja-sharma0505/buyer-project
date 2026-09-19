@@ -21,6 +21,25 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, message: 'Please provide complete shipping details (name, phone, address, city, ZIP)' })
   }
 
+  // Idempotency key from header
+  const idempotencyKey = getHeader(event, 'idempotency-key') || ''
+  if (idempotencyKey) {
+    // Check if order with this idempotency key already exists
+    const pool = getPool()
+    await ensureOrderTables(pool)
+    const [existing] = await pool.query(
+      'SELECT id FROM orders WHERE idempotency_key = ? AND user_id = ? LIMIT 1',
+      [idempotencyKey, user.id]
+    )
+    if (existing.length > 0) {
+      return {
+        message: 'Order already placed',
+        orderId: existing[0].id,
+        idempotent: true
+      }
+    }
+  }
+
   const MAX_QTY = 2
   const resolvedItems = []
 
@@ -72,8 +91,8 @@ export default defineEventHandler(async (event) => {
     await connection.beginTransaction()
 
     const [orderResult] = await connection.query(
-      'INSERT INTO orders (user_id, subtotal, tax, total, status, full_name, phone, address, city, zip) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-      [user.id, subtotal, tax, total, 'Processing', fullName, phone, address, city, zip]
+      'INSERT INTO orders (user_id, subtotal, tax, total, status, full_name, phone, address, city, zip, idempotency_key) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+      [user.id, subtotal, tax, total, 'Processing', fullName, phone, address, city, zip, idempotencyKey || null]
     )
 
     const orderId = orderResult.insertId

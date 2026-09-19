@@ -7,7 +7,7 @@
         :class="{ active: inWishlist }"
         :aria-label="inWishlist ? 'Remove from wishlist' : 'Add to wishlist'"
         :aria-pressed="inWishlist"
-        @click.stop="toggleWishlist"
+        @click.stop="handleWishlistClick"
       >
         <svg width="18" height="18" viewBox="0 0 24 24" :fill="inWishlist ? 'currentColor' : 'none'" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
@@ -27,13 +27,14 @@
 
       <p class="product-price">{{ formatPrice(price) }}</p>
 
-      <div class="qty-row" @click.stop>
-        <button type="button" class="qty-btn" @click="localQty > 1 && localQty--" aria-label="Decrease quantity">-</button>
+      <!-- Qty stepper only shown after item is in cart -->
+      <div v-if="cartQty > 0" class="qty-row" @click.stop>
+        <button type="button" class="qty-btn" @click="decrementQty" aria-label="Decrease quantity">-</button>
         <input
           v-model.number="localQty"
           type="number"
           min="1"
-          :max="remainingQty || 1"
+          :max="maxQtyAllowed"
           class="qty-input"
           aria-label="Quantity"
           @click.stop
@@ -41,13 +42,15 @@
         <button
           type="button"
           class="qty-btn"
-          :disabled="localQty >= (remainingQty || 1)"
-          @click="localQty < (remainingQty || 1) && localQty++"
+          :disabled="localQty >= maxQtyAllowed"
+          @click="incrementQty"
           aria-label="Increase quantity"
         >+</button>
       </div>
 
+      <!-- Add to Cart button - changes to qty stepper when in cart -->
       <button
+        v-if="cartQty === 0"
         class="add-btn"
         :class="{ added: isAdded }"
         :disabled="remainingQty < 1"
@@ -55,12 +58,27 @@
       >
         {{ remainingQty < 1 ? 'Max in cart' : (isAdded ? 'Added!' : '+ Add to Cart') }}
       </button>
+      <div v-else class="in-cart-badge">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="20 6 9 17 4 12"/>
+        </svg>
+        <span>In Cart</span>
+      </div>
     </div>
+
+    <LoginPromptModal
+      v-if="showLoginPrompt"
+      :title="loginPromptTitle"
+      :message="loginPromptMessage"
+      @close="showLoginPrompt = false"
+      @login="navigateToLogin"
+    />
   </div>
 </template>
 
 <script setup>
 import { computed, ref, watch } from 'vue'
+import LoginPromptModal from '~/components/LoginPromptModal.vue'
 
 const props = defineProps({
   id: { type: [Number, String], required: true },
@@ -74,14 +92,19 @@ const props = defineProps({
 const wishlist = useWishlist()
 const cart = useCart()
 const { formatPrice } = useFormatPrice()
+const { isLoggedIn } = useAuth()
 
 const isAdded = ref(false)
 const imgFailed = ref(false)
 const localQty = ref(1)
+const showLoginPrompt = ref(false)
+const loginPromptTitle = ref('')
+const loginPromptMessage = ref('')
 
 const inWishlist = computed(() => wishlist?.isInWishlist(props.id) ?? false)
 const cartQty = computed(() => cart.getCartQty(props.id))
 const remainingQty = computed(() => Math.max(0, cart.MAX_QTY_PER_PRODUCT - cartQty.value))
+const maxQtyAllowed = computed(() => Math.min(cart.MAX_QTY_PER_PRODUCT, cartQty.value + remainingQty.value))
 const displaySrc = computed(() => imgFailed.value ? '/placeholder-product.svg' : props.image || '/placeholder-product.svg')
 const starDisplay = computed(() => {
   const filled = Math.max(0, Math.min(5, Math.round(Number(props.rating?.rate) || 0)))
@@ -95,8 +118,8 @@ watch(() => props.image, () => {
 watch(localQty, (val) => {
   if (!val || val < 1) {
     localQty.value = 1
-  } else if (val > remainingQty.value) {
-    localQty.value = remainingQty.value || 1
+  } else if (val > maxQtyAllowed.value) {
+    localQty.value = maxQtyAllowed.value
   }
 })
 
@@ -106,6 +129,7 @@ function onImgError() {
 function goToDetail() {
   navigateTo(`/product/${props.id}`)
 }
+
 function handleAddToCart() {
   const ok = cart.addToCart({
     id: props.id,
@@ -123,7 +147,14 @@ function handleAddToCart() {
     isAdded.value = false
   }, 1200)
 }
-function toggleWishlist() {
+
+function handleWishlistClick() {
+  if (!isLoggedIn.value) {
+    loginPromptTitle.value = 'Sign in to save to wishlist'
+    loginPromptMessage.value = 'Create an account or sign in to save items to your wishlist and access them across devices.'
+    showLoginPrompt.value = true
+    return
+  }
   wishlist.toggleWishlist({
     id: props.id,
     image: props.image,
@@ -132,6 +163,29 @@ function toggleWishlist() {
     category: props.category,
     rating: props.rating
   })
+}
+
+function navigateToLogin() {
+  showLoginPrompt.value = false
+  navigateTo('/login?redirect=' + encodeURIComponent(`/product/${props.id}`))
+}
+
+function decrementQty() {
+  if (localQty.value > 1) {
+    localQty.value--
+    updateCartQty()
+  }
+}
+
+function incrementQty() {
+  if (localQty.value < maxQtyAllowed.value) {
+    localQty.value++
+    updateCartQty()
+  }
+}
+
+function updateCartQty() {
+  cart.updateQty(props.id, localQty.value)
 }
 </script>
 
@@ -199,6 +253,20 @@ function toggleWishlist() {
 .add-btn { width: 100%; padding: 10px 8px; font-size: 13px; border: none; border-radius: 8px; background: #111827; color: #fff; cursor: pointer; transition: all .15s ease; }
 .add-btn:hover:not(:disabled) { background: #d4af64; color: #0a0806; }
 .add-btn:disabled { background: #9ca3af; cursor: not-allowed; }
+.in-cart-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  padding: 10px 8px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #15803d;
+  background: #dcfce7;
+  border-radius: 8px;
+  border: 1px solid #bbf7d0;
+}
 @media (max-width: 640px) {
   .img-wrapper { padding: 10px; }
   .card-body { padding: 12px; }

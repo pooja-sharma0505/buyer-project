@@ -12,6 +12,7 @@ export default defineEventHandler(async (event) => {
   const body = await readBody(event)
   const phone = String(body?.phone ?? '').trim()
   const password = String(body?.password ?? '')
+  const rememberMe = Boolean(body?.rememberMe)
 
   if (!phone || !password) {
     throw createError({ statusCode: 400, message: 'Phone and password are required' })
@@ -55,7 +56,9 @@ export default defineEventHandler(async (event) => {
     await ensureAuthTables(pool)
 
     const token = randomBytes(32).toString('hex')
-    const expires = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+    // 30 days if rememberMe, otherwise 7 days
+    const maxAgeSeconds = (rememberMe ? 30 : 7) * 24 * 60 * 60
+    const expires = new Date(Date.now() + maxAgeSeconds * 1000)
 
     await pool.query('INSERT INTO sessions (token, user_id, expires_at) VALUES (?, ?, ?)', [
       token,
@@ -63,7 +66,7 @@ export default defineEventHandler(async (event) => {
       expires
     ])
 
-    setSessionCookie(event, token)
+    setSessionCookie(event, token, maxAgeSeconds)
 
     return {
       message: 'Login successful',

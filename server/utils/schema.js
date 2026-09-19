@@ -63,6 +63,7 @@ export async function ensureOrderTables(pool) {
       address VARCHAR(500) NULL,
       city VARCHAR(100) NULL,
       zip VARCHAR(20) NULL,
+      idempotency_key VARCHAR(64) NULL,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )
   `)
@@ -97,6 +98,18 @@ export async function ensureOrderTables(pool) {
     await pool.query('ALTER TABLE orders ADD COLUMN zip VARCHAR(20) NULL AFTER city')
   } catch (err) {
     if (err.code !== 'ER_DUP_FIELDNAME' && err.code !== 'ER_BAD_FIELD_ERROR') throw err
+  }
+  // Migration: add idempotency_key column if missing
+  try {
+    await pool.query('ALTER TABLE orders ADD COLUMN idempotency_key VARCHAR(64) NULL AFTER zip')
+  } catch (err) {
+    if (err.code !== 'ER_DUP_FIELDNAME' && err.code !== 'ER_BAD_FIELD_ERROR') throw err
+  }
+  // Unique index on idempotency_key for fast lookup
+  try {
+    await pool.query('ALTER TABLE orders ADD UNIQUE KEY unique_idempotency_key (idempotency_key)')
+  } catch (err) {
+    if (err.code !== 'ER_DUP_KEYNAME' && err.code !== 'ER_BAD_FIELD_ERROR') throw err
   }
 
   await pool.query(`

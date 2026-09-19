@@ -42,18 +42,35 @@
               class="wish-btn"
               :class="{ on: inWishlist }"
               :aria-pressed="inWishlist"
-              @click="toggleWishlist"
+              @click="handleWishlistClick"
             >
               <svg width="18" height="18" viewBox="0 0 24 24" :fill="inWishlist ? 'currentColor' : 'none'" stroke="currentColor" stroke-width="2">
                 <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
               </svg>
-              {{ inWishlist ? 'Saved' : 'Wishlist' }}
+              <span>{{ inWishlist ? 'Saved' : 'Wishlist' }}</span>
             </button>
           </div>
         </div>
       </div>
 
       <div v-else class="not-found">{{ errorMessage }}</div>
+
+      <!-- You May Also Like - Same Category Suggestions -->
+      <div v-if="product && similarProducts.length" class="similar-section">
+        <h2 class="similar-heading">You may also like</h2>
+        <div class="similar-grid">
+          <product-card
+            v-for="p in similarProducts"
+            :key="p.id"
+            :id="p.id"
+            :image="p.image"
+            :title="p.title"
+            :price="p.price"
+            :category="p.category"
+            :rating="p.rating"
+          />
+        </div>
+      </div>
 
       <div v-if="product" class="reviews-section">
         <h2 class="reviews-heading">Reviews</h2>
@@ -120,10 +137,14 @@
 </template>
 
 <script setup>
+import { computed, ref, watch } from 'vue'
+import ProductCard from '~/components/Productcard.vue'
+import LoginPromptModal from '~/components/LoginPromptModal.vue'
+
 const route = useRoute()
 const cart = useCart()
 const wishlist = useWishlist()
-const { user } = useAuth()
+const { user, isLoggedIn } = useAuth()
 const { formatPrice } = useFormatPrice()
 const { success: toastSuccess } = useToast()
 
@@ -133,8 +154,39 @@ const { data: reviewsData, pending: reviewsPending, error: reviewsError, refresh
 
 const reviews = computed(() => reviewsData.value?.reviews || [])
 
+// Fetch similar products from same category
+const similarProducts = ref([])
+const similarPending = ref(false)
+
+async function fetchSimilarProducts() {
+  if (!product.value?.category) return
+  similarPending.value = true
+  try {
+    const data = await $fetch('/api/products', {
+      query: { category: product.value.category, limit: 4, page: 1 }
+    })
+    const products = Array.isArray(data) ? data : (data?.products || [])
+    if (Array.isArray(products)) {
+      similarProducts.value = products
+        .filter((p) => p && p.id !== product.value?.id)
+        .slice(0, 4)
+    }
+  } catch (e) {
+    similarProducts.value = []
+  } finally {
+    similarPending.value = false
+  }
+}
+
+watch(() => product.value?.category, () => {
+  fetchSimilarProducts()
+}, { immediate: true })
+
 const detailImgBad = ref(false)
 const detailQty = ref(1)
+const showLoginPrompt = ref(false)
+const loginPromptTitle = ref('')
+const loginPromptMessage = ref('')
 
 const cartQty = computed(() => cart.getCartQty(product.value?.id))
 const remainingQty = computed(() => Math.max(0, cart.MAX_QTY_PER_PRODUCT - cartQty.value))
@@ -149,6 +201,48 @@ useSeoMeta(() => ({
   ogImage: product.value?.image || '/og-image.svg',
   ogType: 'product'
 }))
+
+// JSON-LD Product Schema via useHead
+useHead(() => {
+  if (!product.value) return {}
+  const p = product.value
+  const schema = {
+    '@context': 'https://schema.org/',
+    '@type': 'Product',
+    name: p.title,
+    description: p.description,
+    image: p.image,
+    sku: String(p.id),
+    brand: {
+      '@type': 'Brand',
+      name: 'LUMIÈRE'
+    },
+    offers: {
+      '@type': 'Offer',
+      url: window.location?.href || '',
+      priceCurrency: 'INR',
+      price: Number(p.price),
+      availability: 'https://schema.org/InStock',
+      seller: {
+        '@type': 'Organization',
+        name: 'LUMIÈRE'
+      }
+    },
+    aggregateRating: p.rating ? {
+      '@type': 'AggregateRating',
+      ratingValue: p.rating.rate,
+      reviewCount: p.rating.count
+    } : undefined
+  }
+  return {
+    script: [
+      {
+        type: 'application/ld+json',
+        innerHTML: JSON.stringify(schema)
+      }
+    ]
+  }
+})
 
 const newRating = ref(5)
 const newComment = ref('')
@@ -212,9 +306,20 @@ const inWishlist = computed(() =>
   product.value ? wishlist.isInWishlist(product.value.id) : false
 )
 
-const toggleWishlist = () => {
+function handleWishlistClick() {
+  if (!isLoggedIn.value) {
+    loginPromptTitle.value = 'Sign in to save to wishlist'
+    loginPromptMessage.value = 'Create an account or sign in to save items to your wishlist and access them across devices.'
+    showLoginPrompt.value = true
+    return
+  }
   if (!product.value) return
   wishlist.toggleWishlist(product.value)
+}
+
+function navigateToLogin() {
+  showLoginPrompt.value = false
+  navigateTo('/login?redirect=' + encodeURIComponent(`/product/${route.params.id}`))
 }
 
 const addToCartWithQty = () => {
@@ -297,6 +402,17 @@ watch(product, () => {
   .title { font-size: 22px; }
   .image-box { padding: 14px; }
   .cta-row > * { flex: 1; justify-content: center; }
+}
+
+.similar-section { max-width: 1000px; margin: 24px auto 0; }
+.similar-heading { margin: 0 0 16px; color: #111827; font-size: 20px; font-family: 'Cormorant Garamond', serif; }
+.similar-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+@media (min-width: 768px) {
+  .similar-grid { grid-template-columns: repeat(4, 1fr); }
 }
 
 .reviews-section { max-width: 1000px; margin: 24px auto 0; background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 20px; }

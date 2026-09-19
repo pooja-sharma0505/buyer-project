@@ -1,61 +1,161 @@
 <template>
   <div class="signup-page">
     <div class="card">
-      <h1>Create Account</h1>
-      <p>Sign up to start shopping with LUMIÈRE.</p>
+      <!-- Step 1: Basic Info -->
+      <div v-if="step === 1" class="signup-step">
+        <h1>Create Account</h1>
+        <p>Sign up to start shopping with LUMIÈRE.</p>
 
-      <form @submit.prevent="handleSignup">
-        <label for="name">Name</label>
-        <input
-          id="name"
-          v-model.trim="name"
-          type="text"
-          placeholder="Your name"
-          autocomplete="name"
-          :aria-invalid="!!fieldErrors.name"
-          @input="fieldErrors.name = ''"
-          @blur="validateField('name')"
-        />
-        <p v-if="fieldErrors.name" class="field-error">{{ fieldErrors.name }}</p>
+        <form @submit.prevent="handleStep1">
+          <label for="name">Name</label>
+          <input
+            id="name"
+            v-model.trim="name"
+            type="text"
+            placeholder="Your name"
+            autocomplete="name"
+            :aria-invalid="!!fieldErrors.name"
+            @input="fieldErrors.name = ''"
+            @blur="validateField('name')"
+          />
+          <p v-if="fieldErrors.name" class="field-error">{{ fieldErrors.name }}</p>
 
-        <label for="phone">Phone</label>
-        <input
-          id="phone"
-          v-model.trim="phone"
-          type="tel"
-          inputmode="numeric"
-          placeholder="Phone number"
-          autocomplete="tel"
-          :aria-invalid="!!fieldErrors.phone"
-          @input="fieldErrors.phone = ''"
-          @blur="validateField('phone')"
-        />
-        <p v-if="fieldErrors.phone" class="field-error">{{ fieldErrors.phone }}</p>
+          <label for="phone">Phone</label>
+          <input
+            id="phone"
+            v-model.trim="phone"
+            type="tel"
+            inputmode="numeric"
+            placeholder="Phone number"
+            autocomplete="tel"
+            :aria-invalid="!!fieldErrors.phone"
+            @input="fieldErrors.phone = ''"
+            @blur="validateField('phone')"
+          />
+          <p v-if="fieldErrors.phone" class="field-error">{{ fieldErrors.phone }}</p>
 
-        <label for="password">Password</label>
-        <input
-          id="password"
-          v-model="password"
-          type="password"
-          placeholder="Create a password"
-          autocomplete="new-password"
-          :aria-invalid="!!fieldErrors.password"
-          @input="fieldErrors.password = ''"
-          @blur="validateField('password')"
-        />
-        <p v-if="fieldErrors.password" class="field-error">{{ fieldErrors.password }}</p>
+          <label for="email">Email (Optional)</label>
+          <input
+            id="email"
+            v-model.trim="email"
+            type="email"
+            placeholder="Email address"
+            autocomplete="email"
+            :aria-invalid="!!fieldErrors.email"
+            @input="fieldErrors.email = ''"
+            @blur="validateField('email')"
+          />
+          <p v-if="fieldErrors.email" class="field-error">{{ fieldErrors.email }}</p>
 
-        <button type="submit" :disabled="loading">
-          {{ loading ? 'Creating account...' : 'Sign Up' }}
-        </button>
-      </form>
+          <label for="password">Password</label>
+          <div class="password-wrapper">
+            <input
+              id="password"
+              v-model="password"
+              :type="showPassword ? 'text' : 'password'"
+              placeholder="Create a password"
+              autocomplete="new-password"
+              :aria-invalid="!!fieldErrors.password"
+              @input="fieldErrors.password = ''"
+              @blur="validateField('password')"
+            />
+            <button type="button" class="toggle-password" @click="showPassword = !showPassword" :aria-label="showPassword ? 'Hide password' : 'Show password'">
+              <svg v-if="!showPassword" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                <circle cx="12" cy="12" r="3"/>
+              </svg>
+              <svg v-else width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/>
+                <line x1="1" y1="1" x2="23" y2="23"/>
+              </svg>
+            </button>
+          </div>
+          <p v-if="fieldErrors.password" class="field-error">{{ fieldErrors.password }}</p>
 
-      <p v-if="error" class="signup-error">{{ error }}</p>
-      <p v-if="success" class="success">Account created. Redirecting to login...</p>
+          <label for="confirmPassword">Confirm Password</label>
+          <input
+            id="confirmPassword"
+            v-model="confirmPassword"
+            type="password"
+            placeholder="Confirm password"
+            autocomplete="new-password"
+            :aria-invalid="!!fieldErrors.confirmPassword"
+            @input="fieldErrors.confirmPassword = ''"
+            @blur="validateField('confirmPassword')"
+          />
+          <p v-if="fieldErrors.confirmPassword" class="field-error">{{ fieldErrors.confirmPassword }}</p>
 
-      <div class="signup-links">
-        <span>Already have an account?</span>
-        <NuxtLink to="/login" class="link">Log in</NuxtLink>
+          <button type="submit" :disabled="loading" class="btn-primary">
+            {{ loading ? 'Creating account...' : 'Continue' }}
+          </button>
+        </form>
+
+        <p v-if="error" class="signup-error">{{ error }}</p>
+
+        <div class="signup-links">
+          <span>Already have an account?</span>
+          <NuxtLink to="/login" class="link">Log in</NuxtLink>
+        </div>
+      </div>
+
+      <!-- Step 2: OTP Verification -->
+      <div v-if="step === 2" class="signup-step">
+        <h1>Verify Your Phone</h1>
+        <p>We've sent a 6-digit code to <strong>{{ maskPhone(phone) }}</strong>.</p>
+
+        <form @submit.prevent="verifyOTP">
+          <div class="otp-inputs">
+            <input
+              v-for="i in 6"
+              :key="i"
+              v-model="otpDigits[i - 1]"
+              type="text"
+              maxlength="1"
+              inputmode="numeric"
+              @input="handleOtpInput(i)"
+              @keydown="handleOtpKeydown(i, $event)"
+              @paste="handleOtpPaste"
+              :ref="el => otpRefs[i - 1] = el"
+              :aria-label="`Digit ${i}`"
+              class="otp-input"
+            />
+          </div>
+
+          <p v-if="otpError" class="field-error">{{ otpError }}</p>
+
+          <button type="submit" :disabled="verifying || otpDigits.some(d => !d)" class="btn-primary">
+            {{ verifying ? 'Verifying...' : 'Verify & Create Account' }}
+          </button>
+
+          <div class="resend-section">
+            <p v-if="resendCooldown > 0" class="resend-timer">Resend code in {{ resendCooldown }}s</p>
+            <button
+              v-else
+              type="button"
+              class="resend-link"
+              @click="resendOTP"
+              :disabled="resending"
+            >
+              {{ resending ? 'Sending...' : 'Resend code' }}
+            </button>
+            <p class="change-phone" @click="goBackToStep1">Change phone number</p>
+          </div>
+        </form>
+
+        <p v-if="otpSuccess" class="success">{{ otpSuccess }}</p>
+      </div>
+
+      <!-- Step 3: Success -->
+      <div v-if="step === 3" class="signup-step success-step">
+        <div class="success-icon">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+            <polyline points="22 4 12 14.01 9 11.01"/>
+          </svg>
+        </div>
+        <h1>Account Created!</h1>
+        <p>Your account has been verified and is ready to use.</p>
+        <NuxtLink to="/login" class="btn-primary" style="margin-top: 16px;">Continue to Login</NuxtLink>
       </div>
     </div>
   </div>
@@ -71,17 +171,39 @@ useSeoMeta({
 })
 
 const { success: toastSuccess } = useToast()
+const { mergeGuestData } = useAuth()
 
+// Step 1: Basic info
 const name = ref('')
 const phone = ref('')
+const email = ref('')
 const password = ref('')
+const confirmPassword = ref('')
 const error = ref('')
-const success = ref('')
 const loading = ref(false)
-const fieldErrors = ref({ name: '', phone: '', password: '' })
+const fieldErrors = ref({ name: '', phone: '', email: '', password: '', confirmPassword: '' })
+const showPassword = ref(false)
+
+// Step 2: OTP
+const step = ref(1)
+const otpDigits = ref(['', '', '', '', '', ''])
+const otpRefs = ref([])
+const verifying = ref(false)
+const otpError = ref('')
+const otpSuccess = ref('')
+const resending = ref(false)
+const resendCooldown = ref(0)
+let resendTimer = null
+
+function maskPhone(p) {
+  if (!p) return ''
+  const clean = p.replace(/\D/g, '')
+  if (clean.length <= 4) return clean
+  return clean.slice(0, 2) + '*'.repeat(clean.length - 4) + clean.slice(-2)
+}
 
 function validate() {
-  const next = { name: '', phone: '', password: '' }
+  const next = { name: '', phone: '', email: '', password: '', confirmPassword: '' }
 
   if (!name.value) {
     next.name = 'Name is required'
@@ -95,73 +217,164 @@ function validate() {
     next.phone = 'Phone must be 10–15 digits only'
   }
 
+  if (email.value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value)) {
+    next.email = 'Enter a valid email address'
+  }
+
   if (!password.value) {
     next.password = 'Password is required'
   } else if (password.value.length < 6) {
     next.password = 'Password must be at least 6 characters'
   }
 
+  if (password.value !== confirmPassword.value) {
+    next.confirmPassword = 'Passwords do not match'
+  }
+
   fieldErrors.value = next
-  return !next.name && !next.phone && !next.password
+  return !next.name && !next.phone && !next.email && !next.password && !next.confirmPassword
 }
 
 function validateField(field) {
   const err = fieldErrors.value
   if (field === 'name') {
-    if (!name.value) {
-      err.name = 'Name is required'
-    } else if (name.value.length < 2) {
-      err.name = 'Name must be at least 2 characters'
-    } else {
-      err.name = ''
-    }
+    if (!name.value) err.name = 'Name is required'
+    else if (name.value.length < 2) err.name = 'Name must be at least 2 characters'
+    else err.name = ''
   }
   if (field === 'phone') {
-    if (!phone.value) {
-      err.phone = 'Phone is required'
-    } else if (!/^\d{10,15}$/.test(phone.value)) {
-      err.phone = 'Phone must be 10–15 digits only'
-    } else {
-      err.phone = ''
-    }
+    if (!phone.value) err.phone = 'Phone is required'
+    else if (!/^\d{10,15}$/.test(phone.value)) err.phone = 'Phone must be 10–15 digits only'
+    else err.phone = ''
+  }
+  if (field === 'email') {
+    if (email.value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value)) err.email = 'Enter a valid email address'
+    else err.email = ''
   }
   if (field === 'password') {
-    if (!password.value) {
-      err.password = 'Password is required'
-    } else if (password.value.length < 6) {
-      err.password = 'Password must be at least 6 characters'
-    } else {
-      err.password = ''
-    }
+    if (!password.value) err.password = 'Password is required'
+    else if (password.value.length < 6) err.password = 'Password must be at least 6 characters'
+    else err.password = ''
+  }
+  if (field === 'confirmPassword') {
+    if (password.value !== confirmPassword.value) err.confirmPassword = 'Passwords do not match'
+    else err.confirmPassword = ''
   }
 }
 
-const handleSignup = async () => {
+const handleStep1 = async () => {
   error.value = ''
-  success.value = ''
-
   if (!validate()) return
 
   loading.value = true
   try {
-    await $fetch('/api/auth/signup', {
+    // Send OTP request
+    await $fetch('/api/auth/send-otp', {
       method: 'POST',
-      body: { name: name.value, phone: phone.value, password: password.value }
+      body: { phone: phone.value, name: name.value, email: email.value || null, password: password.value }
     })
-    toastSuccess('Account created successfully')
-    success.value = 'Account created successfully'
-    setTimeout(() => navigateTo('/login'), 1500)
+    step.value = 2
+    startResendCooldown()
+    // Auto-focus first OTP input
+    nextTick(() => otpRefs.value[0]?.focus())
   } catch (err) {
-    error.value = err.data?.message || err.message || 'Signup failed'
+    error.value = err.data?.message || err.message || 'Failed to send verification code'
   } finally {
     loading.value = false
   }
+}
+
+function startResendCooldown() {
+  resendCooldown.value = 60
+  if (resendTimer) clearInterval(resendTimer)
+  resendTimer = setInterval(() => {
+    resendCooldown.value--
+    if (resendCooldown.value <= 0) clearInterval(resendTimer)
+  }, 1000)
+}
+
+async function resendOTP() {
+  resending.value = true
+  otpError.value = ''
+  try {
+    await $fetch('/api/auth/send-otp', {
+      method: 'POST',
+      body: { phone: phone.value, name: name.value, email: email.value || null, password: password.value }
+    })
+    startResendCooldown()
+    toastSuccess('New verification code sent')
+  } catch (err) {
+    otpError.value = err.data?.message || 'Failed to resend code'
+  } finally {
+    resending.value = false
+  }
+}
+
+function handleOtpInput(index) {
+  const val = otpDigits.value[index - 1]
+  if (!/^\d$/.test(val)) {
+    otpDigits.value[index - 1] = ''
+    return
+  }
+  if (index < 6) {
+    nextTick(() => otpRefs.value[index]?.focus())
+  }
+}
+
+function handleOtpKeydown(index, e) {
+  if (e.key === 'Backspace' && !otpDigits.value[index - 1] && index > 1) {
+    otpRefs.value[index - 2]?.focus()
+  }
+}
+
+function handleOtpPaste(e) {
+  const pasted = e.clipboardData.getData('text').replace(/\D/g, '').slice(0, 6)
+  pasted.split('').forEach((digit, i) => {
+    otpDigits.value[i] = digit
+  })
+  if (pasted.length === 6) {
+    nextTick(() => otpRefs.value[5]?.focus())
+  }
+}
+
+const verifyOTP = async () => {
+  otpError.value = ''
+  otpSuccess.value = ''
+  const code = otpDigits.value.join('')
+
+  if (code.length !== 6) return
+
+  verifying.value = true
+  try {
+    await $fetch('/api/auth/verify-otp', {
+      method: 'POST',
+      body: { phone: phone.value, code, name: name.value, email: email.value || null, password: password.value }
+    })
+    // Merge guest cart and wishlist into new account
+    await mergeGuestData()
+    step.value = 3
+    toastSuccess('Account created successfully!')
+  } catch (err) {
+    otpError.value = err.data?.message || 'Invalid or expired code'
+  } finally {
+    verifying.value = false
+  }
+}
+
+function goBackToStep1() {
+  step.value = 1
+  if (resendTimer) clearInterval(resendTimer)
 }
 </script>
 
 <style scoped>
 .signup-page { min-height: calc(100vh - 72px); display: flex; align-items: center; justify-content: center; background: #f8fafc; padding: 40px 16px; }
 .card { width: 100%; max-width: 380px; background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 28px 24px; }
+.signup-step { animation: fadeIn 0.3s ease; }
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
 h1 { margin: 0 0 8px; color: #111827; font-family: 'Cormorant Garamond', serif; font-size: 28px; }
 p { margin: 0 0 20px; color: #6b7280; font-size: 14px; }
 form { display: grid; gap: 10px; }
@@ -171,16 +384,112 @@ input:focus { border-color: #d4af64; outline: none; box-shadow: 0 0 0 3px rgba(2
 input[aria-invalid="true"] { border-color: #dc2626; }
 input[aria-invalid="true"]:focus { box-shadow: 0 0 0 3px rgba(220,38,38,0.15); }
 .field-error { color: #dc2626; font-size: 12px; margin: -2px 0 4px; }
-button { margin-top: 8px; border: none; border-radius: 8px; background: #111827; color: #fff; padding: 12px; font-size: 14px; font-weight: 500; cursor: pointer; transition: background 0.2s ease; }
-button:hover { background: #d4af64; color: #0a0806; }
-button:disabled { opacity: 0.7; cursor: not-allowed; }
+.btn-primary {
+  margin-top: 8px;
+  border: none;
+  border-radius: 8px;
+  background: #111827;
+  color: #fff;
+  padding: 12px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+.btn-primary:hover { background: #d4af64; color: #0a0806; }
+.btn-primary:disabled { opacity: 0.7; cursor: not-allowed; }
 .signup-error { color: #dc2626; margin-top: 12px; font-size: 13px; }
 .success { color: #15803d; margin-top: 12px; font-size: 13px; }
 .signup-links { display: flex; gap: 8px; justify-content: center; margin-top: 18px; font-size: 13px; color: #6b7280; }
 .link { color: #d4af64; text-decoration: none; font-weight: 500; }
 .link:hover { text-decoration: underline; }
+
+/* Password wrapper */
+.password-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.password-wrapper input {
+  padding-right: 48px;
+}
+.toggle-password {
+  position: absolute;
+  right: 12px;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  color: #9ca3af;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+}
+.toggle-password:hover { color: #6b7280; }
+.toggle-password:focus { outline: none; }
+
+/* OTP Inputs */
+.otp-inputs {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin: 16px 0;
+}
+.otp-input {
+  width: 44px;
+  height: 52px;
+  text-align: center;
+  font-size: 20px;
+  font-weight: 600;
+  border: 2px solid #d1d5db;
+  border-radius: 10px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.otp-input:focus {
+  border-color: #d4af64;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(212,175,100,0.15);
+}
+.otp-input[aria-invalid="true"] { border-color: #dc2626; }
+
+/* Resend section */
+.resend-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  margin-top: 16px;
+}
+.resend-timer { color: #6b7280; font-size: 13px; margin: 0; }
+.resend-link {
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  color: #d4af64;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  text-decoration: underline;
+}
+.resend-link:hover { color: #b8860b; }
+.resend-link:disabled { opacity: 0.6; cursor: not-allowed; color: #9ca3af; }
+.change-phone { color: #6b7280; font-size: 13px; cursor: pointer; margin: 0; text-decoration: underline; }
+.change-phone:hover { color: #374151; }
+
+/* Success step */
+.success-step { text-align: center; }
+.success-icon {
+  color: #15803d;
+  margin-bottom: 16px;
+}
+.success-step h1 { margin: 0 0 8px; font-size: 24px; }
+.success-step p { margin: 0 0 24px; color: #6b7280; }
+
 @media (max-width: 480px) {
   .signup-page { align-items: flex-start; padding: 24px 12px; }
   .card { border-radius: 10px; padding: 24px 16px; }
+  .otp-input { width: 38px; height: 46px; font-size: 18px; }
 }
 </style>

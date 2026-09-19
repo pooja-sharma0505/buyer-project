@@ -26,7 +26,11 @@
           />
           <div v-if="displayItems.length === 0" class="empty-state">
             <div class="empty-wrap">
-              <i class="bi bi-bag-x-fill empty-icon"></i>
+              <svg class="empty-icon" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+                <line x1="3" y1="6" x2="21" y2="6"/>
+                <path d="M16 10a4 4 0 0 1-8 0"/>
+              </svg>
               <h2 class="empty-title">Your cart is empty</h2>
               <p class="empty-text">Looks like you haven't added anything to your cart yet.</p>
               <NuxtLink to="/" class="empty-cta">Continue Shopping</NuxtLink>
@@ -40,6 +44,37 @@
             <span>Subtotal</span>
             <strong>{{ formatPrice(subtotal) }}</strong>
           </div>
+
+          <!-- Coupon section -->
+          <div class="coupon-section">
+            <div class="coupon-input-row">
+              <input
+                v-model="couponCode"
+                type="text"
+                placeholder="Coupon code"
+                class="coupon-input"
+                @keyup.enter="applyCoupon"
+                :disabled="applyingCoupon"
+                aria-label="Coupon code"
+              />
+              <button
+                class="coupon-btn"
+                :class="{ applied: couponApplied }"
+                :disabled="applyingCoupon || couponApplied"
+                @click="couponApplied ? removeCoupon : applyCoupon"
+              >
+                {{ applyingCoupon ? '...' : (couponApplied ? 'Remove' : 'Apply') }}
+              </button>
+            </div>
+            <p v-if="couponError" class="coupon-error">{{ couponError }}</p>
+            <p v-if="couponApplied" class="coupon-success">Coupon applied! {{ formatPrice(couponDiscount) }} off</p>
+          </div>
+
+          <div v-if="couponDiscount > 0" class="row discount">
+            <span>Discount</span>
+            <strong>-{{ formatPrice(couponDiscount) }}</strong>
+          </div>
+
           <div class="row">
             <span>Tax (18%)</span>
             <strong>{{ formatPrice(tax) }}</strong>
@@ -73,12 +108,75 @@ useSeoMeta({
 
 const { isLoggedIn } = useAuth()
 const { formatPrice } = useFormatPrice()
-// Use the shared useCart() composable (localStorage-backed) so guests see
-// the same items the Navbar shows, instead of the auth-gated /api/cart.
 const { items: displayItems, updateQty, removeFromCart, itemCount: totalQty, subtotal, isHydrated } = useCart()
 
 const tax = computed(() => Number(subtotal.value || 0) * 0.18)
-const total = computed(() => Number(subtotal.value || 0) + tax.value)
+const total = computed(() => Number(subtotal.value || 0) + tax.value - couponDiscount.value)
+
+// Coupon state
+const couponCode = ref('')
+const couponApplied = ref(false)
+const couponDiscount = ref(0)
+const couponError = ref('')
+const applyingCoupon = ref(false)
+
+// Simple coupon validation (in production, this would be an API call)
+const validCoupons = {
+  'WELCOME10': { type: 'percent', value: 10, maxDiscount: 5000 },
+  'SAVE500': { type: 'fixed', value: 500 },
+  'LUXURY20': { type: 'percent', value: 20, maxDiscount: 10000 },
+  'FREESHIP': { type: 'fixed', value: 0, freeShipping: true }
+}
+
+async function applyCoupon() {
+  if (!couponCode.value.trim() || applyingCoupon.value) return
+  if (couponApplied.value) return
+
+  applyingCoupon.value = true
+  couponError.value = ''
+
+  // Simulate API call delay
+  await new Promise(resolve => setTimeout(resolve, 500))
+
+  const code = couponCode.value.trim().toUpperCase()
+  const coupon = validCoupons[code]
+
+  if (!coupon) {
+    couponError.value = 'Invalid or expired coupon code'
+    applyingCoupon.value = false
+    return
+  }
+
+  let discount = 0
+  const sub = Number(subtotal.value || 0)
+
+  if (coupon.type === 'percent') {
+    discount = Math.round(sub * (coupon.value / 100))
+    if (coupon.maxDiscount) {
+      discount = Math.min(discount, coupon.maxDiscount)
+    }
+  } else if (coupon.type === 'fixed') {
+    discount = Math.min(coupon.value, sub)
+  }
+
+  couponDiscount.value = discount
+  couponApplied.value = true
+  couponCode.value = code
+  applyingCoupon.value = false
+
+  const toast = useToast()
+  toast.success(`Coupon "${code}" applied! Saved ${formatPrice(discount)}`)
+}
+
+function removeCoupon() {
+  couponApplied.value = false
+  couponDiscount.value = 0
+  couponCode.value = ''
+  couponError.value = ''
+
+  const toast = useToast()
+  toast.info('Coupon removed')
+}
 
 const goToCheckout = async () => {
   if (!isLoggedIn.value) {
@@ -159,7 +257,79 @@ const handleRemove = (id) => {
 }
 .summary h2 { margin-top: 0; color: #111827; font-size: 18px; font-weight: 600; margin-bottom: 16px; }
 .row { display: flex; justify-content: space-between; margin-bottom: 12px; color: #4b5563; font-size: 14px; }
+.row.discount { color: #15803d; }
 .row.total { border-top: 2px solid #e5e7eb; padding-top: 16px; margin-top: 16px; color: #111827; font-weight: 600; font-size: 16px; }
+
+.coupon-section {
+  margin: 16px 0;
+  padding: 16px;
+  background: #f8fafc;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+}
+.coupon-input-row {
+  display: flex;
+  gap: 8px;
+}
+.coupon-input {
+  flex: 1;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font: inherit;
+  font-size: 14px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.coupon-input:focus {
+  border-color: #d4af64;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(212,175,100,0.15);
+}
+.coupon-btn {
+  white-space: nowrap;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+}
+.coupon-btn:not(.applied) {
+  background: #111827;
+  color: #fff;
+  border-color: #111827;
+}
+.coupon-btn:not(.applied):hover:not(:disabled) {
+  background: #d4af64;
+  color: #0a0806;
+  border-color: #d4af64;
+}
+.coupon-btn.applied {
+  background: #fff;
+  color: #374151;
+  border-color: #d1d5db;
+}
+.coupon-btn.applied:hover:not(:disabled) {
+  background: #f8fafc;
+  border-color: #d4af64;
+  color: #d4af64;
+}
+.coupon-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.coupon-error {
+  margin: 8px 0 0;
+  font-size: 12px;
+  color: #dc2626;
+}
+.coupon-success {
+  margin: 8px 0 0;
+  font-size: 12px;
+  color: #15803d;
+}
+
 .order-btn { 
   width: 100%; 
   border: none; 
@@ -201,7 +371,7 @@ const handleRemove = (id) => {
   border: 1px solid #e5e7eb;
 }
 .empty-wrap { display: flex; flex-direction: column; align-items: center; justify-content: center; max-width: 400px; }
-.empty-icon { font-size: 64px; color: #d4af64; margin-bottom: 24px; line-height: 1; opacity: 0.8; }
+.empty-icon { color: #d4af64; margin-bottom: 24px; line-height: 1; opacity: 0.8; }
 .empty-title { font-family: 'Cormorant Garamond', serif; font-size: 26px; font-weight: 600; color: #111827; margin: 0 0 12px; }
 .empty-text { color: #6b7280; font-size: 15px; margin: 0 0 32px; line-height: 1.6; }
 .empty-cta { 
@@ -232,5 +402,7 @@ const handleRemove = (id) => {
   .top h1 { font-size: 20px; }
   .summary { padding: 18px; }
   .layout { gap: 16px; }
+  .coupon-input-row { flex-direction: column; }
+  .coupon-btn { width: 100%; }
 }
 </style>

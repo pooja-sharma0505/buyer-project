@@ -3,7 +3,7 @@
     <div class="container">
       <div class="top-row">
         <h1 class="brand">Luxury Essentials, Curated for You</h1>
-        <div class="search-wrapper">
+        <div class="search-wrapper" ref="searchWrapperRef">
           <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="11" cy="11" r="8" />
             <line x1="21" y1="21" x2="16.65" y2="16.65" />
@@ -15,9 +15,21 @@
             placeholder="Search products…"
             class="search-input"
             @keyup.enter="onSearchEnter"
+            @focus="showSuggestions = true"
+            @input="onSearchInput"
           />
         </div>
       </div>
+
+      <SearchSuggestions
+        v-if="showSuggestions"
+        :search-query="search"
+        :show="showSuggestions"
+        :suggestions="searchSuggestions"
+        :loading="searchLoading"
+        @close="showSuggestions = false"
+        @select="onSuggestionSelect"
+      />
 
       <div class="filters">
         <button
@@ -96,6 +108,8 @@ useSeoMeta({
   ogType: 'website'
 })
 
+import SearchSuggestions from '~/components/SearchSuggestions.vue'
+
 const cart = useCart()
 const route = useRoute()
 const router = useRouter()
@@ -112,6 +126,13 @@ const currentPage = ref(1)
 const pageSize = 12
 
 const searchDebounced = useDebounce(search, 300)
+
+// Search suggestions state
+const showSuggestions = ref(false)
+const searchSuggestions = ref([])
+const searchLoading = ref(false)
+const searchWrapperRef = ref(null)
+let searchRequestId = 0
 
 const { data: categoriesData } = await useAsyncData('product-categories', () => $fetch('/api/categories'))
 
@@ -134,8 +155,6 @@ const productsData = ref(null)
 const productsPending = ref(true)
 const productsError = ref(null)
 
-// Monotonic token so rapidly-issued requests (e.g. page + filter changes)
-// can't overwrite newer results with stale responses.
 let productsRequestId = 0
 
 async function loadProducts() {
@@ -250,11 +269,64 @@ function clearFilters() {
 
 function onSearchEnter() {
   currentPage.value = 1
+  showSuggestions.value = false
 }
 
 function goToPage(page) {
   currentPage.value = page
 }
+
+// Search suggestions handlers
+async function fetchSearchSuggestions(query) {
+  if (!query.trim() || query.trim().length < 2) {
+    searchSuggestions.value = []
+    searchLoading.value = false
+    return
+  }
+  const requestId = ++searchRequestId
+  searchLoading.value = true
+  try {
+    const data = await $fetch('/api/search/suggestions', { query: { q: query, limit: 5 } })
+    if (requestId === searchRequestId) {
+      searchSuggestions.value = data.suggestions || []
+    }
+  } catch {
+    if (requestId === searchRequestId) {
+      searchSuggestions.value = []
+    }
+  } finally {
+    if (requestId === searchRequestId) {
+      searchLoading.value = false
+    }
+  }
+}
+
+function onSearchInput() {
+  if (search.value.trim().length >= 2) {
+    showSuggestions.value = true
+    fetchSearchSuggestions(search.value)
+  } else {
+    showSuggestions.value = false
+  }
+}
+
+function onSuggestionSelect(item) {
+  search.value = item.title
+  showSuggestions.value = false
+  currentPage.value = 1
+  loadProducts()
+}
+
+// Close suggestions when clicking outside
+onMounted(() => {
+  const handleClickOutside = (e) => {
+    if (searchWrapperRef.value && !searchWrapperRef.value.contains(e.target)) {
+      showSuggestions.value = false
+    }
+  }
+  document.addEventListener('click', handleClickOutside)
+  onUnmounted(() => document.removeEventListener('click', handleClickOutside))
+})
 </script>
 
 <style scoped>
