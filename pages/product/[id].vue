@@ -147,6 +147,7 @@ const wishlist = useWishlist()
 const { user, isLoggedIn } = useAuth()
 const { formatPrice } = useFormatPrice()
 const { success: toastSuccess } = useToast()
+const requestUrl = useRequestURL()
 
 const { data: product, pending, error } = await useFetch(() => `/api/products/${route.params.id}`)
 
@@ -219,7 +220,7 @@ useHead(() => {
     },
     offers: {
       '@type': 'Offer',
-      url: window.location?.href || '',
+      url: requestUrl.href,
       priceCurrency: 'INR',
       price: Number(p.price),
       availability: 'https://schema.org/InStock',

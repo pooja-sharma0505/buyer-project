@@ -142,7 +142,7 @@ onBeforeUnmount(() => {
   right: 0;
   z-index: 1000;
   padding: 0 2rem;
-  height: 72px;
+  height: var(--header-height);
   background: rgba(255, 255, 255, 0.9);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
@@ -151,7 +151,7 @@ onBeforeUnmount(() => {
 }
 
 .navbar.scrolled {
-  height: 60px;
+  height: calc(var(--header-height) - 12px);
   background: rgba(255, 255, 255, 0.98);
   border-bottom-color: rgba(209, 213, 219, 0.8);
   box-shadow: 0 8px 28px rgba(15, 23, 42, 0.08);

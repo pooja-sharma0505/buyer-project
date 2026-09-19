@@ -37,6 +37,10 @@ router.afterEach(async () => {
   box-sizing: border-box;
 }
 
+:root {
+  --header-height: 72px;
+}
+
 html,
 body {
   margin: 0;
@@ -54,7 +58,7 @@ body {
 
 .app-main {
   flex: 1;
-  padding-top: 72px;
+  padding-top: var(--header-height);
 }
 
 /* Page transitions */

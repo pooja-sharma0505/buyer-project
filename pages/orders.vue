@@ -149,6 +149,12 @@ const reordering = ref(null)
 const cancelling = ref(null)
 const returning = ref(null)
 
+const orders = ref([])
+const pageCount = ref(1)
+const totalOrders = ref(0)
+const pending = ref(false)
+const error = ref(null)
+
 async function loadOrders(page = 1) {
   loadingPage.value = true
   try {
@@ -166,25 +172,6 @@ async function loadOrders(page = 1) {
 }
 
 await loadOrders()
-
-watch(() => route.query.page, (val) => {
-  const page = Number(val) || 1
-  if (page !== currentPage.value) {
-    currentPage.value = page
-    loadOrders(page)
-  }
-}, { immediate: true })
-
-// Refresh when navigating from order-success
-watch(() => route.path, () => {
-  loadOrders(currentPage.value)
-})
-
-const orders = ref([])
-const pageCount = ref(1)
-const totalOrders = ref(0)
-const pending = ref(false)
-const error = ref(null)
 
 function formatDate(raw) {
   if (!raw) return ''
