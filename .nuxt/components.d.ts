@@ -16,8 +16,10 @@ type LazyComponent<T> = DefineComponent<HydrationStrategies, {}, {}, {}, {}, {},
 
 export const CartItem: typeof import("../components/CartItem.vue")['default']
 export const Footer: typeof import("../components/Footer.vue")['default']
+export const LoginPromptModal: typeof import("../components/LoginPromptModal.vue")['default']
 export const Navbar: typeof import("../components/Navbar.vue")['default']
 export const Productcard: typeof import("../components/Productcard.vue")['default']
+export const SearchSuggestions: typeof import("../components/SearchSuggestions.vue")['default']
 export const SkeletonLoader: typeof import("../components/SkeletonLoader.vue")['default']
 export const ToastContainer: typeof import("../components/ToastContainer.vue")['default']
 export const NuxtWelcome: typeof import("../node_modules/nuxt/dist/app/components/welcome.vue")['default']
@@ -45,8 +47,10 @@ export const Body: typeof import("../node_modules/nuxt/dist/head/runtime/compone
 export const NuxtIsland: typeof import("../node_modules/nuxt/dist/app/components/nuxt-island")['default']
 export const LazyCartItem: LazyComponent<typeof import("../components/CartItem.vue")['default']>
 export const LazyFooter: LazyComponent<typeof import("../components/Footer.vue")['default']>
+export const LazyLoginPromptModal: LazyComponent<typeof import("../components/LoginPromptModal.vue")['default']>
 export const LazyNavbar: LazyComponent<typeof import("../components/Navbar.vue")['default']>
 export const LazyProductcard: LazyComponent<typeof import("../components/Productcard.vue")['default']>
+export const LazySearchSuggestions: LazyComponent<typeof import("../components/SearchSuggestions.vue")['default']>
 export const LazySkeletonLoader: LazyComponent<typeof import("../components/SkeletonLoader.vue")['default']>
 export const LazyToastContainer: LazyComponent<typeof import("../components/ToastContainer.vue")['default']>
 export const LazyNuxtWelcome: LazyComponent<typeof import("../node_modules/nuxt/dist/app/components/welcome.vue")['default']>

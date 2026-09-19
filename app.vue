@@ -1,5 +1,5 @@
 <script setup>
-import { nextTick } from 'vue'
+import { nextTick, onMounted } from 'vue'
 const { isDark } = useDarkMode()
 
 useHead(computed(() => ({
@@ -12,9 +12,25 @@ useHead(computed(() => ({
   }
 })))
 
+useHead({
+  script: [
+    {
+      hid: 'scroll-restoration',
+      innerHTML: `if ('scrollRestoration' in history) { history.scrollRestoration = 'manual'; }`
+    }
+  ]
+})
+
 const router = useRouter()
 router.afterEach(async () => {
   await nextTick()
+  window.scrollTo(0, 0)
+})
+
+onMounted(() => {
+  if ('scrollRestoration' in history) {
+    history.scrollRestoration = 'manual'
+  }
   window.scrollTo(0, 0)
 })
 </script>
@@ -85,6 +101,7 @@ body {
 /* Smooth scroll */
 html {
   scroll-behavior: smooth;
+  scroll-margin-top: 72px;
 }
 
 /* Dark mode transition */

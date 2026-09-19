@@ -6,7 +6,14 @@
         <h1>Wishlist ({{ items.length }})</h1>
       </div>
 
-      <div v-if="items.length === 0" class="empty-state">
+      <div v-if="!isHydrated" class="loading-state">
+        <div class="loading-wrap">
+          <div class="spinner"></div>
+          <p>Loading your wishlist...</p>
+        </div>
+      </div>
+
+      <div v-else-if="items.length === 0" class="empty-state">
         <div class="empty-wrap">
           <svg class="empty-icon" width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
             <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
@@ -73,9 +80,19 @@ useSeoMeta({
 import LoginPromptModal from '~/components/LoginPromptModal.vue'
 
 const { addToCart: addProductToCart } = useCart()
-const { items, removeFromWishlist } = useWishlist()
-const { formatPrice } = useFormatPrice()
 const { isLoggedIn } = useAuth()
+const { items, removeFromWishlist, addToWishlist, isHydrated, initFromSsr } = useWishlist()
+const { formatPrice } = useFormatPrice()
+
+// Pre-fetch wishlist from DB during SSR for authenticated users
+const { data: serverWishlist } = await useAsyncData('wishlist-ssr', () => {
+  if (!isLoggedIn.value) return null
+  return $fetch('/api/wishlist')
+})
+
+if (serverWishlist.value?.items) {
+  initFromSsr(serverWishlist.value.items)
+}
 
 const showLoginPrompt = ref(false)
 const loginPromptTitle = ref('')
@@ -147,6 +164,30 @@ function navigateToLogin() {
 </script>
 
 <style scoped>
+.loading-state {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+}
+.loading-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  color: #6b7280;
+}
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid #e5e7eb;
+  border-top-color: #d4af64;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
 .wishlist-page { min-height: 100vh; background: #f8fafc; padding: 28px 16px; }
 .container { max-width: 800px; margin: 0 auto; }
 .top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 8px; }

@@ -124,39 +124,13 @@ definePageMeta({
 const route = useRoute()
 const { formatPrice } = useFormatPrice()
 
-const order = ref(null)
-const pending = ref(true)
-const error = ref(null)
-
-// Fetch order on client-side mount to ensure route params are available
-onMounted(async () => {
-  try {
-    pending.value = true
-    error.value = null
-    order.value = await $fetch(`/api/orders/${route.params.id}`)
-  } catch (err) {
-    error.value = err
-    order.value = null
-  } finally {
-    pending.value = false
+const { data: order, pending, error } = await useAsyncData(
+  'order-detail',
+  () => $fetch(`/api/orders/${route.params.id}`),
+  {
+    watch: [() => route.params.id]
   }
-})
-
-// Also watch for route changes in case user navigates between orders
-watch(() => route.params.id, async (newId) => {
-  if (newId) {
-    try {
-      pending.value = true
-      error.value = null
-      order.value = await $fetch(`/api/orders/${newId}`)
-    } catch (err) {
-      error.value = err
-      order.value = null
-    } finally {
-      pending.value = false
-    }
-  }
-})
+)
 
 const errorMessage = computed(() => {
   if (error.value?.statusCode === 404) return 'Order not found'

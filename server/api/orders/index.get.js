@@ -7,6 +7,31 @@ export default defineEventHandler(async (event) => {
   const pool = getPool()
   await ensureOrderTables(pool)
 
+  const page = Math.max(1, Number(getQuery(event).page) || 1)
+  const limit = Math.max(1, Number(getQuery(event).limit) || 10)
+  const offset = (page - 1) * limit
+
+  // Count total orders for this user
+  const [countRows] = await pool.query(
+    'SELECT COUNT(*) AS total FROM orders WHERE user_id = ?',
+    [user.id]
+  )
+  const total = Number(countRows[0]?.total || 0)
+  const pageCount = Math.max(1, Math.ceil(total / limit))
+
+  // Get paginated order IDs
+  const [orderRows] = await pool.query(
+    `SELECT id FROM orders WHERE user_id = ? ORDER BY created_at DESC, id DESC LIMIT ? OFFSET ?`,
+    [user.id, limit, offset]
+  )
+
+  if (!orderRows.length) {
+    return { orders: [], total, pageCount, page, limit }
+  }
+
+  const orderIds = orderRows.map((r) => r.id)
+  const placeholders = orderIds.map(() => '?').join(',')
+
   const [rows] = await pool.query(
     `
     SELECT o.id AS order_id, o.subtotal, o.tax, o.total, o.status, o.created_at,
@@ -15,10 +40,10 @@ export default defineEventHandler(async (event) => {
     FROM orders o
     JOIN order_items oi ON oi.order_id = o.id
     LEFT JOIN products p ON p.id = oi.product_id
-    WHERE o.user_id = ?
-    ORDER BY o.created_at DESC, oi.id ASC
+    WHERE o.id IN (${placeholders})
+    ORDER BY FIELD(o.id, ${orderIds.map(() => '?').join(',')}), oi.id ASC
     `,
-    [user.id]
+    [...orderIds, ...orderIds]
   )
 
   const orderMap = new Map()
@@ -48,5 +73,5 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  return { orders: Array.from(orderMap.values()) }
+  return { orders: Array.from(orderMap.values()), total, pageCount, page, limit }
 })

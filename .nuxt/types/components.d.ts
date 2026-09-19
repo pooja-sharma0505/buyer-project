@@ -16,8 +16,10 @@ type LazyComponent<T> = DefineComponent<HydrationStrategies, {}, {}, {}, {}, {},
 interface _GlobalComponents {
   CartItem: typeof import("../../components/CartItem.vue")['default']
   Footer: typeof import("../../components/Footer.vue")['default']
+  LoginPromptModal: typeof import("../../components/LoginPromptModal.vue")['default']
   Navbar: typeof import("../../components/Navbar.vue")['default']
   Productcard: typeof import("../../components/Productcard.vue")['default']
+  SearchSuggestions: typeof import("../../components/SearchSuggestions.vue")['default']
   SkeletonLoader: typeof import("../../components/SkeletonLoader.vue")['default']
   ToastContainer: typeof import("../../components/ToastContainer.vue")['default']
   NuxtWelcome: typeof import("../../node_modules/nuxt/dist/app/components/welcome.vue")['default']
@@ -45,8 +47,10 @@ interface _GlobalComponents {
   NuxtIsland: typeof import("../../node_modules/nuxt/dist/app/components/nuxt-island")['default']
   LazyCartItem: LazyComponent<typeof import("../../components/CartItem.vue")['default']>
   LazyFooter: LazyComponent<typeof import("../../components/Footer.vue")['default']>
+  LazyLoginPromptModal: LazyComponent<typeof import("../../components/LoginPromptModal.vue")['default']>
   LazyNavbar: LazyComponent<typeof import("../../components/Navbar.vue")['default']>
   LazyProductcard: LazyComponent<typeof import("../../components/Productcard.vue")['default']>
+  LazySearchSuggestions: LazyComponent<typeof import("../../components/SearchSuggestions.vue")['default']>
   LazySkeletonLoader: LazyComponent<typeof import("../../components/SkeletonLoader.vue")['default']>
   LazyToastContainer: LazyComponent<typeof import("../../components/ToastContainer.vue")['default']>
   LazyNuxtWelcome: LazyComponent<typeof import("../../node_modules/nuxt/dist/app/components/welcome.vue")['default']>

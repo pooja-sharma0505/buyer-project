@@ -34,6 +34,7 @@ function persist(items, key = STORAGE_KEY) {
 export function useWishlist() {
   const items = useState('wishlist-items', () => [])
   const { isLoggedIn, user } = useAuth()
+  const isHydrated = useState('wishlist-hydrated', () => false)
 
   const scopedKey = computed(() => {
     const uid = user.value?.id
@@ -52,6 +53,7 @@ export function useWishlist() {
           items.value = loadItems(
             newUserId ? `${STORAGE_KEY}-user-${newUserId}` : STORAGE_KEY
           )
+          isHydrated.value = false
         }
       }
     )
@@ -81,8 +83,23 @@ export function useWishlist() {
     } catch (err) {
       // Keep localStorage items, but tell the user the server copy is stale.
       warnThrottled("Couldn't load your saved wishlist from the server — showing this device's copy.")
+    } finally {
+      isHydrated.value = true
     }
   }
+
+  const refreshFromDb = syncWithDb
+
+  const initFromSsr = (serverItems) => {
+    if (serverItems?.length) {
+      items.value = serverItems
+      if (import.meta.client) {
+        persist(items.value, scopedKey.value)
+      }
+    }
+    isHydrated.value = true
+  }
+
 
   const saveToDb = async (productId) => {
     if (!isLoggedIn.value || !import.meta.client) return
@@ -107,8 +124,11 @@ export function useWishlist() {
 
   if (import.meta.client) {
     watch(isLoggedIn, async (loggedIn) => {
-      if (loggedIn) {
+      if (loggedIn && !isHydrated.value) {
         await syncWithDb()
+      } else if (!loggedIn) {
+        // localStorage is the source of truth for guests
+        isHydrated.value = true
       }
     }, { immediate: true })
   }
@@ -163,6 +183,10 @@ export function useWishlist() {
     toggleWishlist,
     isInWishlist,
     clearWishlist,
-    itemCount
+    itemCount,
+    isHydrated,
+    syncWithDb,
+    refreshFromDb,
+    initFromSsr
   }
 }

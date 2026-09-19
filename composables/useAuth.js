@@ -53,6 +53,10 @@ export function useAuth() {
       body: { phone, password, rememberMe }
     })
     user.value = data.user
+    // Merge guest cart/wishlist into the authenticated account
+    if (import.meta.client) {
+      await mergeGuestData()
+    }
     return data
   }
 
@@ -102,6 +106,11 @@ export function useAuth() {
       await $fetch('/api/auth/logout', { method: 'POST' })
     } finally {
       user.value = null
+      // Reset hydration state so cart/wishlist re-sync from DB on next login
+      const cart = useCart()
+      const wishlist = useWishlist()
+      cart.isHydrated.value = false
+      wishlist.isHydrated.value = false
       // Reset auth ready promise for next login
       resetAuthReady()
       if (import.meta.client) {

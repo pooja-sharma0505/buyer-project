@@ -35,7 +35,7 @@ function persist(items, key) {
 export function useCart() {
   const items = useState('cart-items', () => [])
   const { isLoggedIn, user } = useAuth()
-  const isHydrated = ref(false)
+  const isHydrated = useState('cart-hydrated', () => false)
   const isSyncing = ref(false)
 
   // User-scoped storage key so carts don't leak between accounts
@@ -66,6 +66,7 @@ export function useCart() {
           items.value = loadItems(
             newUserId ? `${STORAGE_KEY}-user-${newUserId}` : STORAGE_KEY
           )
+          isHydrated.value = false
         }
       }
     )
@@ -91,12 +92,22 @@ export function useCart() {
     }
   }
 
+  const initFromSsr = (serverItems) => {
+    if (serverItems?.length) {
+      items.value = serverItems.map((item) => ({ ...item, qty: item.qty || 1 }))
+      if (import.meta.client) {
+        persist(items.value, scopedKey.value)
+      }
+    }
+    isHydrated.value = true
+  }
+
   // Watch for auth state changes and sync cart
   if (import.meta.client) {
     watch(isLoggedIn, async (loggedIn) => {
-      if (loggedIn) {
+      if (loggedIn && !isHydrated.value) {
         await syncWithDb()
-      } else {
+      } else if (!loggedIn) {
         // Mark as hydrated when not logged in (localStorage is the source of truth)
         isHydrated.value = true
       }
@@ -236,6 +247,7 @@ export function useCart() {
     getCartQty,
     MAX_QTY_PER_PRODUCT,
     isHydrated,
-    isSyncing
+    isSyncing,
+    initFromSsr
   }
 }

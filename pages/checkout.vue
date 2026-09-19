@@ -354,6 +354,28 @@ const { formatPrice } = useFormatPrice()
 const { success: toastSuccess, error: toastError } = useToast()
 const router = useRouter()
 
+// Pre-fetch addresses during SSR for authenticated users
+const { data: serverAddresses } = await useAsyncData('checkout-addresses', () => {
+  if (!isLoggedIn.value) return null
+  return $fetch('/api/addresses')
+})
+
+if (serverAddresses.value?.addresses) {
+  savedAddresses.value = serverAddresses.value.addresses
+  // Select default address
+  const defaultAddr = savedAddresses.value.find(a => a.isDefault)
+  if (defaultAddr) {
+    selectedAddressId.value = defaultAddr.id
+  } else if (savedAddresses.value.length) {
+    selectedAddressId.value = savedAddresses.value[0].id
+  }
+}
+
+// Pre-fill address form from user profile on SSR
+if (user.value?.name && !addressForm.value.fullName) {
+  addressForm.value.fullName = user.value.name
+}
+
 const steps = [
   { id: 'address', label: 'Address' },
   { id: 'payment', label: 'Payment' },
@@ -430,11 +452,6 @@ onMounted(async () => {
   if (!isLoggedIn.value) {
     await navigateTo('/login?redirect=/checkout')
     return
-  }
-  await fetchAddresses()
-  // Pre-fill from user profile
-  if (user.value?.name && !addressForm.value.fullName) {
-    addressForm.value.fullName = user.value.name
   }
 })
 
@@ -552,6 +569,11 @@ const placeOrder = async () => {
     orderId.value = result.orderId
     currentStep.value = 3 // Confirmation
     toastSuccess('Order placed successfully!')
+    try {
+      await navigateTo(`/order-success?orderId=${result.orderId}`)
+    } catch {
+      // Navigation failed — keep inline confirmation visible
+    }
   } catch (err) {
     toastError(err.data?.message || err.message || 'Failed to place order')
   } finally {

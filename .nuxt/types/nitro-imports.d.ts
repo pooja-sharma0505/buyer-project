@@ -13,6 +13,8 @@ declare global {
   const cachedEventHandler: typeof import('../../node_modules/nitropack/dist/runtime/internal/cache').cachedEventHandler
   const cachedFunction: typeof import('../../node_modules/nitropack/dist/runtime/internal/cache').cachedFunction
   const callNodeListener: typeof import('../../node_modules/h3').callNodeListener
+  const checkRateLimit: typeof import('../../server/utils/rate-limit').checkRateLimit
+  const clearOTP: typeof import('../../server/utils/otp-store').clearOTP
   const clearResponseHeaders: typeof import('../../node_modules/h3').clearResponseHeaders
   const clearSession: typeof import('../../node_modules/h3').clearSession
   const clearSessionCookie: typeof import('../../server/utils/auth').clearSessionCookie
@@ -42,6 +44,7 @@ declare global {
   const deleteCookie: typeof import('../../node_modules/h3').deleteCookie
   const destroySession: typeof import('../../server/utils/auth').destroySession
   const dynamicEventHandler: typeof import('../../node_modules/h3').dynamicEventHandler
+  const enforceRateLimit: typeof import('../../server/utils/rate-limit').enforceRateLimit
   const ensureAuthTables: typeof import('../../server/utils/schema').ensureAuthTables
   const ensureCartTables: typeof import('../../server/utils/schema').ensureCartTables
   const ensureOrderTables: typeof import('../../server/utils/schema').ensureOrderTables
@@ -58,12 +61,14 @@ declare global {
   const fromNodeMiddleware: typeof import('../../node_modules/h3').fromNodeMiddleware
   const fromPlainHandler: typeof import('../../node_modules/h3').fromPlainHandler
   const fromWebHandler: typeof import('../../node_modules/h3').fromWebHandler
+  const generateOTP: typeof import('../../server/utils/otp-store').generateOTP
   const getCookie: typeof import('../../node_modules/h3').getCookie
   const getDemoProductById: typeof import('../../server/utils/demo-products').getDemoProductById
   const getDemoProducts: typeof import('../../server/utils/demo-products').getDemoProducts
   const getHeader: typeof import('../../node_modules/h3').getHeader
   const getHeaders: typeof import('../../node_modules/h3').getHeaders
   const getMethod: typeof import('../../node_modules/h3').getMethod
+  const getOTP: typeof import('../../server/utils/otp-store').getOTP
   const getPool: typeof import('../../server/utils/db').getPool
   const getProxyRequestHeaders: typeof import('../../node_modules/h3').getProxyRequestHeaders
   const getQuery: typeof import('../../node_modules/h3').getQuery
@@ -128,6 +133,7 @@ declare global {
   const setCookie: typeof import('../../node_modules/h3').setCookie
   const setHeader: typeof import('../../node_modules/h3').setHeader
   const setHeaders: typeof import('../../node_modules/h3').setHeaders
+  const setOTP: typeof import('../../server/utils/otp-store').setOTP
   const setResponseHeader: typeof import('../../node_modules/h3').setResponseHeader
   const setResponseHeaders: typeof import('../../node_modules/h3').setResponseHeaders
   const setResponseStatus: typeof import('../../node_modules/h3').setResponseStatus
@@ -174,5 +180,7 @@ export { defineAppConfig } from '/Applications/XAMPP/xamppfiles/htdocs/buyer-pro
 export { getSessionToken, getUserFromSession, requireUser, setSessionCookie, clearSessionCookie, destroySession } from '/Applications/XAMPP/xamppfiles/htdocs/buyer-project/server/utils/auth';
 export { getPool, testDbConnection, resetPool } from '/Applications/XAMPP/xamppfiles/htdocs/buyer-project/server/utils/db';
 export { getDemoProducts, getDemoProductById } from '/Applications/XAMPP/xamppfiles/htdocs/buyer-project/server/utils/demo-products';
+export { generateOTP, setOTP, getOTP, clearOTP } from '/Applications/XAMPP/xamppfiles/htdocs/buyer-project/server/utils/otp-store';
 export { fetchProductsPage, fetchAllProductsRows, fetchProductRowById, fetchReviewStats, toProductPayload } from '/Applications/XAMPP/xamppfiles/htdocs/buyer-project/server/utils/products';
+export { checkRateLimit, enforceRateLimit } from '/Applications/XAMPP/xamppfiles/htdocs/buyer-project/server/utils/rate-limit';
 export { ensureUsersTable, ensureProductsTable, ensureAuthTables, ensureOrderTables, seedDemoUserIfEmpty, ensureCartTables, ensureReviewTables, ensureWishlistTable } from '/Applications/XAMPP/xamppfiles/htdocs/buyer-project/server/utils/schema';

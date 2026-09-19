@@ -3,6 +3,17 @@ import type { Serialize, Simplify } from "nitropack/types";
 declare module "nitropack/types" {
   type Awaited<T> = T extends PromiseLike<infer U> ? Awaited<U> : T
   interface InternalApi {
+    '/api/addresses': {
+      'get': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/addresses.get').default>>>>
+      'post': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/addresses.post').default>>>>
+    }
+    '/api/addresses/:id': {
+      'delete': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/addresses/[id].delete').default>>>>
+      'put': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/addresses/[id].put').default>>>>
+    }
+    '/api/auth/forgot-password': {
+      'post': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/auth/forgot-password.post').default>>>>
+    }
     '/api/auth/login': {
       'post': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/auth/login.post').default>>>>
     }
@@ -12,8 +23,14 @@ declare module "nitropack/types" {
     '/api/auth/me': {
       'get': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/auth/me.get').default>>>>
     }
+    '/api/auth/send-otp': {
+      'post': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/auth/send-otp.post').default>>>>
+    }
     '/api/auth/signup': {
       'post': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/auth/signup.post').default>>>>
+    }
+    '/api/auth/verify-otp': {
+      'post': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/auth/verify-otp.post').default>>>>
     }
     '/api/cart': {
       'delete': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/cart.delete').default>>>>
@@ -33,6 +50,15 @@ declare module "nitropack/types" {
     '/api/orders/:id': {
       'get': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/orders/[id].get').default>>>>
     }
+    '/api/orders/:id/cancel': {
+      'post': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/orders/[id]/cancel.post').default>>>>
+    }
+    '/api/orders/:id/return': {
+      'post': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/orders/[id]/return.post').default>>>>
+    }
+    '/api/payment-methods': {
+      'get': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/payment-methods.get').default>>>>
+    }
     '/api/products/:id': {
       'get': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/products/[id].get').default>>>>
     }
@@ -45,8 +71,14 @@ declare module "nitropack/types" {
     '/api/reviews/:productId': {
       'get': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/reviews/[productId].get').default>>>>
     }
+    '/api/search/suggestions': {
+      'get': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/search/suggestions.get').default>>>>
+    }
     '/api/upload': {
       'post': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/upload.post').default>>>>
+    }
+    '/api/wallet/balance': {
+      'get': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/wallet/balance.get').default>>>>
     }
     '/api/wishlist/:productId': {
       'delete': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/wishlist/[productId].delete').default>>>>

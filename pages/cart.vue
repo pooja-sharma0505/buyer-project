@@ -108,7 +108,18 @@ useSeoMeta({
 
 const { isLoggedIn } = useAuth()
 const { formatPrice } = useFormatPrice()
-const { items: displayItems, updateQty, removeFromCart, itemCount: totalQty, subtotal, isHydrated } = useCart()
+const { items: displayItems, updateQty, removeFromCart, itemCount: totalQty, subtotal, isHydrated, initFromSsr } = useCart()
+
+// Pre-fetch cart from DB during SSR for authenticated users so the page
+// renders with correct items instead of a loading spinner.
+const { data: serverCart } = await useAsyncData('cart-ssr', () => {
+  if (!isLoggedIn.value) return null
+  return $fetch('/api/cart')
+})
+
+if (serverCart.value?.items) {
+  initFromSsr(serverCart.value.items)
+}
 
 const tax = computed(() => Number(subtotal.value || 0) * 0.18)
 const total = computed(() => Number(subtotal.value || 0) + tax.value - couponDiscount.value)
