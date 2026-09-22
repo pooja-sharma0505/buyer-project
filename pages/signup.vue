@@ -86,7 +86,7 @@
           <p v-if="fieldErrors.confirmPassword" class="field-error">{{ fieldErrors.confirmPassword }}</p>
 
           <button type="submit" :disabled="loading" class="btn-primary">
-            {{ loading ? 'Creating account...' : 'Continue' }}
+            {{ loading ? 'Creating account...' : 'Create Account' }}
           </button>
         </form>
 
@@ -98,55 +98,8 @@
         </div>
       </div>
 
-      <!-- Step 2: OTP Verification -->
-      <div v-if="step === 2" class="signup-step">
-        <h1>Verify Your Phone</h1>
-        <p>We've sent a 6-digit code to <strong>{{ maskPhone(phone) }}</strong>.</p>
-
-        <form @submit.prevent="verifyOTP">
-          <div class="otp-inputs">
-            <input
-              v-for="i in 6"
-              :key="i"
-              v-model="otpDigits[i - 1]"
-              type="text"
-              maxlength="1"
-              inputmode="numeric"
-              @input="handleOtpInput(i)"
-              @keydown="handleOtpKeydown(i, $event)"
-              @paste="handleOtpPaste"
-              :ref="el => otpRefs[i - 1] = el"
-              :aria-label="`Digit ${i}`"
-              class="otp-input"
-            />
-          </div>
-
-          <p v-if="otpError" class="field-error">{{ otpError }}</p>
-
-          <button type="submit" :disabled="verifying || otpDigits.some(d => !d)" class="btn-primary">
-            {{ verifying ? 'Verifying...' : 'Verify & Create Account' }}
-          </button>
-
-          <div class="resend-section">
-            <p v-if="resendCooldown > 0" class="resend-timer">Resend code in {{ resendCooldown }}s</p>
-            <button
-              v-else
-              type="button"
-              class="resend-link"
-              @click="resendOTP"
-              :disabled="resending"
-            >
-              {{ resending ? 'Sending...' : 'Resend code' }}
-            </button>
-            <p class="change-phone" @click="goBackToStep1">Change phone number</p>
-          </div>
-        </form>
-
-        <p v-if="otpSuccess" class="success">{{ otpSuccess }}</p>
-      </div>
-
-      <!-- Step 3: Success -->
-      <div v-if="step === 3" class="signup-step success-step">
+      <!-- Success -->
+      <div v-if="step === 2" class="signup-step success-step">
         <div class="success-icon">
           <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
@@ -154,7 +107,7 @@
           </svg>
         </div>
         <h1>Account Created!</h1>
-        <p>Your account has been verified and is ready to use.</p>
+        <p>Your account is ready to use.</p>
         <NuxtLink to="/login" class="btn-primary" style="margin-top: 16px;">Continue to Login</NuxtLink>
       </div>
     </div>
@@ -171,7 +124,6 @@ useSeoMeta({
 })
 
 const { success: toastSuccess } = useToast()
-const { mergeGuestData } = useAuth()
 
 // Step 1: Basic info
 const name = ref('')
@@ -184,23 +136,7 @@ const loading = ref(false)
 const fieldErrors = ref({ name: '', phone: '', email: '', password: '', confirmPassword: '' })
 const showPassword = ref(false)
 
-// Step 2: OTP
 const step = ref(1)
-const otpDigits = ref(['', '', '', '', '', ''])
-const otpRefs = ref([])
-const verifying = ref(false)
-const otpError = ref('')
-const otpSuccess = ref('')
-const resending = ref(false)
-const resendCooldown = ref(0)
-let resendTimer = null
-
-function maskPhone(p) {
-  if (!p) return ''
-  const clean = p.replace(/\D/g, '')
-  if (clean.length <= 4) return clean
-  return clean.slice(0, 2) + '*'.repeat(clean.length - 4) + clean.slice(-2)
-}
 
 function validate() {
   const next = { name: '', phone: '', email: '', password: '', confirmPassword: '' }
@@ -268,102 +204,22 @@ const handleStep1 = async () => {
 
   loading.value = true
   try {
-    // Send OTP request
-    await $fetch('/api/auth/send-otp', {
+    await $fetch('/api/auth/signup', {
       method: 'POST',
-      body: { phone: phone.value, name: name.value, email: email.value || null, password: password.value }
+      body: {
+        name: name.value,
+        phone: phone.value,
+        email: email.value || null,
+        password: password.value
+      }
     })
     step.value = 2
-    startResendCooldown()
-    // Auto-focus first OTP input
-    nextTick(() => otpRefs.value[0]?.focus())
+    toastSuccess('Account created successfully!')
   } catch (err) {
-    error.value = err.data?.message || err.message || 'Failed to send verification code'
+    error.value = err.data?.message || err.message || 'Failed to create account'
   } finally {
     loading.value = false
   }
-}
-
-function startResendCooldown() {
-  resendCooldown.value = 60
-  if (resendTimer) clearInterval(resendTimer)
-  resendTimer = setInterval(() => {
-    resendCooldown.value--
-    if (resendCooldown.value <= 0) clearInterval(resendTimer)
-  }, 1000)
-}
-
-async function resendOTP() {
-  resending.value = true
-  otpError.value = ''
-  try {
-    await $fetch('/api/auth/send-otp', {
-      method: 'POST',
-      body: { phone: phone.value, name: name.value, email: email.value || null, password: password.value }
-    })
-    startResendCooldown()
-    toastSuccess('New verification code sent')
-  } catch (err) {
-    otpError.value = err.data?.message || 'Failed to resend code'
-  } finally {
-    resending.value = false
-  }
-}
-
-function handleOtpInput(index) {
-  const val = otpDigits.value[index - 1]
-  if (!/^\d$/.test(val)) {
-    otpDigits.value[index - 1] = ''
-    return
-  }
-  if (index < 6) {
-    nextTick(() => otpRefs.value[index]?.focus())
-  }
-}
-
-function handleOtpKeydown(index, e) {
-  if (e.key === 'Backspace' && !otpDigits.value[index - 1] && index > 1) {
-    otpRefs.value[index - 2]?.focus()
-  }
-}
-
-function handleOtpPaste(e) {
-  const pasted = e.clipboardData.getData('text').replace(/\D/g, '').slice(0, 6)
-  pasted.split('').forEach((digit, i) => {
-    otpDigits.value[i] = digit
-  })
-  if (pasted.length === 6) {
-    nextTick(() => otpRefs.value[5]?.focus())
-  }
-}
-
-const verifyOTP = async () => {
-  otpError.value = ''
-  otpSuccess.value = ''
-  const code = otpDigits.value.join('')
-
-  if (code.length !== 6) return
-
-  verifying.value = true
-  try {
-    await $fetch('/api/auth/verify-otp', {
-      method: 'POST',
-      body: { phone: phone.value, code, name: name.value, email: email.value || null, password: password.value }
-    })
-    // Merge guest cart and wishlist into new account
-    await mergeGuestData()
-    step.value = 3
-    toastSuccess('Account created successfully!')
-  } catch (err) {
-    otpError.value = err.data?.message || 'Invalid or expired code'
-  } finally {
-    verifying.value = false
-  }
-}
-
-function goBackToStep1() {
-  step.value = 1
-  if (resendTimer) clearInterval(resendTimer)
 }
 </script>
 
@@ -429,55 +285,6 @@ input[aria-invalid="true"]:focus { box-shadow: 0 0 0 3px rgba(220,38,38,0.15); }
 .toggle-password:hover { color: #6b7280; }
 .toggle-password:focus { outline: none; }
 
-/* OTP Inputs */
-.otp-inputs {
-  display: flex;
-  gap: 8px;
-  justify-content: center;
-  margin: 16px 0;
-}
-.otp-input {
-  width: 44px;
-  height: 52px;
-  text-align: center;
-  font-size: 20px;
-  font-weight: 600;
-  border: 2px solid #d1d5db;
-  border-radius: 10px;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
-}
-.otp-input:focus {
-  border-color: #d4af64;
-  outline: none;
-  box-shadow: 0 0 0 3px rgba(212,175,100,0.15);
-}
-.otp-input[aria-invalid="true"] { border-color: #dc2626; }
-
-/* Resend section */
-.resend-section {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  margin-top: 16px;
-}
-.resend-timer { color: #6b7280; font-size: 13px; margin: 0; }
-.resend-link {
-  background: none;
-  border: none;
-  padding: 0;
-  margin: 0;
-  color: #d4af64;
-  font-size: 13px;
-  font-weight: 500;
-  cursor: pointer;
-  text-decoration: underline;
-}
-.resend-link:hover { color: #b8860b; }
-.resend-link:disabled { opacity: 0.6; cursor: not-allowed; color: #9ca3af; }
-.change-phone { color: #6b7280; font-size: 13px; cursor: pointer; margin: 0; text-decoration: underline; }
-.change-phone:hover { color: #374151; }
-
 /* Success step */
 .success-step { text-align: center; }
 .success-icon {
@@ -490,6 +297,5 @@ input[aria-invalid="true"]:focus { box-shadow: 0 0 0 3px rgba(220,38,38,0.15); }
 @media (max-width: 480px) {
   .signup-page { align-items: flex-start; padding: 24px 12px; }
   .card { border-radius: 10px; padding: 24px 16px; }
-  .otp-input { width: 38px; height: 46px; font-size: 18px; }
 }
 </style>

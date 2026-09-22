@@ -1,26 +1,8 @@
-// Module-level promise that resolves when auth initialization is complete
-let authReadyPromise = null
-let authReadyResolve = null
-
-function createAuthReadyPromise() {
-  authReadyPromise = new Promise((resolve) => {
-    authReadyResolve = resolve
-  })
-}
-
-// Initialize the promise
-createAuthReadyPromise()
-
 export function useAuth() {
   const user = useState('auth-user', () => null)
   const isAuthLoading = useState('auth-loading', () => true)
 
   const isLoggedIn = computed(() => !!user.value)
-
-  // Function to reset the ready promise (used on logout)
-  const resetAuthReady = () => {
-    createAuthReadyPromise()
-  }
 
   async function fetchUser() {
     isAuthLoading.value = true
@@ -36,16 +18,8 @@ export function useAuth() {
       user.value = null
     } finally {
       isAuthLoading.value = false
-      // Resolve the promise to signal auth is ready
-      if (authReadyResolve) {
-        authReadyResolve()
-        authReadyResolve = null
-      }
     }
   }
-
-  // Function to wait for auth to be ready
-  const waitForAuthReady = () => authReadyPromise
 
   async function login(phone, password, rememberMe = false) {
     const data = await $fetch('/api/auth/login', {
@@ -111,8 +85,6 @@ export function useAuth() {
       const wishlist = useWishlist()
       cart.isHydrated.value = false
       wishlist.isHydrated.value = false
-      // Reset auth ready promise for next login
-      resetAuthReady()
       if (import.meta.client) {
         try {
           localStorage.removeItem('buyer-cart-v1')
@@ -132,5 +104,5 @@ export function useAuth() {
     }
   }
 
-  return { user, isLoggedIn, isAuthLoading, fetchUser, login, logout, waitForAuthReady, resetAuthReady, mergeGuestData }
+  return { user, isLoggedIn, isAuthLoading, fetchUser, login, logout, mergeGuestData }
 }

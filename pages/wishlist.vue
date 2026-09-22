@@ -114,8 +114,6 @@ const addToCart = (item) => {
     rating: item.rating || { rate: 0, count: 0 },
     qty: 1
   })
-  // Optionally remove from wishlist after adding to cart
-  removeFromWishlist(item.id)
 }
 
 const moveAllToCart = async () => {
@@ -147,7 +145,6 @@ const moveAllToCart = async () => {
         rating: item.rating || { rate: 0, count: 0 },
         qty: 1
       })
-      removeFromWishlist(item.id)
     }
     toast.success(`Moved ${availableItems.length} item${availableItems.length > 1 ? 's' : ''} to cart`)
   } catch (err) {

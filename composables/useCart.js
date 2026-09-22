@@ -170,7 +170,7 @@ export function useCart() {
     }
     if (import.meta.client) {
       const toast = useToast()
-      toast.success('Added to cart!')
+      toast.success(`${product.title || 'Item'} added to cart`)
     }
     return true
   }

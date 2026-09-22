@@ -30,14 +30,14 @@ defineProps({
   actionType: { type: String, default: 'wishlist' } // 'wishlist' | 'cart' | 'checkout'
 })
 
-defineEmits(['close', 'login'])
+const emit = defineEmits(['close', 'login'])
 
 function handleLoginClick() {
-  $emit('login')
+  emit('login')
 }
 
 function close() {
-  $emit('close')
+  emit('close')
 }
 </script>
 
