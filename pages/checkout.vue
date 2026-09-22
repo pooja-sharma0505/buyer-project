@@ -360,22 +360,6 @@ const { data: serverAddresses } = await useAsyncData('checkout-addresses', () =>
   return $fetch('/api/addresses')
 })
 
-if (serverAddresses.value?.addresses) {
-  savedAddresses.value = serverAddresses.value.addresses
-  // Select default address
-  const defaultAddr = savedAddresses.value.find(a => a.isDefault)
-  if (defaultAddr) {
-    selectedAddressId.value = defaultAddr.id
-  } else if (savedAddresses.value.length) {
-    selectedAddressId.value = savedAddresses.value[0].id
-  }
-}
-
-// Pre-fill address form from user profile on SSR
-if (user.value?.name && !addressForm.value.fullName) {
-  addressForm.value.fullName = user.value.name
-}
-
 const steps = [
   { id: 'address', label: 'Address' },
   { id: 'payment', label: 'Payment' },
@@ -404,6 +388,20 @@ const addressForm = ref({
   country: 'India',
   isDefault: false
 })
+
+if (serverAddresses.value?.addresses) {
+  savedAddresses.value = serverAddresses.value.addresses
+  const defaultAddr = savedAddresses.value.find(a => a.isDefault)
+  if (defaultAddr) {
+    selectedAddressId.value = defaultAddr.id
+  } else if (savedAddresses.value.length) {
+    selectedAddressId.value = savedAddresses.value[0].id
+  }
+}
+
+if (user.value?.name && !addressForm.value.fullName) {
+  addressForm.value.fullName = user.value.name
+}
 
 // Payment state
 const selectedPaymentMethod = ref('card')
