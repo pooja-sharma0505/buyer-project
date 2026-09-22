@@ -13,7 +13,7 @@
           </NuxtLink>
         </li>
         <li v-if="isLoggedIn" class="user-chip">
-          <span class="user-name">{{ user.name }}</span>
+          <NuxtLink to="/profile" class="user-name">{{ user.name }}</NuxtLink>
           <button type="button" class="logout-btn" @click="logout">Logout</button>
         </li>
       </ul>
@@ -77,6 +77,7 @@
             </NuxtLink>
           </li>
           <li v-if="isLoggedIn" class="mobile-user">
+            <NuxtLink to="/profile" class="mobile-link" @click="mobileOpen = false">Profile</NuxtLink>
             <span>Signed in as {{ user.name }}</span>
             <button type="button" class="mobile-logout" @click="handleMobileLogout">Logout</button>
           </li>
@@ -255,6 +256,11 @@ onBeforeUnmount(() => {
   font-size: 0.72rem;
   letter-spacing: 0.08em;
   color: #374151;
+  text-decoration: none;
+}
+
+.user-name:hover {
+  color: #d4af64;
 }
 
 .logout-btn {

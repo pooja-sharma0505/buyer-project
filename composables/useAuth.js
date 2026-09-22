@@ -1,10 +1,13 @@
 export function useAuth() {
   const user = useState('auth-user', () => null)
   const isAuthLoading = useState('auth-loading', () => true)
+  const authReady = useState('auth-ready', () => false)
 
   const isLoggedIn = computed(() => !!user.value)
 
   async function fetchUser() {
+    if (authReady.value) return
+
     isAuthLoading.value = true
     try {
       // During SSR, we need to forward cookies to the API call
@@ -18,6 +21,13 @@ export function useAuth() {
       user.value = null
     } finally {
       isAuthLoading.value = false
+      authReady.value = true
+    }
+  }
+
+  async function waitForAuthReady() {
+    if (!authReady.value) {
+      await fetchUser()
     }
   }
 
@@ -27,10 +37,30 @@ export function useAuth() {
       body: { phone, password, rememberMe }
     })
     user.value = data.user
+    authReady.value = true
     // Merge guest cart/wishlist into the authenticated account
     if (import.meta.client) {
       await mergeGuestData()
     }
+    return data
+  }
+
+  async function updateProfile(profile) {
+    const data = await $fetch('/api/auth/profile', {
+      method: 'PUT',
+      body: profile
+    })
+    user.value = data.user
+    authReady.value = true
+    return data
+  }
+
+  async function changePassword(newPassword) {
+    const data = await $fetch('/api/auth/change-password', {
+      method: 'PUT',
+      body: { newPassword }
+    })
+    authReady.value = true
     return data
   }
 
@@ -79,6 +109,7 @@ export function useAuth() {
     try {
       await $fetch('/api/auth/logout', { method: 'POST' })
     } finally {
+      authReady.value = false
       user.value = null
       // Reset hydration state so cart/wishlist re-sync from DB on next login
       const cart = useCart()
@@ -104,5 +135,5 @@ export function useAuth() {
     }
   }
 
-  return { user, isLoggedIn, isAuthLoading, fetchUser, login, logout, mergeGuestData }
+  return { user, isLoggedIn, isAuthLoading, fetchUser, waitForAuthReady, login, updateProfile, changePassword, logout, mergeGuestData }
 }

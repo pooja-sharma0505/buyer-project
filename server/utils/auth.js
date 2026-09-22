@@ -1,5 +1,5 @@
 import { getPool } from './db.js'
-import { ensureAuthTables } from './schema.js'
+import { ensureAuthTables, ensureUsersTable } from './schema.js'
 
 const SESSION_COOKIE = 'auth_session'
 
@@ -12,11 +12,12 @@ export async function getUserFromSession(event) {
   if (!token) return null
 
   const pool = getPool()
+  await ensureUsersTable(pool)
   await ensureAuthTables(pool)
 
   const [rows] = await pool.query(
     `
-    SELECT u.id, u.name, u.phone, u.role
+    SELECT u.id, u.name, u.phone, u.email, u.role
     FROM sessions s
     JOIN users u ON u.id = s.user_id
     WHERE s.token = ? AND s.expires_at > NOW()

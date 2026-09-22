@@ -10,6 +10,8 @@ export default defineEventHandler(async (event) => {
   const body = await readBody(event)
   const name = String(body?.name ?? '').trim()
   const phone = String(body?.phone ?? '').trim()
+  const emailValue = String(body?.email ?? '').trim()
+  const email = emailValue || null
   const password = String(body?.password ?? '')
 
   if (!name || !phone || !password) {
@@ -22,6 +24,10 @@ export default defineEventHandler(async (event) => {
 
   if (!/^\d{10,15}$/.test(phone)) {
     throw createError({ statusCode: 400, message: 'Phone must be 10–15 digits' })
+  }
+
+  if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    throw createError({ statusCode: 400, message: 'Enter a valid email address' })
   }
 
   if (password.length < 6) {
@@ -44,13 +50,13 @@ export default defineEventHandler(async (event) => {
     const passwordHash = await bcrypt.hash(password, 10)
 
     const [result] = await pool.query(
-      'INSERT INTO users (name, phone, password_hash, role) VALUES (?, ?, ?, ?)',
-      [name, phone, passwordHash, 'customer']
+      'INSERT INTO users (name, phone, email, password_hash, role) VALUES (?, ?, ?, ?, ?)',
+      [name, phone, email, passwordHash, 'customer']
     )
 
     return {
       message: 'Account created successfully',
-      user: { id: result.insertId, name, phone, role: 'customer' }
+      user: { id: result.insertId, name, phone, email, role: 'customer' }
     }
   } catch (error) {
     if (error.statusCode) throw error

@@ -4,10 +4,17 @@ export async function ensureUsersTable(pool) {
       id INT AUTO_INCREMENT PRIMARY KEY,
       name VARCHAR(255) NOT NULL,
       phone VARCHAR(255) NOT NULL UNIQUE,
+      email VARCHAR(255) NULL,
       password_hash VARCHAR(255) NULL,
       role VARCHAR(50) DEFAULT 'customer'
     )
   `)
+
+  try {
+    await pool.query(`ALTER TABLE users ADD COLUMN email VARCHAR(255) NULL AFTER phone`)
+  } catch (err) {
+    if (err.code !== 'ER_DUP_FIELDNAME' && err.code !== 'ER_BAD_FIELD_ERROR') throw err
+  }
 
   // Add password_hash column if missing (migration for existing users table)
   try {

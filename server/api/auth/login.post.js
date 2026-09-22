@@ -1,6 +1,6 @@
 import { randomBytes } from 'node:crypto'
 import { getPool } from '../../utils/db.js'
-import { ensureAuthTables } from '../../utils/schema.js'
+import { ensureAuthTables, ensureUsersTable } from '../../utils/schema.js'
 import { setSessionCookie } from '../../utils/auth.js'
 import { enforceRateLimit } from '../../utils/rate-limit.js'
 import bcrypt from 'bcryptjs'
@@ -28,9 +28,10 @@ export default defineEventHandler(async (event) => {
 
   try {
     const pool = getPool()
+    await ensureUsersTable(pool)
     const [rows] = await pool.query(
       `
-      SELECT id, name, phone, role, password_hash
+      SELECT id, name, phone, email, role, password_hash
       FROM users
       WHERE phone = ?
       LIMIT 1
@@ -70,7 +71,7 @@ export default defineEventHandler(async (event) => {
 
     return {
       message: 'Login successful',
-      user: { id: user.id, name: user.name, phone: user.phone, role: user.role }
+      user: { id: user.id, name: user.name, phone: user.phone, email: user.email || null, role: user.role }
     }
   } catch (error) {
     if (error.statusCode) throw error
